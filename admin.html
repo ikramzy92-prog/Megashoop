@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Megashoop — администратор</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f5fb;color:#17233b}header{background:#1554d8;color:white;padding:22px}main{max-width:740px;margin:30px auto;padding:0 16px}.panel{background:white;border-radius:16px;padding:24px;box-shadow:0 5px 20px #10204012;margin-bottom:18px}h1{margin:0;font-size:27px}h2{margin-top:0}label{display:block;margin:14px 0 6px;font-weight:600}input,textarea{width:100%;padding:12px;border:1px solid #ccd5e4;border-radius:9px;font:inherit}textarea{min-height:85px}button{border:0;background:#1554d8;color:white;border-radius:9px;padding:13px 18px;font-weight:bold;cursor:pointer;margin-top:16px}button:disabled{opacity:.5;cursor:wait}.secondary{background:#475569}.hidden{display:none}.message{white-space:pre-wrap;color:#334155;margin-top:14px}.error{color:#b91c1c}.ok{color:#047857}.preview{width:170px;max-height:170px;object-fit:contain;margin-top:12px;border-radius:10px}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px}.topline button{margin:0}
+</style>
+</head>
+<body>
+<header><h1>Megashoop Admin</h1><div>Управление товарами · цены в лари ₾</div></header>
+<main>
+<section id="loginPanel" class="panel"><h2>Вход администратора</h2><form id="loginForm"><label for="email">Email</label><input id="email" type="email" required autocomplete="email"><label for="password">Пароль</label><input id="password" type="password" required autocomplete="current-password"><button id="loginBtn" type="submit">Войти</button></form><div id="loginStatus" class="message"></div></section>
+<section id="adminPanel" class="panel hidden"><div class="topline"><h2>Добавить товар</h2><button id="logout" class="secondary" type="button">Выйти</button></div><form id="productForm"><label for="name">Название товара</label><input id="name" required placeholder="Шуруповёрт Bosch 48V"><label for="description">Описание</label><textarea id="description" placeholder="Описание товара"></textarea><label for="price">Цена (₾)</label><input id="price" type="number" min="0" step="0.01" required placeholder="75.00"><label for="stock">Количество на складе</label><input id="stock" type="number" min="0" step="1" value="1" required><label for="category">ID категории (необязательно)</label><input id="category" type="number" min="1" step="1" placeholder="Например, 5"><label for="unit">Единица</label><input id="unit" value="шт"><label for="photo">Фотография товара</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" required><img id="preview" class="preview hidden" alt="Предпросмотр фотографии"><button id="saveBtn" type="submit">Сохранить товар</button></form><div id="saveStatus" class="message"></div></section>
+</main>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SUPABASE_URL = 'https://mrslybtwzfcovpsyuexf.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_AnpUjix60jDfpZDGlcO6vQ_XIyxcpDd';
+const BUCKET = 'изображения продукта';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+function status(id,message,kind=''){const el=$(id);el.textContent=message;el.className='message '+kind;}
+async function refresh(){const {data:{session},error}=await supabase.auth.getSession();if(error)status('loginStatus',error.message,'error');$('loginPanel').classList.toggle('hidden',!!session);$('adminPanel').classList.toggle('hidden',!session);}
+supabase.auth.onAuthStateChange(()=>{refresh();});
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginBtn').disabled=true;status('loginStatus','Выполняется вход...');try{const {error}=await supabase.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;status('loginStatus','');}catch(err){status('loginStatus','Ошибка входа: '+err.message,'error');}finally{$('loginBtn').disabled=false;}});
+$('logout').addEventListener('click',async()=>{await supabase.auth.signOut();await refresh();});
+$('photo').addEventListener('change',()=>{const file=$('photo').files[0];if(!file){$('preview').classList.add('hidden');return;}const url=URL.createObjectURL(file);$('preview').src=url;$('preview').classList.remove('hidden');$('preview').onload=()=>URL.revokeObjectURL(url);});
+$('productForm').addEventListener('submit',async e=>{e.preventDefault();const btn=$('saveBtn');btn.disabled=true;status('saveStatus','Загружаем фотографию и сохраняем товар...');try{
+const {data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)throw Error('Войдите в аккаунт администратора.');
+const file=$('photo').files[0];if(!file)throw Error('Выберите фотографию.');if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('Разрешены только JPG, PNG и WEBP.');if(file.size>5*1024*1024)throw Error('Фотография должна быть не больше 5 МБ.');
+const extension={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[file.type];const path=user.id+'/'+crypto.randomUUID()+'.'+extension;
+const {error:uploadError}=await supabase.storage.from(BUCKET).upload(path,file,{contentType:file.type,upsert:false});if(uploadError)throw uploadError;
+const {data:publicData}=supabase.storage.from(BUCKET).getPublicUrl(path);
+const product={name:$('name').value.trim(),description:$('description').value.trim(),price:Number($('price').value),stock:Number($('stock').value),image_url:publicData.publicUrl,unit:$('unit').value.trim()||'шт'};
+if($('category').value.trim())product.category_id=Number($('category').value);
+const {error:insertError}=await supabase.from('products').insert(product);if(insertError)throw insertError;
+$('productForm').reset();$('preview').classList.add('hidden');status('saveStatus','Товар успешно добавлен!','ok');
+}catch(err){status('saveStatus','Не удалось сохранить: '+err.message+'\nПроверь права доступа Supabase.','error');}finally{btn.disabled=false;}});
+refresh();
+</script>
+</body>
+</html>
