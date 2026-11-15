@@ -17,7 +17,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SUPABASE_URL = 'https://mrslybtwzfcovpsyuexf.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_AnpUjix60jDfpZDGlcO6vQ_XIyxcpDd';
-const BUCKET = 'изображения продукта';
+const BUCKET = const BUCKET = 'product-images';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = id => document.getElementById(id);
 function status(id,message,kind=''){const el=$(id);el.textContent=message;el.className='message '+kind;}
