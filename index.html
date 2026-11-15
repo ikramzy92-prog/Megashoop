@@ -3,325 +3,45 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Megashoop — интернет-магазин</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Megashoop — Интернет-магазин</title>
 <style>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Megashoop — Интернет-магазин</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f2f5fb;
-      color: #17233b;
-    }
-    header {
-      background: #1554d8;
-      color: white;
-      padding: 24px;
-    }
-    .header-inner, main {
-      max-width: 1100px;
-      margin: auto;
-    }
-    h1 { margin: 0 0 8px; }
-    .search-row {
-      display: flex;
-      gap: 12px;
-      margin-top: 20px;
-    }
-    input {
-      flex: 1;
-      min-width: 0;
-      padding: 14px;
-      border: 0;
-      border-radius: 9px;
-      font-size: 16px;
-    }
-    button {
-      cursor: pointer;
-      border: 0;
-      border-radius: 9px;
-      padding: 12px 16px;
-      font-weight: bold;
-    }
-    .cart-button { background: white; color: #1554d8; }
-    main { padding: 28px 20px; }
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-    .card {
-      background: white;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 3px 12px #0001;
-    }
-    .card img {
-      width: 100%;
-      height: 220px;
-      object-fit: contain;
-    }
-    .details { padding: 16px; }
-    .details h3 { margin: 0 0 12px; }
-    .price {
-      color: #1554d8;
-      font-size: 24px;
-      font-weight: bold;
-    }
-    .stock { color: #64748b; }
-    .buy {
-      width: 100%;
-      background: #1554d8;
-      color: white;
-    }
-    .buy:disabled { background: #aab5c8; }
-    .cart-panel {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-    }
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid #ddd;
-    }
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #64748b;
-    }
-  </style>
-</head>
-<body>
-
-<header>
-  <div class="header-inner">
-    <h1>Megashoop</h1>
-    <p>Электроинструменты, электроника и оборудование</p>
-    <div class="search-row">
-      <input id="search" placeholder="Поиск товаров...">
-      <button class="cart-button" onclick="toggleCart()">
-        🛒 Корзина: <span id="cartCount">0</span>
-      </button>
-    </div>
-  </div>
-</header>
-
-<main>
-  <h2>Каталог товаров</h2>
-  <p id="status">Загрузка товаров...</p>
-  <div id="products" class="products"></div>
-
-  <section id="cartPanel" class="cart-panel" hidden>
-    <h2>Ваша корзина</h2>
-    <div id="cartItems"></div>
-    <h3 id="cartTotal"></h3>
-    <p>Оформление заказа добавим следующим этапом.</p>
-  </section>
-</main>
-
-<footer>© 2026 Megashoop. Все права защищены.</footer>
-
-<script>
-  // Настройки Supabase
-  const SUPABASE_URL =
-    "https://mrslybtwzfcovpsyuexf.supabase.co";
-
-  // Вставь сюда свой Supabase publishable key
-  const SUPABASE_KEY = "ВСТАВЬ_СВОЙ_PUBLISHABLE_KEY";
-
-  let products = [];
-  let cart = [];
-
-  function money(value) {
-    return Number(value ?? 0).toLocaleString("ru-RU", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }) + " ₾";
-  }
-
-  async function loadProducts() {
-    const status = document.getElementById("status");
-
-    try {
-      const response = await fetch(
-        SUPABASE_URL + "/rest/v1/products?select=*",
-        {
-          headers: {
-            "apikey": SUPABASE_KEY
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("HTTP " + response.status);
-      }
-
-      products = await response.json();
-      renderProducts();
-
-    } catch (error) {
-      console.error("Ошибка загрузки:", error);
-      status.textContent =
-        "Не удалось загрузить товары. Проверь Supabase.";
-    }
-  }
-
-  function renderProducts() {
-    const search = document.getElementById("search")
-      .value.toLowerCase();
-
-    const filtered = products.filter(product =>
-      String(product.name ?? "")
-        .toLowerCase().includes(search)
-    );
-
-    const container = document.getElementById("products");
-    container.replaceChildren();
-
-    document.getElementById("status").textContent =
-      "Найдено товаров: " + filtered.length;
-
-    filtered.forEach(product => {
-      const card = document.createElement("div");
-      card.className = "card";
-
-      const img = document.createElement("img");
-      img.src = product.image_url || "";
-      img.alt = product.name || "Товар";
-      img.loading = "lazy";
-
-      const details = document.createElement("div");
-      details.className = "details";
-
-      const name = document.createElement("h3");
-      name.textContent = product.name || "Без названия";
-
-      const price = document.createElement("p");
-      price.className = "price";
-      price.textContent = money(product.price);
-
-      const stock = document.createElement("p");
-      stock.className = "stock";
-      stock.textContent =
-        "В наличии: " + (product.stock ?? 0) + " шт.";
-
-      const button = document.createElement("button");
-      button.className = "buy";
-      button.textContent = "В корзину";
-      button.disabled = Number(product.stock ?? 0) <= 0;
-      button.onclick = () => addToCart(product);
-
-      details.append(name, price, stock, button);
-      card.append(img, details);
-      container.append(card);
-    });
-  }
-
-  function addToCart(product) {
-    const count = cart.filter(item => item.id === product.id).length;
-
-    if (count >= Number(product.stock ?? 0)) {
-      alert("Недостаточно товара на складе");
-      return;
-    }
-
-    cart.push(product);
-    updateCart();
-  }
-
-  function toggleCart() {
-    const panel = document.getElementById("cartPanel");
-    panel.hidden = !panel.hidden;
-    updateCart();
-  }
-
-  function updateCart() {
-    document.getElementById("cartCount").textContent =
-      cart.length;
-
-    const container = document.getElementById("cartItems");
-    container.replaceChildren();
-
-    cart.forEach((item, index) => {
-      const row = document.createElement("div");
-      row.className = "cart-item";
-
-      const label = document.createElement("span");
-      label.textContent =
-        item.name + " — " + money(item.price);
-
-      const remove = document.createElement("button");
-      remove.textContent = "Удалить";
-      remove.onclick = () => {
-        cart.splice(index, 1);
-        updateCart();
-      };
-
-      row.append(label, remove);
-      container.append(row);
-    });
-
-    const total = cart.reduce(
-      (sum, item) => sum + Number(item.price ?? 0), 0
-    );
-
-    document.getElementById("cartTotal").textContent =
-      "Итого: " + money(total);
-  }
-
-  document.getElementById("search")
-    .addEventListener("input", renderProducts);
-
-  loadProducts();
-</script>
-</body>
-</html>
-
 *{box-sizing:border-box}
-body{margin:0;background:#f2f5fb;color:#17243d;font-family:Arial,sans-serif}
-header{background:#1254d8;color:white;padding:24px 5%}
-header h1{margin:0;font-size:30px}
-header p{margin:8px 0 0}
-nav{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:20px}
-input{padding:13px;border:1px solid #ddd;border-radius:9px;font-size:16px;flex:1;min-width:180px}
-button{background:#1254d8;color:white;border:0;padding:12px 16px;border-radius:9px;cursor:pointer}
-button:disabled{background:#aab5c7;cursor:not-allowed}
-.cart-button{background:white;color:#1254d8;font-weight:bold}
-main{max-width:1200px;margin:auto;padding:25px 16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
-.card{background:white;border-radius:14px;overflow:hidden;box-shadow:0 3px 12px #0001;padding-bottom:16px}
-.card img{width:100%;height:190px;object-fit:contain;background:#fff}
-.info{padding:15px}
-.info h3{margin:5px 0 12px;font-size:18px}
-.price{font-size:23px;font-weight:bold;color:#1254d8}
-.stock{font-size:13px;color:#687589}
-.card button{width:100%;margin-top:12px}
-#status{color:#64748b}
-#cart{background:white;padding:20px;border-radius:14px;margin-top:25px}
-.cart-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #eee}
-footer{text-align:center;padding:25px;color:#687589}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f5fb;color:#17233b}
+header{background:#1554d8;color:white;padding:25px 20px}
+.wrap{max-width:1100px;margin:auto}
+h1{margin:0 0 8px;font-size:32px}
+.search{display:flex;gap:12px;margin-top:20px}
+input{flex:1;min-width:0;padding:14px;border:0;border-radius:9px;font-size:16px}
+button{border:0;border-radius:9px;padding:13px;cursor:pointer;font-weight:bold}
+.cart-btn{background:white;color:#1554d8}
+main{max-width:1100px;margin:auto;padding:30px 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;margin-top:20px}
+.card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 3px 12px #0001}
+.card img{width:100%;height:220px;object-fit:contain}
+.info{padding:16px}
+.info h3{margin:0 0 12px}
+.price{color:#1554d8;font-size:24px;font-weight:bold}
+.stock{color:#64748b}
+.buy{background:#1554d8;color:white;width:100%}
+.buy:disabled{background:#aab5c8}
+.cart-panel{background:white;padding:20px;border-radius:12px;margin-top:25px}
+.cart-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #ddd}
+[hidden]{display:none!important}
+footer{text-align:center;padding:30px;color:#64748b}
 </style>
 </head>
 <body>
+
 <header>
+<div class="wrap">
 <h1>Megashoop</h1>
 <p>Электроинструменты, электроника и оборудование</p>
-<nav>
+<div class="search">
 <input id="search" placeholder="Поиск товаров...">
-<button class="cart-button" onclick="showCart()">Корзина 🛒 <span id="count">0</span></button>
-</nav>
+<button class="cart-btn" onclick="toggleCart()">🛒 Корзина: <span id="count">0</span></button>
+</div>
+</div>
 </header>
 
 <main>
@@ -329,11 +49,11 @@ footer{text-align:center;padding:25px;color:#687589}
 <p id="status">Загрузка товаров...</p>
 <div id="products" class="grid"></div>
 
-<section id="cart" hidden>
+<section id="cartPanel" class="cart-panel" hidden>
 <h2>Ваша корзина</h2>
 <div id="cartItems"></div>
 <h3 id="total"></h3>
-<p>Оформление заказов добавим на следующем этапе.</p>
+<p>Оформление заказа добавим следующим этапом.</p>
 </section>
 </main>
 
@@ -341,24 +61,23 @@ footer{text-align:center;padding:25px;color:#687589}
 
 <script>
 const SUPABASE_URL = "https://mrslybtwzfcovpsyuexf.supabase.co";
-
-// ВСТАВЬ СЮДА СВОЙ ПУБЛИЧНЫЙ КЛЮЧ
-const SUPABASE_KEY = " sb_publishable_AnpUjix60jDfpZDGlcO6vQ_XIyxcpDd";
+const SUPABASE_KEY = "sb_publishable_AnpUjix60jDfpZDGlcO6vQ_XIyxcpDd";
 
 let products = [];
 let cart = [];
 
-const money = n => Number(n).toLocaleString("ru-RU", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2
-}) + " ₾";
+function money(value){
+  return Number(value ?? 0).toLocaleString("ru-RU",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  }) + " ₾";
+}
 
 async function loadProducts(){
   const status = document.getElementById("status");
   try{
     const response = await fetch(
-      SUPABASE_URL + "/rest/v1/" +
-      encodeURIComponent("products") + "?select=*",
+      SUPABASE_URL + "/rest/v1/products?select=*",
       {
         headers:{
           "apikey":SUPABASE_KEY
@@ -366,123 +85,109 @@ async function loadProducts(){
       }
     );
 
-    if(!response.ok) throw new Error(
-      "Ошибка загрузки: " + response.status
-    );
+    if(!response.ok){
+      throw new Error("HTTP " + response.status);
+    }
 
     products = await response.json();
-    renderProducts(products);
-    status.textContent = products.length
-      ? "Найдено товаров: " + products.length
-      : "Пока нет товаров";
+    renderProducts();
   }catch(error){
+    console.error("Ошибка загрузки:",error);
     status.textContent = "Не удалось загрузить товары. Проверь подключение Supabase и права доступа.";
-    console.error(error);
   }
 }
 
-function renderProducts(items){
-  const container = document.getElementById("products");
-  container.innerHTML = "";
+function renderProducts(){
+  const search = document.getElementById("search").value.toLowerCase();
+  const filtered = products.filter(p =>
+    String(p.name ?? "").toLowerCase().includes(search)
+  );
 
-  items.forEach(product=>{
-    const card = document.createElement("article");
+  const container = document.getElementById("products");
+  container.replaceChildren();
+
+  document.getElementById("status").textContent =
+    "Найдено товаров: " + filtered.length;
+
+  filtered.forEach(product=>{
+    const card = document.createElement("div");
     card.className = "card";
 
     const img = document.createElement("img");
-    img.alt = product["имя"] || "Товар";
+    img.src = product.image_url || "";
+    img.alt = product.name || "Товар";
     img.loading = "lazy";
-    img.src = product.image_url ||
-      "https://placehold.co/400x300?text=Megashoop";
-    img.onerror = () => {
-      img.onerror = null;
-      img.src = "https://placehold.co/400x300?text=Megashoop";
-    };
 
     const info = document.createElement("div");
     info.className = "info";
 
     const name = document.createElement("h3");
-    name.textContent = product["имя"] || "Без названия";
+    name.textContent = product.name || "Без названия";
 
-    const price = document.createElement("div");
+    const price = document.createElement("p");
     price.className = "price";
-    price.textContent = money(product["цена"] || 0);
+    price.textContent = money(product.price);
 
     const stock = document.createElement("p");
     stock.className = "stock";
-    stock.textContent = "В наличии: " +
-      (product["запас"] ?? 0) + " " +
-      (product["единица"] || "шт");
+    stock.textContent = "В наличии: " + (product.stock ?? 0) + " шт.";
 
-    const button = document.createElement("button");
-    button.textContent = "В корзину";
-    button.disabled = Number(product["запас"] || 0) <= 0;
-    button.onclick = () => addToCart(product);
+    const buy = document.createElement("button");
+    buy.className = "buy";
+    buy.textContent = "В корзину";
+    buy.disabled = Number(product.stock ?? 0) <= 0;
+    buy.onclick = ()=>addToCart(product);
 
-    info.append(name,price,stock,button);
+    info.append(name,price,stock,buy);
     card.append(img,info);
     container.append(card);
   });
 }
 
 function addToCart(product){
-  const existing = cart.find(p=>p.id===product["идентифи"]);
-  const quantity = existing ? existing.quantity : 0;
-
-  if(quantity >= Number(product["запас"] || 0)){
+  const count = cart.filter(p=>p.id===product.id).length;
+  if(count >= Number(product.stock ?? 0)){
     alert("Недостаточно товара на складе");
     return;
   }
-
-  if(existing) existing.quantity++;
-  else cart.push({
-    id:product["идентифи"],
-    name:product["имя"],
-    price:Number(product["цена"] || 0),
-    quantity:1
-  });
-
-  document.getElementById("count").textContent =
-    cart.reduce((sum,p)=>sum+p.quantity,0);
-  renderCart();
+  cart.push(product);
+  updateCart();
 }
 
-function showCart(){
-  const element = document.getElementById("cart");
-  element.hidden = !element.hidden;
-  if(!element.hidden) element.scrollIntoView({behavior:"smooth"});
-  renderCart();
+function toggleCart(){
+  const panel = document.getElementById("cartPanel");
+  panel.hidden = !panel.hidden;
+  updateCart();
 }
 
-function renderCart(){
+function updateCart(){
+  document.getElementById("count").textContent = cart.length;
   const container = document.getElementById("cartItems");
-  container.innerHTML = "";
+  container.replaceChildren();
 
-  cart.forEach(p=>{
+  cart.forEach((product,index)=>{
     const row = document.createElement("div");
     row.className = "cart-row";
-    const name = document.createElement("span");
-    name.textContent = p.name + " × " + p.quantity;
-    const price = document.createElement("strong");
-    price.textContent = money(p.price*p.quantity);
-    row.append(name,price);
+
+    const label = document.createElement("span");
+    label.textContent = product.name + " — " + money(product.price);
+
+    const remove = document.createElement("button");
+    remove.textContent = "Удалить";
+    remove.onclick = ()=>{
+      cart.splice(index,1);
+      updateCart();
+    };
+
+    row.append(label,remove);
     container.append(row);
   });
 
-  document.getElementById("total").textContent =
-    "Итого: " + money(
-      cart.reduce((sum,p)=>sum+p.price*p.quantity,0)
-    );
+  const total = cart.reduce((sum,p)=>sum+Number(p.price ?? 0),0);
+  document.getElementById("total").textContent = "Итого: " + money(total);
 }
 
-document.getElementById("search").addEventListener("input",e=>{
-  const query = e.target.value.toLowerCase();
-  renderProducts(products.filter(p=>
-    String(p["имя"] || "").toLowerCase().includes(query)
-  ));
-});
-
+document.getElementById("search").addEventListener("input",renderProducts);
 loadProducts();
 </script>
 </body>
