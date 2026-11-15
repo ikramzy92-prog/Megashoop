@@ -75,7 +75,7 @@ async function loadProducts(){
   try{
     const response = await fetch(
       SUPABASE_URL + "/rest/v1/" +
-      encodeURIComponent("продукты") + "?select=*",
+      encodeURIComponent("products") + "?select=*",
       {
         headers:{
           "apikey":SUPABASE_KEY
