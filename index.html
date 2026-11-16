@@ -135,6 +135,16 @@ main{padding-top:26px!important}
 .hero-inner.second-slide .hero-art{visibility:hidden}
 @media(max-width:760px){.hero-inner > img.slider-product[data-slide="1"]{object-position:65% center}.hero-inner.second-slide::before{background:linear-gradient(90deg,rgba(7,10,14,.95),rgba(7,10,14,.7))}}
 </style>
+<style>
+/* ModernMarket recommendation experience */
+.mm-rec{margin:34px 0 42px;padding:26px;border:1px solid #5b472b;border-radius:18px;background:linear-gradient(125deg,#191b21,#11151b)}
+.mm-rec h2{font-size:clamp(22px,3vw,30px);margin:0 0 8px}.mm-rec p{color:#bfc2cb;margin:0 0 22px}.mm-rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.mm-rec-item{border:1px solid #3d414a;border-radius:12px;background:#20242c;color:#f9f6ef;text-align:left;padding:12px;cursor:pointer;min-width:0}
+.mm-rec-item:hover,.mm-rec-item:focus-visible{border-color:#e8ad42}.mm-rec-item img{width:100%;height:130px;object-fit:contain;background:#272c34;border-radius:8px}
+.mm-rec-item strong{display:block;margin:12px 0 8px;font-size:14px;line-height:1.4;min-height:38px}.mm-rec-item span{color:#f0bd5b;font-weight:800}
+.mm-rec-actions{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.mm-rec-clear{border:1px solid #666;background:transparent;color:#ddd;padding:9px 12px;border-radius:8px}
+@media(max-width:520px){.mm-rec{padding:15px}.mm-rec-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.mm-rec-item img{height:100px}}
+</style>
 </head>
 <body>
 <header><div class="wrap">
@@ -238,5 +248,38 @@ renderStorefrontLabels();
  document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setText()));
  show(0);reset();
 })();
-</script></body>
+</script></b<script>
+/* Recommendations v1: privacy-friendly, local to this browser, no paid services. */
+(()=>{
+'use strict';
+const KEY='modernmarket.interests.v2';
+const dictionary={ka:{title:'თქვენთვის რეკომენდებული',desc:'თქვენი ძიებისა და ნანახი პროდუქტების მიხედვით',clear:'ისტორიის წაშლა',empty:'დაათვალიერეთ პროდუქტები პერსონალური რეკომენდაციების მისაღებად'},ru:{title:'Рекомендуем для вас',desc:'На основе ваших поисков и просмотренных товаров',clear:'Очистить историю',empty:'Посмотрите товары, чтобы появились персональные рекомендации'},az:{title:'Sizin üçün tövsiyələr',desc:'Axtarış və baxış tarixçənizə əsasən',clear:'Tarixçəni sil',empty:'Tövsiyələr üçün məhsullara baxın'}};
+let history=[];try{const h=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(h))history=h.filter(x=>x&&typeof x.value==='string').slice(-80)}catch(e){}
+const normalize=x=>String(x||'').toLocaleLowerCase().trim();
+const words=x=>normalize(x).split(/[^\p{L}\p{N}]+/u).filter(w=>w.length>=3);
+const remember=(type,value)=>{const v=String(value||'').trim().slice(0,120);if(!v)return;history.push({type,value:v,time:Date.now()});history=history.slice(-80);try{localStorage.setItem(KEY,JSON.stringify(history))}catch(e){};render()};
+const section=document.createElement('section');section.className='mm-rec';section.setAttribute('aria-label','Recommendations');
+const anchor=document.getElementById('catalog')||document.querySelector('main');if(!anchor)return;anchor.parentNode.insertBefore(section,anchor);
+const safeImg=p=>p.image_url||'https://placehold.co/400x300/253144/ffffff?text=Modern+Market';
+function render(){
+ const locale=typeof lang!=='undefined'&&dictionary[lang]?lang:'ka',d=dictionary[locale];
+ section.replaceChildren();const actions=document.createElement('div');actions.className='mm-rec-actions';const title=document.createElement('h2');title.textContent='✨ '+d.title;const clear=document.createElement('button');clear.type='button';clear.className='mm-rec-clear';clear.textContent=d.clear;clear.hidden=!history.length;clear.onclick=()=>{history=[];try{localStorage.removeItem(KEY)}catch(e){}render()};actions.append(title,clear);section.append(actions);
+ const desc=document.createElement('p');desc.textContent=history.length?d.desc:d.empty;section.append(desc);
+ if(typeof products==='undefined'||!Array.isArray(products)||!products.length)return;
+ const tokens=new Map();for(const h of history){const weight=h.type==='cart'?5:h.type==='view'?3:2;for(const w of words(h.value))tokens.set(w,(tokens.get(w)||0)+weight)}
+ const ranked=products.map((p,i)=>{const name=typeof nameOf==='function'?nameOf(p):String(p.name||'');const n=normalize(name);let score=0;for(const [w,weight] of tokens)if(n.includes(w))score+=weight;return {p,i,score}}).filter(x=>!Number.isNaN(x.score));ranked.sort((a,b)=>b.score-a.score||a.i-b.i);
+ const list=document.createElement('div');list.className='mm-rec-grid';const picked=(history.length?ranked:ranked.slice(0,4)).slice(0,4);
+ for(const {p} of picked){const item=document.createElement('button');item.type='button';item.className='mm-rec-item';const img=document.createElement('img');img.loading='lazy';img.alt='';img.src=safeImg(p);img.onerror=()=>{img.onerror=null;img.src='https://placehold.co/400x300/253144/ffffff?text=Modern+Market'};const name=document.createElement('strong');name.textContent=nameOf(p);const price=document.createElement('span');price.textContent=money(priceOf(p));item.append(img,name,price);item.onclick=()=>{remember('view',nameOf(p));const input=document.getElementById('search');if(input){input.value=nameOf(p);input.dispatchEvent(new Event('input',{bubbles:true}))}document.getElementById('catalog')?.scrollIntoView({behavior:'smooth'})};list.append(item)}section.append(list)
+}
+let searchTimer;document.getElementById('search')?.addEventListener('input',e=>{clearTimeout(searchTimer);const term=e.target.value.trim();if(term.length>=3)searchTimer=setTimeout(()=>remember('search',term),650)});
+document.getElementById('products')?.addEventListener('click',e=>{const card=e.target.closest('.card');if(!card)return;const name=card.querySelector('h3')?.textContent;if(name)remember(e.target.closest('.buy')?'cart':'view',name)});
+document.getElementById('products')?.addEventListener('pointerover',e=>{const card=e.target.closest('.card');if(!card||card.dataset.mmViewed)return;card.dataset.mmViewed='1';setTimeout(()=>{if(card.matches(':hover')){const name=card.querySelector('h3')?.textContent;if(name)remember('view',name)}},1800)});
+const previousLoad=typeof loadProducts==='function'?loadProducts:null;
+if(previousLoad){const originalFetch=window.fetch;/* Product updates observed without replacing existing API functions */}
+const observer=new MutationObserver(()=>{if(document.getElementById('products')?.children.length)render()});const grid=document.getElementById('products');if(grid)observer.observe(grid,{childList:true});
+document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(render,0)));
+render();
+})();
+</script>
+ody>
 </html>
