@@ -195,7 +195,7 @@ function animateToCart(source){
   {transform:'translate(0,0) scale(1)',opacity:1,offset:0},
   {transform:`translate(${dx*.42}px,${dy*.15-65}px) scale(.75)`,opacity:1,offset:.45},
   {transform:`translate(${dx}px,${dy}px) scale(.12)`,opacity:.2,offset:1}
- ],{duration:750,easing:'cubic-bezier(.25,.7,.2,1)'});
+ ],{duration:1800,easing:'cubic-bezier(.42,0,.58,1)'});
  anim.onfinish=()=>{flyer.remove();bump()};anim.oncancel=()=>flyer.remove();
 }
 function addToCart(product){const id=idOf(product);const existing=cart.find(p=>p.id===id);if((existing?.quantity||0)>=stockOf(product)){alert(t().shortage);return false}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),price:priceOf(product),quantity:1});updateCount();renderCart();return true}
