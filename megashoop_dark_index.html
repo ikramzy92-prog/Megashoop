@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Megashoop — ონლაინ მაღაზია</title>
+<style>
+:root{--dark:#111b2b;--gold:#e9b54d;--bg:#f5f6f8;--muted:#65738a}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--dark)}
+header{background:linear-gradient(120deg,#111b2b,#263d58);color:#fff;padding:30px max(18px,calc((100vw - 1140px)/2))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.brand{font-size:32px;font-weight:800;letter-spacing:.3px}.brand span{color:var(--gold)}
+.languages{display:flex;gap:7px;flex-wrap:wrap}.languages button{background:transparent;color:white;border:1px solid #728096}.languages button.active{background:var(--gold);border-color:var(--gold);color:#152033}
+.tagline{color:#d7dfe8;margin:12px 0 25px}.search-row{display:flex;gap:12px;flex-wrap:wrap}input{flex:1;min-width:180px;padding:15px;border:1px solid #d9dee6;border-radius:10px;font-size:16px}
+button{border:0;background:var(--gold);color:#142136;border-radius:10px;padding:12px 16px;cursor:pointer;font-weight:bold}button:disabled{opacity:.5;cursor:not-allowed}
+main{max-width:1172px;margin:0 auto;padding:32px 16px 55px}.heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}.heading h2{font-size:27px;margin:0}.status{color:var(--muted);margin:14px 0 24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}.card{background:white;border:1px solid #e9ebef;border-radius:16px;overflow:hidden;box-shadow:0 8px 25px #17243d0b;display:flex;flex-direction:column}.card img{width:100%;height:215px;object-fit:contain;background:#fff}.info{padding:18px;display:flex;flex-direction:column;flex:1}.info h3{font-size:17px;line-height:1.45;margin:0 0 15px;min-height:48px}.price{font-size:25px;font-weight:800;color:#172d49}.stock{font-size:14px;color:var(--muted);margin:12px 0}.buy{margin-top:auto;width:100%}
+#cart{background:#fff;padding:22px;border-radius:16px;margin-top:30px;box-shadow:0 8px 25px #17243d0b}#cart[hidden]{display:none}.cart-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #e9ebef;flex-wrap:wrap}.cart-controls{display:flex;gap:8px;align-items:center}.cart-controls button{padding:7px 12px}.total{font-size:22px;font-weight:bold;text-align:right;margin-top:20px}.empty{color:var(--muted)}footer{text-align:center;background:#111b2b;color:#c8d1dd;padding:28px 12px}
+@media(max-width:600px){header{padding:24px 16px}.brand{font-size:27px}.heading h2{font-size:23px}.grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px}.card img{height:155px}.info{padding:12px}.info h3{font-size:14px}.price{font-size:20px}.languages button{padding:9px}}
+
+/* Megashoop Midnight Gold redesign */
+:root{--dark:#eaf0fb;--gold:#f3bd52;--bg:#0a101b;--muted:#9aaac0}
+body{background:radial-gradient(ellipse at 65% 0%,#1c2c42 0%,#0c1421 45%,#080d16 100%);color:#f0f4fb;min-height:100vh}
+header{background:linear-gradient(115deg,#090f19,#18273b 60%,#25334b);border-bottom:1px solid #3c4558;box-shadow:0 12px 35px #0005}
+.brand{font-size:36px;text-shadow:0 3px 18px #0006}.brand span{color:#f3bd52}
+.tagline{color:#c4cedd}
+.languages button{background:#152338;border:1px solid #46546b;color:#e5ecf8;transition:.2s}
+.languages button:hover{border-color:#f3bd52;transform:translateY(-2px)}
+.languages button.active{background:linear-gradient(135deg,#ffd77c,#e6a835);color:#141a24;border-color:#f3bd52}
+input{background:#111d2d;border:1px solid #42516a;color:#fff;box-shadow:inset 0 1px 5px #0003}
+input::placeholder{color:#9aa9bf}input:focus{outline:2px solid #e9b54d;outline-offset:1px}
+button{background:linear-gradient(135deg,#ffd77c,#e6a835);color:#131b27;box-shadow:0 5px 15px #0003;transition:transform .2s,filter .2s}
+button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.07)}
+main{min-height:62vh}.heading h2{color:#f6f8ff;letter-spacing:.2px}.status{color:#b2bfd2}
+.grid{gap:24px}.card{background:linear-gradient(160deg,#202d40,#121e2f);border:1px solid #3b4a60;border-radius:20px;box-shadow:0 14px 36px #0006;transition:transform .25s,border-color .25s,box-shadow .25s}
+.card:hover{transform:translateY(-5px);border-color:#d5a64e;box-shadow:0 18px 42px #0009}
+.card img{background:linear-gradient(145deg,#e8ebef,#cfd6e0);padding:12px;border-bottom:1px solid #344154}
+.info h3{color:#f7f9ff}.price{color:#ffd275}.stock{color:#b4c1d3}.buy{margin-top:auto}
+#cart{background:#172338;border:1px solid #43516a;box-shadow:0 16px 35px #0007}
+.cart-row{border-color:#3c4b60}.empty{color:#aab9ce}
+footer{background:#080e18;border-top:1px solid #334157;color:#9cacc3}
+@media(max-width:600px){.brand{font-size:28px}.grid{gap:12px}.card img{padding:5px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="top"><div class="brand">Mega<span>shoop</span></div><div class="languages" aria-label="Language"><button type="button" data-lang="ka">🇬🇪 ქართული</button><button type="button" data-lang="ru">🇷🇺 Русский</button><button type="button" data-lang="az">🇦🇿 Azərbaycan</button></div></div>
+ <p class="tagline" id="tagline"></p>
+ <div class="search-row"><input id="search" type="search" autocomplete="off"><button id="cartToggle" type="button"></button></div>
+</header>
+<main>
+ <div class="heading"><h2 id="catalogTitle"></h2></div><p class="status" id="status"></p>
+ <div class="grid" id="products"></div>
+ <section id="cart" hidden><h2 id="cartTitle"></h2><div id="cartItems"></div><div class="total" id="total"></div><p class="empty" id="checkoutNote"></p></section>
+</main>
+<footer id="footer"></footer>
+<script>
+'use strict';
+const SUPABASE_URL='https://mrslybtwzfcovpsyuexf.supabase.co';
+const SUPABASE_KEY='sb_publishable_AnpUjix60jDfpZDGlcO6vQ_XIyxcpDd';
+const messages={
+ ka:{tagline:'ელექტროინსტრუმენტები, ელექტრონიკა და აღჭურვილობა',search:'პროდუქტის ძებნა...',cart:'კალათა',catalog:'პროდუქტების კატალოგი',loading:'პროდუქტები იტვირთება...',found:'ნაპოვნია პროდუქტები: ',none:'პროდუქტები ჯერ არ არის',error:'პროდუქტების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ Supabase-ის კავშირი და წვდომა.',stock:'მარაგში: ',unit:'ც.',buy:'კალათაში დამატება',out:'არ არის მარაგში',cartTitle:'თქვენი კალათა',empty:'კალათა ცარიელია',total:'სულ: ',checkout:'შეკვეთის გაფორმება დაემატება შემდეგ ეტაპზე.',insufficient:'მარაგში საკმარისი რაოდენობა არ არის',remove:'წაშლა',unnamed:'უსახელო პროდუქტი',footer:'ყველა უფლება დაცულია.'},
+ ru:{tagline:'Электроинструменты, электроника и оборудование',search:'Поиск товаров...',cart:'Корзина',catalog:'Каталог товаров',loading:'Загрузка товаров...',found:'Найдено товаров: ',none:'Пока нет товаров',error:'Не удалось загрузить товары. Проверьте подключение Supabase и права доступа.',stock:'В наличии: ',unit:'шт.',buy:'В корзину',out:'Нет в наличии',cartTitle:'Ваша корзина',empty:'Корзина пуста',total:'Итого: ',checkout:'Оформление заказов добавим на следующем этапе.',insufficient:'Недостаточно товара на складе',remove:'Удалить',unnamed:'Без названия',footer:'Все права защищены.'},
+ az:{tagline:'Elektrik alətləri, elektronika və avadanlıqlar',search:'Məhsul axtar...',cart:'Səbət',catalog:'Məhsul kataloqu',loading:'Məhsullar yüklənir...',found:'Tapılan məhsullar: ',none:'Hələ məhsul yoxdur',error:'Məhsulları yükləmək mümkün olmadı. Supabase bağlantısını və icazələri yoxlayın.',stock:'Stokda: ',unit:'əd.',buy:'Səbətə əlavə et',out:'Stokda yoxdur',cartTitle:'Səbətiniz',empty:'Səbət boşdur',total:'Cəmi: ',checkout:'Sifarişin rəsmiləşdirilməsi növbəti mərhələdə əlavə olunacaq.',insufficient:'Stokda kifayət qədər məhsul yoxdur',remove:'Sil',unnamed:'Adsız məhsul',footer:'Bütün hüquqlar qorunur.'}
+};
+let language='ka';try{const saved=localStorage.getItem('megashoop-language');if(messages[saved])language=saved}catch(e){}
+let products=[],cart=[],loading=true,loadError=false;
+const $=id=>document.getElementById(id);
+const t=()=>messages[language];
+const get=(p,...keys)=>{for(const key of keys){if(p[key]!==undefined&&p[key]!==null)return p[key]}return undefined};
+const productId=p=>String(get(p,'идентифи','id','идентификатор')??get(p,'имя','name')??'');
+const productName=p=>String(get(p,'имя','name')||t().unnamed);
+const productPrice=p=>Number(get(p,'цена','price')||0);
+const productStock=p=>Math.max(0,Number(get(p,'запас','stock')||0));
+const money=n=>Number(n).toLocaleString(language==='ka'?'ka-GE':language==='az'?'az-AZ':'ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₾';
+function updateLanguage(){
+ document.documentElement.lang=language;
+ document.querySelectorAll('[data-lang]').forEach(b=>{b.classList.toggle('active',b.dataset.lang===language);b.setAttribute('aria-pressed',String(b.dataset.lang===language))});
+ $('tagline').textContent=t().tagline;$('search').placeholder=t().search;$('catalogTitle').textContent=t().catalog;$('cartTitle').textContent=t().cartTitle;
+ $('checkoutNote').textContent=t().checkout;$('footer').textContent='© 2026 Megashoop. '+t().footer;
+ $('cartToggle').textContent='🛒 '+t().cart+' ('+cart.reduce((s,p)=>s+p.quantity,0)+')';
+ $('status').textContent=loading?t().loading:loadError?t().error:products.length?t().found+products.length:t().none;
+ renderProducts();renderCart();
+}
+function renderProducts(){
+ const root=$('products');root.replaceChildren();const query=$('search').value.trim().toLocaleLowerCase();
+ for(const p of products.filter(p=>productName(p).toLocaleLowerCase().includes(query))){
+  const card=document.createElement('article');card.className='card';
+  const img=document.createElement('img');img.loading='lazy';img.alt=productName(p);
+  const src=String(get(p,'image_url','изображение','image')||'');
+  img.src=src||'https://placehold.co/400x300?text=Megashoop';img.onerror=()=>{img.onerror=null;img.src='https://placehold.co/400x300?text=Megashoop'};
+  const info=document.createElement('div');info.className='info';
+  const name=document.createElement('h3');name.textContent=productName(p);
+  const price=document.createElement('div');price.className='price';price.textContent=money(productPrice(p));
+  const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+productStock(p)+' '+(get(p,'единица','unit')||t().unit);
+  const buy=document.createElement('button');buy.className='buy';buy.textContent=productStock(p)>0?t().buy:t().out;buy.disabled=productStock(p)<=0;buy.addEventListener('click',()=>addToCart(p));
+  info.append(name,price,stock,buy);card.append(img,info);root.append(card);
+ }
+}
+function addToCart(p){
+ const id=productId(p);const found=cart.find(item=>item.id===id);
+ if((found?.quantity||0)>=productStock(p)){alert(t().insufficient);return}
+ if(found)found.quantity++;else cart.push({id,product:p,quantity:1});
+ updateLanguage();
+}
+function renderCart(){
+ const root=$('cartItems');root.replaceChildren();
+ if(!cart.length){const p=document.createElement('p');p.className='empty';p.textContent=t().empty;root.append(p)}
+ for(const item of cart){
+  const row=document.createElement('div');row.className='cart-row';const label=document.createElement('span');label.textContent=productName(item.product)+' × '+item.quantity;
+  const controls=document.createElement('div');controls.className='cart-controls';const price=document.createElement('strong');price.textContent=money(productPrice(item.product)*item.quantity);
+  const minus=document.createElement('button');minus.textContent='−';minus.setAttribute('aria-label',t().remove);minus.addEventListener('click',()=>{item.quantity--;if(item.quantity<=0)cart=cart.filter(p=>p!==item);updateLanguage()});
+  const plus=document.createElement('button');plus.textContent='+';plus.addEventListener('click',()=>addToCart(item.product));
+  controls.append(price,minus,plus);row.append(label,controls);root.append(row);
+ }
+ $('total').textContent=t().total+money(cart.reduce((s,p)=>s+productPrice(p.product)*p.quantity,0));
+}
+async function loadProducts(){
+ try{
+  const response=await fetch(SUPABASE_URL+'/rest/v1/products?select=*',{headers:{apikey:SUPABASE_KEY}});
+  if(!response.ok)throw new Error('Supabase HTTP '+response.status);
+  const data=await response.json();if(!Array.isArray(data))throw new Error('Unexpected response');products=data;loadError=false;
+ }catch(error){console.error('Megashoop:',error);loadError=true}
+ finally{loading=false;updateLanguage()}
+}
+document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>{language=b.dataset.lang;try{localStorage.setItem('megashoop-language',language)}catch(e){}updateLanguage()}));
+$('search').addEventListener('input',renderProducts);
+$('cartToggle').addEventListener('click',()=>{$('cart').hidden=!$('cart').hidden;if(!$('cart').hidden)$('cart').scrollIntoView({behavior:'smooth'})});
+updateLanguage();loadProducts();
+</script>
+</body>
+</html>
