@@ -1,182 +1,108 @@
-
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Megashoop — ონლაინ მაღაზია</title>
 <style>
-  #mega-languages {
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    z-index: 9999;
-    display: flex;
-    gap: 6px;
-    background: #172033;
-    padding: 8px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px #0004;
-  }
-  #mega-languages button {
-    padding: 9px 12px;
-    border: 1px solid #52617b;
-    border-radius: 8px;
-    background: #263650;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  #mega-languages button.active {
-    background: #e4ad42;
-    color: #172033;
-  }
-  header {
-    padding-top: 65px !important;
-  }
+:root{--dark:#111b2b;--gold:#e9b54d;--bg:#f5f6f8;--muted:#65738a}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--dark)}
+header{background:linear-gradient(120deg,#111b2b,#263d58);color:#fff;padding:30px max(18px,calc((100vw - 1140px)/2))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.brand{font-size:32px;font-weight:800;letter-spacing:.3px}.brand span{color:var(--gold)}
+.languages{display:flex;gap:7px;flex-wrap:wrap}.languages button{background:transparent;color:white;border:1px solid #728096}.languages button.active{background:var(--gold);border-color:var(--gold);color:#152033}
+.tagline{color:#d7dfe8;margin:12px 0 25px}.search-row{display:flex;gap:12px;flex-wrap:wrap}input{flex:1;min-width:180px;padding:15px;border:1px solid #d9dee6;border-radius:10px;font-size:16px}
+button{border:0;background:var(--gold);color:#142136;border-radius:10px;padding:12px 16px;cursor:pointer;font-weight:bold}button:disabled{opacity:.5;cursor:not-allowed}
+main{max-width:1172px;margin:0 auto;padding:32px 16px 55px}.heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}.heading h2{font-size:27px;margin:0}.status{color:var(--muted);margin:14px 0 24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}.card{background:white;border:1px solid #e9ebef;border-radius:16px;overflow:hidden;box-shadow:0 8px 25px #17243d0b;display:flex;flex-direction:column}.card img{width:100%;height:215px;object-fit:contain;background:#fff}.info{padding:18px;display:flex;flex-direction:column;flex:1}.info h3{font-size:17px;line-height:1.45;margin:0 0 15px;min-height:48px}.price{font-size:25px;font-weight:800;color:#172d49}.stock{font-size:14px;color:var(--muted);margin:12px 0}.buy{margin-top:auto;width:100%}
+#cart{background:#fff;padding:22px;border-radius:16px;margin-top:30px;box-shadow:0 8px 25px #17243d0b}#cart[hidden]{display:none}.cart-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #e9ebef;flex-wrap:wrap}.cart-controls{display:flex;gap:8px;align-items:center}.cart-controls button{padding:7px 12px}.total{font-size:22px;font-weight:bold;text-align:right;margin-top:20px}.empty{color:var(--muted)}footer{text-align:center;background:#111b2b;color:#c8d1dd;padding:28px 12px}
+@media(max-width:600px){header{padding:24px 16px}.brand{font-size:27px}.heading h2{font-size:23px}.grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px}.card img{height:155px}.info{padding:12px}.info h3{font-size:14px}.price{font-size:20px}.languages button{padding:9px}}
 </style>
-
-<div id="mega-languages">
-  <button type="button" data-lang="ka">🇬🇪 KA</button>
-  <button type="button" data-lang="ru">🇷🇺 RU</button>
-  <button type="button" data-lang="az">🇦🇿 AZ</button>
-</div>
-
+</head>
+<body>
+<header>
+ <div class="top"><div class="brand">Mega<span>shoop</span></div><div class="languages" aria-label="Language"><button type="button" data-lang="ka">🇬🇪 ქართული</button><button type="button" data-lang="ru">🇷🇺 Русский</button><button type="button" data-lang="az">🇦🇿 Azərbaycan</button></div></div>
+ <p class="tagline" id="tagline"></p>
+ <div class="search-row"><input id="search" type="search" autocomplete="off"><button id="cartToggle" type="button"></button></div>
+</header>
+<main>
+ <div class="heading"><h2 id="catalogTitle"></h2></div><p class="status" id="status"></p>
+ <div class="grid" id="products"></div>
+ <section id="cart" hidden><h2 id="cartTitle"></h2><div id="cartItems"></div><div class="total" id="total"></div><p class="empty" id="checkoutNote"></p></section>
+</main>
+<footer id="footer"></footer>
 <script>
-(function () {
-  const translations = {
-    ru: {
-      subtitle: "Электроинструменты, электроника и оборудование",
-      catalog: "Каталог товаров",
-      search: "Поиск товаров...",
-      found: "Найдено товаров:",
-      cart: "Корзина:",
-      buy: "В корзину",
-      stock: "В наличии:",
-      remove: "Удалить",
-      total: "Итого:",
-      shortage: "Недостаточно товара на складе",
-      rights: "Все права защищены."
-    },
-    ka: {
-      subtitle: "ელექტროინსტრუმენტები, ელექტრონიკა და აღჭურვილობა",
-      catalog: "პროდუქციის კატალოგი",
-      search: "პროდუქციის ძებნა...",
-      found: "ნაპოვნია პროდუქტი:",
-      cart: "კალათა:",
-      buy: "კალათაში დამატება",
-      stock: "მარაგშია:",
-      remove: "წაშლა",
-      total: "სულ:",
-      shortage: "მარაგში საკმარისი პროდუქტი არ არის",
-      rights: "ყველა უფლება დაცულია."
-    },
-    az: {
-      subtitle: "Elektrik alətləri, elektronika və avadanlıqlar",
-      catalog: "Məhsul kataloqu",
-      search: "Məhsul axtar...",
-      found: "Tapılan məhsullar:",
-      cart: "Səbət:",
-      buy: "Səbətə əlavə et",
-      stock: "Stokda:",
-      remove: "Sil",
-      total: "Cəmi:",
-      shortage: "Anbarda kifayət qədər məhsul yoxdur",
-      rights: "Bütün hüquqlar qorunur."
-    }
-  };
-
-  const originals = [
-    ["Электроинструменты, электроника и оборудование", "subtitle"],
-    ["Каталог товаров", "catalog"],
-    ["Найдено товаров:", "found"],
-    ["Корзина:", "cart"],
-    ["В корзину", "buy"],
-    ["В наличии:", "stock"],
-    ["Удалить", "remove"],
-    ["Итого:", "total"],
-    ["Все права защищены.", "rights"]
-  ];
-
-  let language = "ka";
-  try {
-    const saved = localStorage.getItem("mega-language");
-    if (translations[saved]) language = saved;
-  } catch (e) {}
-
-  function translateText(value, dict) {
-    let result = value;
-    for (const [original, key] of originals) {
-      const pattern = new RegExp(
-        original.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-        "g"
-      );
-      result = result.replace(pattern, dict[key]);
-      for (const lang of Object.keys(translations)) {
-        result = result.replaceAll(
-          translations[lang][key],
-          dict[key]
-        );
-      }
-    }
-    return result;
-  }
-
-  function applyLanguage() {
-    const dict = translations[language];
-    document.documentElement.lang = language;
-
-    document.querySelectorAll("#mega-languages button")
-      .forEach(button => {
-        button.classList.toggle(
-          "active",
-          button.dataset.lang === language
-        );
-      });
-
-    const search = document.getElementById("search");
-    if (search) search.placeholder = dict.search;
-
-    const walker = document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_TEXT
-    );
-
-    const nodes = [];
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      const parent = node.parentElement;
-      if (!parent) continue;
-      if (parent.closest("#mega-languages")) continue;
-      if (["SCRIPT", "STYLE", "TEXTAREA"].includes(parent.tagName))
-        continue;
-      nodes.push(node);
-    }
-
-    for (const node of nodes) {
-      const updated = translateText(node.nodeValue, dict);
-      if (updated !== node.nodeValue) node.nodeValue = updated;
-    }
-  }
-
-  document.querySelectorAll("#mega-languages button")
-    .forEach(button => {
-      button.addEventListener("click", () => {
-        language = button.dataset.lang;
-        try {
-          localStorage.setItem("mega-language", language);
-        } catch (e) {}
-        applyLanguage();
-      });
-    });
-
-  const observer = new MutationObserver(() => {
-    observer.disconnect();
-    applyLanguage();
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-  });
-
-  applyLanguage();
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-})();
+'use strict';
+const SUPABASE_URL='https://mrslybtwzfcovpsyuexf.supabase.co';
+const SUPABASE_KEY='sb_publishable_AnpUjix60jDfpZDGlcO6vQ_XIyxcpDd';
+const messages={
+ ka:{tagline:'ელექტროინსტრუმენტები, ელექტრონიკა და აღჭურვილობა',search:'პროდუქტის ძებნა...',cart:'კალათა',catalog:'პროდუქტების კატალოგი',loading:'პროდუქტები იტვირთება...',found:'ნაპოვნია პროდუქტები: ',none:'პროდუქტები ჯერ არ არის',error:'პროდუქტების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ Supabase-ის კავშირი და წვდომა.',stock:'მარაგში: ',unit:'ც.',buy:'კალათაში დამატება',out:'არ არის მარაგში',cartTitle:'თქვენი კალათა',empty:'კალათა ცარიელია',total:'სულ: ',checkout:'შეკვეთის გაფორმება დაემატება შემდეგ ეტაპზე.',insufficient:'მარაგში საკმარისი რაოდენობა არ არის',remove:'წაშლა',unnamed:'უსახელო პროდუქტი',footer:'ყველა უფლება დაცულია.'},
+ ru:{tagline:'Электроинструменты, электроника и оборудование',search:'Поиск товаров...',cart:'Корзина',catalog:'Каталог товаров',loading:'Загрузка товаров...',found:'Найдено товаров: ',none:'Пока нет товаров',error:'Не удалось загрузить товары. Проверьте подключение Supabase и права доступа.',stock:'В наличии: ',unit:'шт.',buy:'В корзину',out:'Нет в наличии',cartTitle:'Ваша корзина',empty:'Корзина пуста',total:'Итого: ',checkout:'Оформление заказов добавим на следующем этапе.',insufficient:'Недостаточно товара на складе',remove:'Удалить',unnamed:'Без названия',footer:'Все права защищены.'},
+ az:{tagline:'Elektrik alətləri, elektronika və avadanlıqlar',search:'Məhsul axtar...',cart:'Səbət',catalog:'Məhsul kataloqu',loading:'Məhsullar yüklənir...',found:'Tapılan məhsullar: ',none:'Hələ məhsul yoxdur',error:'Məhsulları yükləmək mümkün olmadı. Supabase bağlantısını və icazələri yoxlayın.',stock:'Stokda: ',unit:'əd.',buy:'Səbətə əlavə et',out:'Stokda yoxdur',cartTitle:'Səbətiniz',empty:'Səbət boşdur',total:'Cəmi: ',checkout:'Sifarişin rəsmiləşdirilməsi növbəti mərhələdə əlavə olunacaq.',insufficient:'Stokda kifayət qədər məhsul yoxdur',remove:'Sil',unnamed:'Adsız məhsul',footer:'Bütün hüquqlar qorunur.'}
+};
+let language='ka';try{const saved=localStorage.getItem('megashoop-language');if(messages[saved])language=saved}catch(e){}
+let products=[],cart=[],loading=true,loadError=false;
+const $=id=>document.getElementById(id);
+const t=()=>messages[language];
+const get=(p,...keys)=>{for(const key of keys){if(p[key]!==undefined&&p[key]!==null)return p[key]}return undefined};
+const productId=p=>String(get(p,'идентифи','id','идентификатор')??get(p,'имя','name')??'');
+const productName=p=>String(get(p,'имя','name')||t().unnamed);
+const productPrice=p=>Number(get(p,'цена','price')||0);
+const productStock=p=>Math.max(0,Number(get(p,'запас','stock')||0));
+const money=n=>Number(n).toLocaleString(language==='ka'?'ka-GE':language==='az'?'az-AZ':'ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₾';
+function updateLanguage(){
+ document.documentElement.lang=language;
+ document.querySelectorAll('[data-lang]').forEach(b=>{b.classList.toggle('active',b.dataset.lang===language);b.setAttribute('aria-pressed',String(b.dataset.lang===language))});
+ $('tagline').textContent=t().tagline;$('search').placeholder=t().search;$('catalogTitle').textContent=t().catalog;$('cartTitle').textContent=t().cartTitle;
+ $('checkoutNote').textContent=t().checkout;$('footer').textContent='© 2026 Megashoop. '+t().footer;
+ $('cartToggle').textContent='🛒 '+t().cart+' ('+cart.reduce((s,p)=>s+p.quantity,0)+')';
+ $('status').textContent=loading?t().loading:loadError?t().error:products.length?t().found+products.length:t().none;
+ renderProducts();renderCart();
+}
+function renderProducts(){
+ const root=$('products');root.replaceChildren();const query=$('search').value.trim().toLocaleLowerCase();
+ for(const p of products.filter(p=>productName(p).toLocaleLowerCase().includes(query))){
+  const card=document.createElement('article');card.className='card';
+  const img=document.createElement('img');img.loading='lazy';img.alt=productName(p);
+  const src=String(get(p,'image_url','изображение','image')||'');
+  img.src=src||'https://placehold.co/400x300?text=Megashoop';img.onerror=()=>{img.onerror=null;img.src='https://placehold.co/400x300?text=Megashoop'};
+  const info=document.createElement('div');info.className='info';
+  const name=document.createElement('h3');name.textContent=productName(p);
+  const price=document.createElement('div');price.className='price';price.textContent=money(productPrice(p));
+  const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+productStock(p)+' '+(get(p,'единица','unit')||t().unit);
+  const buy=document.createElement('button');buy.className='buy';buy.textContent=productStock(p)>0?t().buy:t().out;buy.disabled=productStock(p)<=0;buy.addEventListener('click',()=>addToCart(p));
+  info.append(name,price,stock,buy);card.append(img,info);root.append(card);
+ }
+}
+function addToCart(p){
+ const id=productId(p);const found=cart.find(item=>item.id===id);
+ if((found?.quantity||0)>=productStock(p)){alert(t().insufficient);return}
+ if(found)found.quantity++;else cart.push({id,product:p,quantity:1});
+ updateLanguage();
+}
+function renderCart(){
+ const root=$('cartItems');root.replaceChildren();
+ if(!cart.length){const p=document.createElement('p');p.className='empty';p.textContent=t().empty;root.append(p)}
+ for(const item of cart){
+  const row=document.createElement('div');row.className='cart-row';const label=document.createElement('span');label.textContent=productName(item.product)+' × '+item.quantity;
+  const controls=document.createElement('div');controls.className='cart-controls';const price=document.createElement('strong');price.textContent=money(productPrice(item.product)*item.quantity);
+  const minus=document.createElement('button');minus.textContent='−';minus.setAttribute('aria-label',t().remove);minus.addEventListener('click',()=>{item.quantity--;if(item.quantity<=0)cart=cart.filter(p=>p!==item);updateLanguage()});
+  const plus=document.createElement('button');plus.textContent='+';plus.addEventListener('click',()=>addToCart(item.product));
+  controls.append(price,minus,plus);row.append(label,controls);root.append(row);
+ }
+ $('total').textContent=t().total+money(cart.reduce((s,p)=>s+productPrice(p.product)*p.quantity,0));
+}
+async function loadProducts(){
+ try{
+  const response=await fetch(SUPABASE_URL+'/rest/v1/products?select=*',{headers:{apikey:SUPABASE_KEY}});
+  if(!response.ok)throw new Error('Supabase HTTP '+response.status);
+  const data=await response.json();if(!Array.isArray(data))throw new Error('Unexpected response');products=data;loadError=false;
+ }catch(error){console.error('Megashoop:',error);loadError=true}
+ finally{loading=false;updateLanguage()}
+}
+document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>{language=b.dataset.lang;try{localStorage.setItem('megashoop-language',language)}catch(e){}updateLanguage()}));
+$('search').addEventListener('input',renderProducts);
+$('cartToggle').addEventListener('click',()=>{$('cart').hidden=!$('cart').hidden;if(!$('cart').hidden)$('cart').scrollIntoView({behavior:'smooth'})});
+updateLanguage();loadProducts();
 </script>
+</body>
+</html>
