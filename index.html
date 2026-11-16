@@ -1,177 +1,182 @@
 
 <style>
-  body {
-    background: #f5f2eb !important;
-    color: #202734 !important;
+  #mega-languages {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 9999;
+    display: flex;
+    gap: 6px;
+    background: #172033;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px #0004;
+  }
+  #mega-languages button {
+    padding: 9px 12px;
+    border: 1px solid #52617b;
+    border-radius: 8px;
+    background: #263650;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  #mega-languages button.active {
+    background: #e4ad42;
+    color: #172033;
   }
   header {
-    background: linear-gradient(120deg,#151d2e,#293b50) !important;
-  }
-  .card, .карта {
-    border-radius: 18px !important;
-    box-shadow: 0 8px 24px #15203318 !important;
-  }
-  button {
-    border-radius: 10px !important;
-  }
-  #language-switcher {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 12px 0;
-  }
-  #language-switcher button {
-    background: #ffffff;
-    color: #182334;
-    border: 1px solid #d6d9e0;
-    padding: 10px 14px;
-    cursor: pointer;
-  }
-  #language-switcher button.active {
-    background: #d9ad62;
-    color: #171717;
-    border-color: #d9ad62;
+    padding-top: 65px !important;
   }
 </style>
 
+<div id="mega-languages">
+  <button type="button" data-lang="ka">🇬🇪 KA</button>
+  <button type="button" data-lang="ru">🇷🇺 RU</button>
+  <button type="button" data-lang="az">🇦🇿 AZ</button>
+</div>
+
 <script>
 (function () {
-  const dictionary = {
+  const translations = {
     ru: {
-      "Каталог товаров": "Каталог товаров",
-      "Найдено товаров:": "Найдено товаров:",
-      "В корзину": "В корзину",
-      "В наличии:": "В наличии:",
-      "Корзина:": "Корзина:",
-      "Поиск товаров...": "Поиск товаров...",
-      "Электроинструменты, электроника и оборудование":
-        "Электроинструменты, электроника и оборудование",
-      "Удалить": "Удалить",
-      "Недостаточно товара на складе":
-        "Недостаточно товара на складе"
+      subtitle: "Электроинструменты, электроника и оборудование",
+      catalog: "Каталог товаров",
+      search: "Поиск товаров...",
+      found: "Найдено товаров:",
+      cart: "Корзина:",
+      buy: "В корзину",
+      stock: "В наличии:",
+      remove: "Удалить",
+      total: "Итого:",
+      shortage: "Недостаточно товара на складе",
+      rights: "Все права защищены."
     },
     ka: {
-      "Каталог товаров": "პროდუქციის კატალოგი",
-      "Найдено товаров:": "ნაპოვნია პროდუქტები:",
-      "В корзину": "კალათაში დამატება",
-      "В наличии:": "მარაგშია:",
-      "Корзина:": "კალათა:",
-      "Поиск товаров...": "პროდუქტის ძებნა...",
-      "Электроинструменты, электроника и оборудование":
-        "ელექტროინსტრუმენტები, ელექტრონიკა და აღჭურვილობა",
-      "Удалить": "წაშლა",
-      "Недостаточно товара на складе":
-        "მარაგში საკმარისი პროდუქტი არ არის"
+      subtitle: "ელექტროინსტრუმენტები, ელექტრონიკა და აღჭურვილობა",
+      catalog: "პროდუქციის კატალოგი",
+      search: "პროდუქციის ძებნა...",
+      found: "ნაპოვნია პროდუქტი:",
+      cart: "კალათა:",
+      buy: "კალათაში დამატება",
+      stock: "მარაგშია:",
+      remove: "წაშლა",
+      total: "სულ:",
+      shortage: "მარაგში საკმარისი პროდუქტი არ არის",
+      rights: "ყველა უფლება დაცულია."
     },
     az: {
-      "Каталог товаров": "Məhsul kataloqu",
-      "Найдено товаров:": "Tapılan məhsullar:",
-      "В корзину": "Səbətə əlavə et",
-      "В наличии:": "Stokda:",
-      "Корзина:": "Səbət:",
-      "Поиск товаров...": "Məhsul axtarışı...",
-      "Электроинструменты, электроника и оборудование":
-        "Elektrik alətləri, elektronika və avadanlıqlar",
-      "Удалить": "Sil",
-      "Недостаточно товара на складе":
-        "Anbarda kifayət qədər məhsul yoxdur"
+      subtitle: "Elektrik alətləri, elektronika və avadanlıqlar",
+      catalog: "Məhsul kataloqu",
+      search: "Məhsul axtar...",
+      found: "Tapılan məhsullar:",
+      cart: "Səbət:",
+      buy: "Səbətə əlavə et",
+      stock: "Stokda:",
+      remove: "Sil",
+      total: "Cəmi:",
+      shortage: "Anbarda kifayət qədər məhsul yoxdur",
+      rights: "Bütün hüquqlar qorunur."
     }
   };
 
-  let language = localStorage.getItem("megashoop-language") || "ka";
-  if (!dictionary[language]) language = "ka";
+  const originals = [
+    ["Электроинструменты, электроника и оборудование", "subtitle"],
+    ["Каталог товаров", "catalog"],
+    ["Найдено товаров:", "found"],
+    ["Корзина:", "cart"],
+    ["В корзину", "buy"],
+    ["В наличии:", "stock"],
+    ["Удалить", "remove"],
+    ["Итого:", "total"],
+    ["Все права защищены.", "rights"]
+  ];
 
-  const original = dictionary.ru;
-  const keys = Object.keys(original);
-  const phrases = [...new Set(
-    Object.values(dictionary).flatMap(Object.keys)
-      .concat(Object.values(dictionary).flatMap(Object.values))
-  )].sort((a,b) => b.length-a.length);
+  let language = "ka";
+  try {
+    const saved = localStorage.getItem("mega-language");
+    if (translations[saved]) language = saved;
+  } catch (e) {}
 
-  function translateString(value) {
-    if (!value || !value.trim()) return value;
+  function translateText(value, dict) {
     let result = value;
-    for (const phrase of phrases) {
-      const key = keys.find(k =>
-        Object.values(dictionary).some(d => d[k] === phrase)
+    for (const [original, key] of originals) {
+      const pattern = new RegExp(
+        original.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+        "g"
       );
-      if (key && dictionary[language][key]) {
-        result = result.split(phrase).join(dictionary[language][key]);
+      result = result.replace(pattern, dict[key]);
+      for (const lang of Object.keys(translations)) {
+        result = result.replaceAll(
+          translations[lang][key],
+          dict[key]
+        );
       }
     }
     return result;
   }
 
-  const sourceText = new WeakMap();
-  const sourcePlaceholders = new WeakMap();
-  let applying = false;
+  function applyLanguage() {
+    const dict = translations[language];
+    document.documentElement.lang = language;
 
-  function translatePage() {
-    if (applying) return;
-    applying = true;
+    document.querySelectorAll("#mega-languages button")
+      .forEach(button => {
+        button.classList.toggle(
+          "active",
+          button.dataset.lang === language
+        );
+      });
+
+    const search = document.getElementById("search");
+    if (search) search.placeholder = dict.search;
+
     const walker = document.createTreeWalker(
-      document.body, NodeFilter.SHOW_TEXT
+      document.body,
+      NodeFilter.SHOW_TEXT
     );
-    let node;
-    while ((node = walker.nextNode())) {
-      if (node.parentElement?.closest(
-        "script,style,#language-switcher"
-      )) continue;
-      let base = sourceText.get(node);
-      if (base === undefined) {
-        base = node.nodeValue;
-        sourceText.set(node, base);
-      } else if (node.nodeValue !== translateString(base)) {
-        base = node.nodeValue;
-        sourceText.set(node, base);
-      }
-      const translated = translateString(base);
-      if (node.nodeValue !== translated) node.nodeValue = translated;
+
+    const nodes = [];
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const parent = node.parentElement;
+      if (!parent) continue;
+      if (parent.closest("#mega-languages")) continue;
+      if (["SCRIPT", "STYLE", "TEXTAREA"].includes(parent.tagName))
+        continue;
+      nodes.push(node);
     }
 
-    document.querySelectorAll("input[placeholder]").forEach(input => {
-      let base = sourcePlaceholders.get(input);
-      if (base === undefined) {
-        base = input.placeholder;
-        sourcePlaceholders.set(input, base);
-      }
-      input.placeholder = translateString(base);
-    });
-
-    document.documentElement.lang = language;
-    document.querySelectorAll("#language-switcher button")
-      .forEach(btn => btn.classList.toggle(
-        "active", btn.dataset.lang === language
-      ));
-    applying = false;
+    for (const node of nodes) {
+      const updated = translateText(node.nodeValue, dict);
+      if (updated !== node.nodeValue) node.nodeValue = updated;
+    }
   }
 
-  const switcher = document.createElement("div");
-  switcher.id = "language-switcher";
-  switcher.innerHTML = `
-    <button data-lang="ka">🇬🇪 ქართული</button>
-    <button data-lang="ru">🇷🇺 Русский</button>
-    <button data-lang="az">🇦🇿 Azərbaycan</button>
-  `;
+  document.querySelectorAll("#mega-languages button")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        language = button.dataset.lang;
+        try {
+          localStorage.setItem("mega-language", language);
+        } catch (e) {}
+        applyLanguage();
+      });
+    });
 
-  const location = document.querySelector("header") || document.body;
-  location.appendChild(switcher);
-
-  switcher.addEventListener("click", event => {
-    const btn = event.target.closest("button[data-lang]");
-    if (!btn) return;
-    language = btn.dataset.lang;
-    localStorage.setItem("megashoop-language", language);
-    translatePage();
+  const observer = new MutationObserver(() => {
+    observer.disconnect();
+    applyLanguage();
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
   });
 
-  const observer = new MutationObserver(() => translatePage());
+  applyLanguage();
   observer.observe(document.body, {
     childList: true,
-    subtree: true,
-    characterData: true
+    subtree: true
   });
-
-  translatePage();
 })();
 </script>
