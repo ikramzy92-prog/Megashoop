@@ -107,6 +107,12 @@ main{padding-top:26px!important}
 @keyframes georgianFlagWave{0%,100%{transform:rotateY(-9deg) skewY(-2deg) scaleX(.96)}25%{transform:rotateY(11deg) skewY(3deg) scaleX(1)}50%{transform:rotateY(-13deg) skewY(-3deg) scaleX(.93)}75%{transform:rotateY(9deg) skewY(2deg) scaleX(.99)}}
 @media(max-width:520px){.brand{gap:8px}.georgia-flag{width:39px;height:28px}.georgia-flag svg{width:37px;height:25px}}
 @media(prefers-reduced-motion:reduce){.georgia-flag svg{animation:none}}
+
+/* Fly-to-cart: decorative motion, never blocks clicks */
+.fly-cart-item{position:fixed;z-index:99999;pointer-events:none;object-fit:contain;border-radius:12px;background:#171b22;box-shadow:0 8px 25px #0009,0 0 0 2px #e6b75c;will-change:transform,opacity;transform-origin:center center;}
+#cartToggle.cart-bump{animation:cartBump .4s ease-out}
+@keyframes cartBump{0%,100%{transform:scale(1)}45%{transform:scale(1.13)}}
+@media(prefers-reduced-motion:reduce){#cartToggle.cart-bump{animation:none}}
 </style>
 </head>
 <body>
@@ -140,8 +146,28 @@ const money=n=>Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maxi
 function updateCount(){const count=cart.reduce((s,p)=>s+p.quantity,0);$('cartToggle').textContent='🛒 '+t().cart+' ('+count+')'}
 function renderProducts(){const box=$('products');box.replaceChildren();const query=$('search').value.toLocaleLowerCase().trim();const items=products.filter(p=>nameOf(p).toLocaleLowerCase().includes(query));if(!loading&&!loadError&&!items.length){const p=document.createElement('p');p.textContent=t().empty;box.append(p)}
  for(const product of items){const card=document.createElement('article');card.className='card';const photo=document.createElement('div');photo.className='photo';const img=document.createElement('img');img.alt=nameOf(product);img.loading='lazy';img.src=product.image_url||'https://placehold.co/400x300/253144/ffffff?text=Modern Market';img.onerror=()=>{img.onerror=null;img.src='https://placehold.co/400x300/253144/ffffff?text=Modern Market'};photo.append(img);
- const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);const price=document.createElement('div');price.className='price';price.textContent=money(priceOf(product));const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<=0;buy.onclick=()=>addToCart(product);info.append(name,price,stock,buy);card.append(photo,info);box.append(card)} }
-function addToCart(product){const id=idOf(product);const existing=cart.find(p=>p.id===id);if((existing?.quantity||0)>=stockOf(product)){alert(t().shortage);return}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),price:priceOf(product),quantity:1});updateCount();renderCart()}
+ const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);const price=document.createElement('div');price.className='price';price.textContent=money(priceOf(product));const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<=0;buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(name,price,stock,buy);card.append(photo,info);box.append(card)} }
+function animateToCart(source){
+ const target=$('cartToggle');
+ if(!source||!target)return;
+ const bump=()=>{target.classList.remove('cart-bump');void target.offsetWidth;target.classList.add('cart-bump');};
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){bump();return;}
+ const a=source.getBoundingClientRect(),b=target.getBoundingClientRect();
+ if(a.width===0||a.height===0||b.width===0)return;
+ const w=Math.min(a.width,110),h=Math.min(a.height,100);
+ const x=a.left+a.width/2-w/2,y=a.top+a.height/2-h/2;
+ const flyer=source.cloneNode(false);flyer.removeAttribute('id');flyer.className='fly-cart-item';
+ Object.assign(flyer.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
+ document.body.appendChild(flyer);
+ const dx=b.left+b.width/2-(x+w/2),dy=b.top+b.height/2-(y+h/2);
+ const anim=flyer.animate([
+  {transform:'translate(0,0) scale(1)',opacity:1,offset:0},
+  {transform:`translate(${dx*.42}px,${dy*.15-65}px) scale(.75)`,opacity:1,offset:.45},
+  {transform:`translate(${dx}px,${dy}px) scale(.12)`,opacity:.2,offset:1}
+ ],{duration:750,easing:'cubic-bezier(.25,.7,.2,1)'});
+ anim.onfinish=()=>{flyer.remove();bump()};anim.oncancel=()=>flyer.remove();
+}
+function addToCart(product){const id=idOf(product);const existing=cart.find(p=>p.id===id);if((existing?.quantity||0)>=stockOf(product)){alert(t().shortage);return false}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),price:priceOf(product),quantity:1});updateCount();renderCart();return true}
 function renderCart(){const box=$('cartItems');box.replaceChildren();for(const item of cart){const row=document.createElement('div');row.className='cart-row';const label=document.createElement('span');label.textContent=item.name+' × '+item.quantity;const amount=document.createElement('strong');amount.textContent=money(item.price*item.quantity);const remove=document.createElement('button');remove.className='remove';remove.textContent=t().remove;remove.onclick=()=>{cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};row.append(label,amount,remove);box.append(row)}$('total').textContent=t().total+' '+money(cart.reduce((s,p)=>s+p.price*p.quantity,0))}
 function updateLanguage(){document.documentElement.lang=lang;$('subtitle').textContent=t().subtitle;const heroText={ka:['ხარისხი ყველა დეტალში','პროფესიონალური ხელსაწყოები','პროდუქციის ნახვა'],ru:['КАЧЕСТВО В КАЖДОЙ ДЕТАЛИ','Профессиональные инструменты','Смотреть товары'],az:['HƏR DETALDA KEYFİYYƏT','Peşəkar alətlər','Məhsullara bax']};$('heroKicker').textContent=heroText[lang][0];$('heroTitle').textContent=heroText[lang][1];$('heroDescription').textContent=t().subtitle;$('heroCta').textContent=heroText[lang][2];$('catalogTitle').textContent=t().catalog;$('search').placeholder=t().search;$('cartTitle').textContent=t().cartTitle;$('checkoutNote').textContent=t().note;$('footer').textContent='© 2026 Modern Market. '+t().footer;$('status').textContent=loading?t().loading:loadError?t().error:t().found+' '+products.length;document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));updateCount();renderProducts();renderCart()}
 async function loadProducts(){try{const response=await fetch(SUPABASE_URL+'/rest/v1/products?select=*',{headers:{apikey:SUPABASE_KEY}});if(!response.ok)throw new Error('Supabase HTTP '+response.status);const data=await response.json();if(!Array.isArray(data))throw new Error('Invalid response');products=data;loadError=false}catch(error){console.error(error);loadError=true}finally{loading=false;updateLanguage()}}
