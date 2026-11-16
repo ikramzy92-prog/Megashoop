@@ -47,7 +47,7 @@ function setHeroImage() {
   const image = document.getElementById("heroImage");
   if (!image) return;
 
-  image.src = product.image_url;
+  image.style.background = "transparent";
   image.alt = nameOf(product);
   image.hidden = false;
 
