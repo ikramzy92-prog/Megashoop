@@ -118,7 +118,7 @@ function renderDashboardExtras(){
 }
 $('dashPosSearch').addEventListener('input',()=>{if(shop)renderDashboardExtras()});
 
-$('exportOverview').onclick=()=>$('exportCsv').click();$('todayButton').onclick=()=>message(lang==='ru'?'Период: сегодня. Данные продаж пока не подключены.':lang==='ka'?'პერიოდი: დღეს. გაყიდვები ჯერ არ არის დაკავშირებული.':'Dövr: bu gün. Satış məlumatları hələ qoşulmayıb.');$('toggleSide').onclick=()=>document.querySelector('.side').classList.toggle('side-collapsed');$('globalSearch').oninput=e=>{const term=e.target.value.toLowerCase();$('dashPosSearch').value=e.target.value;if(shop)renderDashboardExtras()};db.auth.onAuthStateChange(()=>setTimeout(refresh,0));translate();refresh();
+$('exportOverview').onclick=()=>$('exportCsv').click();$('todayButton').onclick=()=>message(lang==='ru'?'Период: сегодня. Данные продаж пока не подключены.':lang==='ka'?'პერიოდი: დღეს. გაყიდვები ჯერ არ არის დაკავშირებული.':'Dövr: bu gün. Satış məlumatları hələ qoşulmayıb.');$('toggleSide').onclick=()=>document.querySelector('.side').classList.toggle('side-collapsed');$('globalSearch').oninput=e=>{const term=e.target.value.toLowerCase();$('dashPosSearch').value=e.target.value;if(shop)renderDashboardExtras()};db.auth.onAuthStateChange(()=>setTimeout(refresh,0));
 document.querySelectorAll('.lang-flag').forEach(btn=>btn.addEventListener('click',()=>{const select=document.getElementById('language');select.value=btn.dataset.lang;select.dispatchEvent(new Event('change',{bubbles:true}));updateLanguageFlags()}));function updateLanguageFlags(){const selected=document.getElementById('language').value;document.querySelectorAll('.lang-flag').forEach(btn=>{const on=btn.dataset.lang===selected;btn.classList.toggle('active',on);btn.setAttribute('aria-pressed',String(on))})}document.getElementById('language').addEventListener('change',updateLanguageFlags);updateLanguageFlags();
 
 // Complete translations for the static seller dashboard (including sections and POS).
@@ -139,4 +139,8 @@ function applyStaticTranslations(){
  if(titleMap[active]){const text=uiTranslations['[data-tab="'+active+'"]']?.[lang];if(text){$('pageTitle').textContent=text;$('topTitle').textContent=text;}}
  if(shop)$('stockCount').textContent=items.length+' '+({ru:'товаров',ka:'პროდუქტი',az:'məhsul'}[lang]);
 }
+
+// Initialize only after every translation dictionary and helper is defined.
+translate();
+refresh();
 </script></body></html>
