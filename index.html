@@ -477,9 +477,22 @@ const words={
  az:{open:'👤 Giriş / Qeydiyyat',seller:'Satıcı ol',logout:'Çıxış',heading:'Giriş / Qeydiyyat',intro:'ModernMarket alıcı hesabı yaradın',login:'Daxil ol',signup:'Qeydiyyat',pass:'Şifrə (ən azı 8 simvol)',sellerMore:'Satmaq istəyirsiniz? Mağaza açın',confirm:'E-poçtunuzu yoxlayın və qeydiyyatı təsdiqləyin, sonra daxil olun.',created:'Hesab yaradıldı!',welcome:'Hesaba daxil oldunuz.',error:'Xəta: ',loading:'Gözləyin...',password:'Şifrə ən azı 8 simvol olmalıdır.'}
 };
 let mode='login',user=null,processing=false;
+let mmSellerVerifiedId=null;
+async function mmCheckSellerStore(){
+ const currentId=user?.id||null;
+ mmSellerVerifiedId=null;
+ draw();
+ if(!currentId)return;
+ try{
+  const {data,error}=await db.from('stores').select('id').eq('owner_id',currentId).limit(1);
+  if(error)throw error;
+  if(user?.id===currentId){mmSellerVerifiedId=(data&&data.length)?currentId:null;draw();}
+ }catch(err){console.warn('Store ownership lookup failed:',err?.message||err);}
+}
+
 const lang=()=>['ka','ru','az'].includes(document.documentElement.lang)?document.documentElement.lang:'ka';
 const w=()=>words[lang()];
-function draw(){window.mmBuyerUser=user;window.dispatchEvent(new Event('mm-auth-changed'));const t=w();$('mmAccountOpen').textContent=t.open;$('mmAccountLogout').textContent=t.logout;$('mmAuthHeading').textContent=t.heading;$('mmAuthIntro').textContent=t.intro;$('mmAuthLoginTab').textContent=t.login;$('mmAuthSignupTab').textContent=t.signup;$('mmAuthPasswordLabel').textContent=t.pass;$('mmAuthSubmit').textContent=mode==='login'?t.login:t.signup;$('mmAuthLoginTab').setAttribute('aria-selected',String(mode==='login'));$('mmAuthSignupTab').setAttribute('aria-selected',String(mode==='signup'));$('mmAuthPassword').autocomplete=mode==='login'?'current-password':'new-password';$('mmRolePicker').hidden=mode!=='signup';$('mmRoleLabel').textContent=({ka:'აირჩიეთ ანგარიშის ტიპი',ru:'Кем вы хотите зарегистрироваться?',az:'Hesab növünü seçin'})[lang()];$('mmRoleBuyer').textContent=({ka:'🛍️ მყიდველი',ru:'🛍️ Покупатель',az:'🛍️ Alıcı'})[lang()];$('mmRoleSeller').textContent=({ka:'🏪 გამყიდველი',ru:'🏪 Продавец',az:'🏪 Satıcı'})[lang()];const sellerAccess=!!user&&user.user_metadata?.account_role==='seller';$('mmSellerBackoffice').hidden=!sellerAccess;$('mmSellerBackoffice').style.display=sellerAccess?'inline-flex':'none';$('mmAccountOpen').hidden=!!user;$('mmAccountLogout').hidden=!user;$('mmBuyerProfileBtn').hidden=!user;$('mmAccountEmail').hidden=!user;$('mmHeaderAvatar').hidden=!user;$('mmHeaderAvatar').src=window.mmHeaderAvatarUrl||('data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" rx="40" fill="#3a3023"/><circle cx="40" cy="29" r="15" fill="#eabb61"/><ellipse cx="40" cy="75" rx="27" ry="26" fill="#eabb61"/></svg>'));$('mmAccountEmail').textContent=user?.email?(user.email.slice(0,3)+'***@'+(user.email.split('@')[1]||'').slice(0,1)+'***'):'';}
+function draw(){window.mmBuyerUser=user;window.dispatchEvent(new Event('mm-auth-changed'));const t=w();$('mmAccountOpen').textContent=t.open;$('mmAccountLogout').textContent=t.logout;$('mmAuthHeading').textContent=t.heading;$('mmAuthIntro').textContent=t.intro;$('mmAuthLoginTab').textContent=t.login;$('mmAuthSignupTab').textContent=t.signup;$('mmAuthPasswordLabel').textContent=t.pass;$('mmAuthSubmit').textContent=mode==='login'?t.login:t.signup;$('mmAuthLoginTab').setAttribute('aria-selected',String(mode==='login'));$('mmAuthSignupTab').setAttribute('aria-selected',String(mode==='signup'));$('mmAuthPassword').autocomplete=mode==='login'?'current-password':'new-password';$('mmRolePicker').hidden=mode!=='signup';$('mmRoleLabel').textContent=({ka:'აირჩიეთ ანგარიშის ტიპი',ru:'Кем вы хотите зарегистрироваться?',az:'Hesab növünü seçin'})[lang()];$('mmRoleBuyer').textContent=({ka:'🛍️ მყიდველი',ru:'🛍️ Покупатель',az:'🛍️ Alıcı'})[lang()];$('mmRoleSeller').textContent=({ka:'🏪 გამყიდველი',ru:'🏪 Продавец',az:'🏪 Satıcı'})[lang()];const sellerAccess=!!user&&(user.user_metadata?.account_role==='seller'||mmSellerVerifiedId===user.id);$('mmSellerBackoffice').hidden=!sellerAccess;$('mmSellerBackoffice').style.display=sellerAccess?'inline-flex':'none';$('mmAccountOpen').hidden=!!user;$('mmAccountLogout').hidden=!user;$('mmBuyerProfileBtn').hidden=!user;$('mmAccountEmail').hidden=!user;$('mmHeaderAvatar').hidden=!user;$('mmHeaderAvatar').src=window.mmHeaderAvatarUrl||('data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" rx="40" fill="#3a3023"/><circle cx="40" cy="29" r="15" fill="#eabb61"/><ellipse cx="40" cy="75" rx="27" ry="26" fill="#eabb61"/></svg>'));$('mmAccountEmail').textContent=user?.email?(user.email.slice(0,3)+'***@'+(user.email.split('@')[1]||'').slice(0,1)+'***'):'';}
 function open(){ $('mmAuthOverlay').hidden=false;document.body.style.overflow='hidden';draw();$('mmAuthEmail').focus(); }
 function close(){ $('mmAuthOverlay').hidden=true;document.body.style.overflow='';$('mmAuthFeedback').textContent='';$('mmAuthPassword').value=''; }
 function switchMode(m){mode=m;$('mmAuthFeedback').textContent='';draw();}
@@ -490,8 +503,8 @@ $('mmAccountLogout').addEventListener('click',async()=>{const {error}=await db.a
 async function refreshHeaderAvatar(){const u=user;const path=u?.user_metadata?.avatar_path;if(!path){window.mmHeaderAvatarUrl=null;draw();return;}try{const {data}=await db.storage.from('buyer-avatars').createSignedUrl(path,1800);if(u?.id===user?.id){window.mmHeaderAvatarUrl=data?.signedUrl||null;draw();}}catch(e){console.warn('Avatar',e)}}
 window.addEventListener('mm-auth-changed',()=>{if(user?.id!==window.mmAvatarLoadedFor){window.mmAvatarLoadedFor=user?.id;refreshHeaderAvatar()}});
 window.addEventListener('mm-profile-saved',()=>refreshHeaderAvatar());
-db.auth.onAuthStateChange((_event,session)=>{user=session?.user||null;draw()});
-db.auth.getSession().then(({data})=>{user=data.session?.user||null;draw()}).catch(()=>draw());
+db.auth.onAuthStateChange((_event,session)=>{user=session?.user||null;draw();setTimeout(mmCheckSellerStore,0)});
+db.auth.getSession().then(({data})=>{user=data.session?.user||null;draw();mmCheckSellerStore()}).catch(()=>draw());
 const observer=new MutationObserver(()=>draw());observer.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});draw();
 </script>
 <div class="mm-buyer-modal" id="mmBuyerModal" hidden><div class="mm-buyer-window" role="dialog" aria-modal="true" aria-labelledby="mmBuyerTitle">
