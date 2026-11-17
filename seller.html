@@ -11,6 +11,38 @@
 </style><style>/* Compact Retail360 layout */
 .layout{grid-template-columns:210px minmax(0,1fr)}.side{padding:14px 10px}.brand{font-size:20px;margin-bottom:17px}.nav{padding:10px 11px;margin:2px 0}.subhead{margin:15px 10px 7px}.top{height:60px;padding:8px 19px}.content{padding:17px 19px}.content>h1{font-size:22px}.dash-heading{margin-bottom:11px}.dash-grid{gap:10px}.dash-metric{padding:13px;min-height:93px;border-radius:9px}.dash-metric .metric-icon{font-size:18px;padding:7px}.dash-metric strong{font-size:22px;margin:9px 0 2px}.dash-two,.dash-bottom{gap:11px;margin-top:11px}.dash-panel{padding:14px;border-radius:9px}.dash-panel h2{font-size:16px}.dash-chart{height:195px;margin-top:9px}.dash-donut{width:145px;height:145px;border-width:16px;margin:10px auto}.dash-bottom{grid-template-columns:minmax(0,1fr) 275px}.dash-side{gap:11px}.dash-table th,.dash-table td{padding:8px 6px}.dash-table .thumb{width:35px;height:35px}.dash-alert{padding:8px 0}.dash-pos-placeholder{padding:13px}.card{padding:15px;margin-bottom:12px}
 @media(max-width:1200px){.dash-bottom{grid-template-columns:1fr}.dash-side{grid-template-columns:1fr 1fr}}@media(max-width:850px){.dash-side{grid-template-columns:1fr}}@media(max-width:700px){.layout{grid-template-columns:1fr}.top{height:auto}.content{padding:12px}.side{padding:8px}}@media(max-width:480px){.dash-metric{padding:10px;min-height:84px}.dash-metric strong{font-size:19px}.dash-panel{padding:11px}}
+</style><style>
+/* Ultra-compact dashboard: avoid stretched empty inventory and unnecessary scrolling */
+@media(min-width:851px){
+ .content{padding:10px 14px;max-width:none}
+ .content>h1{font-size:18px;margin-bottom:2px}
+ .content>#subtitle{margin:2px 0 7px}
+ .dash-heading{margin-bottom:6px}
+ .dash-heading h2{font-size:14px}
+ .dash-grid{gap:8px}
+ .dash-metric{min-height:70px;padding:9px 11px}
+ .dash-metric small{font-size:11px}
+ .dash-metric strong{font-size:19px;margin:4px 0 1px}
+ .dash-metric .metric-icon{font-size:15px;padding:5px}
+ .dash-two,.dash-bottom{gap:9px;margin-top:9px}
+ .dash-panel{padding:10px 12px}
+ .dash-panel h2{font-size:14px;margin-bottom:4px}
+ .dash-panel .muted{font-size:11px;margin:3px 0}
+ .dash-chart{height:135px;margin-top:4px}
+ .dash-donut{width:105px;height:105px;border-width:12px;margin:6px auto}
+ .dash-donut span{font-size:11px}
+ .dash-bottom{align-items:start;grid-template-columns:minmax(0,1fr) 250px}
+ .dash-side{gap:9px}
+ .dash-table th,.dash-table td{padding:5px}
+ .dash-table .thumb{width:28px;height:28px}
+ .dash-pos-search{margin:5px 0;padding:8px}
+ .dash-pos-placeholder{padding:8px}
+ .dash-alert{padding:5px 0}
+ .dash-actions button{padding:7px 10px}
+ .top{height:52px}
+}
+@media(min-width:851px) and (max-width:1200px){.dash-bottom{grid-template-columns:minmax(0,1fr) 240px}.dash-side{grid-template-columns:1fr}}
+@media(max-width:850px){.dash-bottom{align-items:start}.dash-chart{height:155px}.dash-donut{width:120px;height:120px}}
 </style></head><body><div class="layout"><aside class="side"><div class="brand">Modern<span>Market.ge</span><div class="muted" style="font-size:11px">SELLER BACK OFFICE</div></div><div class="subhead" data-i="manage">УПРАВЛЕНИЕ</div><button class="nav active" data-tab="dashboard" data-i="dashboard">Главная</button><button class="nav" data-tab="orders" data-i="orders">Заказы</button><button class="nav" data-tab="sales" data-i="sales">Продажи (POS)</button><button class="nav" data-tab="warehouse" data-i="warehouse">Склад</button><button class="nav" data-tab="catalog" data-i="catalog">Номенклатура</button><button class="nav" data-tab="invoices" data-i="invoices">Счета и документы</button><button class="nav" data-tab="reports" data-i="reports">Excel и отчёты</button><button class="nav" data-tab="settings" data-i="settings">Настройки</button></aside><div class="main"><div class="top"><strong id="topTitle">Главная</strong><div style="display:flex;align-items:center;gap:9px"><div class="lang-flags" role="group" aria-label="Язык / Dil / ენა"><button type="button" class="lang-flag" data-lang="ru" title="Русский">🇷🇺 <span>Русский</span></button><button type="button" class="lang-flag" data-lang="az" title="Azərbaycanca">🇦🇿 <span>AZ</span></button><button type="button" class="lang-flag" data-lang="ka" title="ქართული">🇬🇪 <span>ქართული</span></button></div><select id="language" class="hidden" aria-label="Language"><option value="ka">🇬🇪 ქართული</option><option value="az">🇦🇿 Azərbaycanca</option><option value="ru">🇷🇺 Русский</option></select><button class="ghost hidden" id="signout" data-i="signout">Выйти</button></div></div><main class="content"><h1 id="pageTitle">Главная</h1><p class="muted" id="subtitle">Панель управления продавца</p><div id="message" class="hidden" role="status"></div>
 <section id="auth" class="authwrap card"><h2 data-i="login">Вход / регистрация</h2><label>Email<input id="email" type="email" autocomplete="email"></label><label data-i="password">Пароль (минимум 8 символов)<input id="password" type="password" minlength="8" autocomplete="current-password"></label><div class="actions"><button id="signup" data-i="signup">Регистрация</button><button id="signin" class="ghost" data-i="signin">Войти</button></div></section>
 <div id="app" class="hidden"><section id="shopCreate" class="card hidden"><h2 data-i="createStore">Создать магазин</h2><label data-i="storeName">Название магазина<input id="shopName" maxlength="100"></label><label data-i="description">Описание<textarea id="shopDesc" maxlength="2000"></textarea></label><button id="createShop" data-i="createStore">Создать магазин</button></section><div id="shopApp" class="hidden">
