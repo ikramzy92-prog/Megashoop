@@ -1463,19 +1463,91 @@ header .search-row .mm-search-box{border:1px solid #e9b64e!important;box-shadow:
  sync();refreshCount();
 })();
 </script>
+<style id="tovex-tracking-style">
+.tovex-track-btn{margin-top:11px;border:1px solid #37b99e;background:#103d43;color:#d5fff2;padding:10px 13px;border-radius:9px;font-weight:700;cursor:pointer}
+.tovex-track-panel{margin-top:12px;border:1px solid #315e70;border-radius:12px;padding:12px;background:#091c31}
+.tovex-track-map{height:290px;width:100%;border-radius:10px;margin:10px 0;background:#14273a;z-index:0}
+.tovex-track-msg{font-size:13px;color:#cbd8e9;line-height:1.55}
+.tovex-track-panel[hidden]{display:none!important}
+@media(max-width:600px){.tovex-track-map{height:255px}}
+</style>
 <script id="tovex-live-buyer-orders">(()=>{
- const dict={ru:['Мои заказы TOVEX','Загрузка…','Пока нет заказов TOVEX','Статус','Доставка','Магазин','Обновить','Ошибка: '],ka:['ჩემი TOVEX შეკვეთები','იტვირთება…','TOVEX შეკვეთები ჯერ არ არის','სტატუსი','მიწოდება','მაღაზია','განახლება','შეცდომა: '],az:['TOVEX sifarişlərim','Yüklənir…','TOVEX sifarişi yoxdur','Status','Çatdırılma','Mağaza','Yenilə','Xəta: ']};
+ const dict={
+ ru:{title:'Мои заказы TOVEX',loading:'Загрузка…',empty:'Пока нет заказов TOVEX',status:'Статус',delivery:'Доставка',refresh:'Обновить',error:'Ошибка: ',track:'📍 Отследить доставку',hide:'Скрыть карту',noDelivery:'Курьер ещё не назначен. Отслеживание появится после назначения доставки.',noGps:'Курьер ещё не передал GPS-координаты.',last:'Последнее обновление GPS',approx:'Показана последняя переданная точка, а не гарантированное положение в реальном времени.',denied:'Нет доступа к координатам этой доставки. Проверьте права доступа в Supabase.',mapError:'Не удалось загрузить карту.',seller:'Курьер магазина'},
+ ka:{title:'ჩემი TOVEX შეკვეთები',loading:'იტვირთება…',empty:'TOVEX შეკვეთები ჯერ არ არის',status:'სტატუსი',delivery:'მიწოდება',refresh:'განახლება',error:'შეცდომა: ',track:'📍 მიწოდების თვალყურის დევნება',hide:'რუკის დამალვა',noDelivery:'კურიერი ჯერ არ არის დანიშნული.',noGps:'კურიერს GPS მდებარეობა ჯერ არ გამოუგზავნია.',last:'GPS-ის ბოლო განახლება',approx:'ნაჩვენებია ბოლო მიღებული მდებარეობა.',denied:'ამ მიწოდების მდებარეობაზე წვდომა არ არის.',mapError:'რუკის ჩატვირთვა ვერ მოხერხდა.',seller:'მაღაზიის კურიერი'},
+ az:{title:'TOVEX sifarişlərim',loading:'Yüklənir…',empty:'TOVEX sifarişi yoxdur',status:'Status',delivery:'Çatdırılma',refresh:'Yenilə',error:'Xəta: ',track:'📍 Çatdırılmanı izlə',hide:'Xəritəni gizlət',noDelivery:'Kuryer hələ təyin edilməyib.',noGps:'Kuryer hələ GPS koordinatlarını göndərməyib.',last:'Son GPS yenilənməsi',approx:'Son göndərilmiş mövqe göstərilir.',denied:'Bu çatdırılmanın koordinatlarına giriş yoxdur.',mapError:'Xəritə yüklənmədi.',seller:'Mağaza kuryeri'}
+ };
+ const t=()=>dict[document.documentElement.lang]||dict.ka;
  const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const panel=document.createElement('section');panel.id='tovexLiveBuyerPanel';panel.style='margin:18px 0;padding:18px;border:1px solid #64748b55;border-radius:12px';
  panel.innerHTML='<h3 id="tovexBuyerTitle"></h3><button type="button" id="tovexBuyerRefresh" style="padding:8px 12px;margin:8px 0">↻</button><div id="tovexBuyerRows"></div>';
- const target=document.getElementById('tovexOrdersContent')||document.getElementById('mmBuyerOrders')||document.body;
- target.appendChild(panel);
- const t=()=>dict[document.documentElement.lang]||dict.ka;
- async function load(){const db=window.mmBuyerDb;const rows=document.getElementById('tovexBuyerRows');document.getElementById('tovexBuyerTitle').textContent=t()[0];document.getElementById('tovexBuyerRefresh').textContent=t()[6];if(!db){rows.textContent='Supabase unavailable';return;}const {data:{user}}=await db.auth.getUser();if(!user){rows.textContent='';return;}rows.textContent=t()[1];
- try{const a=await db.from('tovex_orders').select('id,created_at,status,delivery_address').eq('buyer_id',user.id).order('created_at',{ascending:false}).limit(50);if(a.error)throw a.error;const orders=a.data||[];if(!orders.length){rows.textContent=t()[2];return;}const ids=orders.map(o=>o.id);const [b,c]=await Promise.all([db.from('tovex_order_items').select('order_id,product_name,quantity,unit_price_gel').in('order_id',ids),db.from('tovex_deliveries').select('order_id,store_id,method,status').in('order_id',ids)]);if(b.error)throw b.error;if(c.error)throw c.error;
- rows.innerHTML=orders.map(o=>{const products=(b.data||[]).filter(x=>x.order_id===o.id);const delivery=(c.data||[]).find(x=>x.order_id===o.id);const total=products.reduce((s,x)=>s+Number(x.unit_price_gel)*Number(x.quantity),0);return '<article style="padding:12px 0;border-top:1px solid #64748b55"><b>#'+safe(o.id.slice(0,8))+'</b> · '+safe(new Date(o.created_at).toLocaleString())+'<div>'+products.map(x=>safe(x.product_name)+' × '+Number(x.quantity)).join(', ')+'</div><strong>'+total.toFixed(2)+' ₾</strong><div>'+t()[3]+': '+safe(delivery?.status||o.status)+' · '+t()[4]+': '+safe(delivery?.method==='seller'?'Курьер магазина':delivery?.method==='tovex'?'TOVEX':'—')+'</div></article>'}).join('');
- }catch(e){rows.textContent=t()[7]+e.message;}}
+ (document.getElementById('tovexOrdersContent')||document.getElementById('mmBuyerOrders')||document.body).appendChild(panel);
+ const rows=document.getElementById('tovexBuyerRows');
+ let active=null, timer=null, leafletPromise=null, loadSequence=0;
+ function stopTracking(){if(timer){clearInterval(timer);timer=null}if(active?.map){active.map.remove()}active=null}
+ function loadLeaflet(){
+  if(window.L)return Promise.resolve(window.L);
+  if(leafletPromise)return leafletPromise;
+  leafletPromise=new Promise((resolve,reject)=>{
+   if(!document.getElementById('tovex-leaflet-css')){const css=document.createElement('link');css.id='tovex-leaflet-css';css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.append(css)}
+   const script=document.createElement('script');script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';script.onload=()=>window.L?resolve(window.L):reject(new Error('Leaflet unavailable'));script.onerror=()=>reject(new Error('Leaflet unavailable'));document.head.append(script);
+  }).catch(e=>{leafletPromise=null;throw e});
+  return leafletPromise;
+ }
+ async function updatePosition(){
+  const current=active;if(!current||document.hidden)return;
+  const db=window.mmBuyerDb;if(!db)return;
+  const {data:{user},error:authError}=await db.auth.getUser();
+  if(active!==current)return;
+  if(authError||!user){current.message.textContent=t().denied;return}
+  const result=await db.from('tovex_deliveries').select('id,order_id,latitude,longitude,gps_updated_at,status').eq('id',current.deliveryId).eq('order_id',current.orderId).maybeSingle();
+  if(active!==current)return;
+  if(result.error){current.message.textContent=t().denied+' '+result.error.message;return}
+  const d=result.data;
+  if(!d){current.message.textContent=t().denied;return}
+  const lat=Number(d.latitude),lng=Number(d.longitude);
+  if(d.latitude==null||d.longitude==null||!Number.isFinite(lat)||!Number.isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180){current.message.textContent=t().noGps;return}
+  current.message.textContent=t().last+': '+(d.gps_updated_at?new Date(d.gps_updated_at).toLocaleString():'—')+'. '+t().approx;
+  try{
+   const L=await loadLeaflet();if(active!==current)return;
+   if(!current.map){current.map=L.map(current.mapEl,{scrollWheelZoom:false}).setView([lat,lng],15);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(current.map);current.marker=L.marker([lat,lng]).addTo(current.map);setTimeout(()=>{if(active===current)current.map.invalidateSize()},80)}
+   else{current.marker.setLatLng([lat,lng]);current.map.panTo([lat,lng])}
+  }catch(e){current.message.textContent=t().mapError+' '+e.message}
+ }
+ function openTracking(btn){
+  const deliveryId=btn.dataset.deliveryId,orderId=btn.dataset.orderId;
+  if(active?.deliveryId===deliveryId){stopTracking();document.querySelectorAll('.tovex-track-panel').forEach(p=>p.hidden=true);document.querySelectorAll('.tovex-track-btn').forEach(b=>b.textContent=t().track);return}
+  stopTracking();document.querySelectorAll('.tovex-track-panel').forEach(p=>p.hidden=true);document.querySelectorAll('.tovex-track-btn').forEach(b=>b.textContent=t().track);
+  const box=btn.nextElementSibling;box.hidden=false;btn.textContent=t().hide;
+  active={deliveryId,orderId,mapEl:box.querySelector('.tovex-track-map'),message:box.querySelector('.tovex-track-msg'),map:null,marker:null};
+  active.message.textContent=t().loading;updatePosition();timer=setInterval(updatePosition,15000);
+ }
+ async function load(){
+  const seq=++loadSequence;stopTracking();const db=window.mmBuyerDb;
+  document.getElementById('tovexBuyerTitle').textContent=t().title;document.getElementById('tovexBuyerRefresh').textContent=t().refresh;
+  if(!db){rows.textContent='Supabase unavailable';return}
+  const {data:{user}}=await db.auth.getUser();if(seq!==loadSequence)return;
+  if(!user){rows.textContent='';return}rows.textContent=t().loading;
+  try{
+   const a=await db.from('tovex_orders').select('id,created_at,status,delivery_address').eq('buyer_id',user.id).order('created_at',{ascending:false}).limit(50);
+   if(a.error)throw a.error;if(seq!==loadSequence)return;
+   const orders=a.data||[];if(!orders.length){rows.textContent=t().empty;return}
+   const ids=orders.map(o=>o.id);
+   const [b,c]=await Promise.all([db.from('tovex_order_items').select('order_id,product_name,quantity,unit_price_gel').in('order_id',ids),db.from('tovex_deliveries').select('id,order_id,store_id,method,status').in('order_id',ids)]);
+   if(b.error)throw b.error;if(c.error)throw c.error;if(seq!==loadSequence)return;
+   rows.innerHTML=orders.map(o=>{
+    const products=(b.data||[]).filter(x=>x.order_id===o.id),delivery=(c.data||[]).find(x=>x.order_id===o.id);
+    const total=products.reduce((s,x)=>s+Number(x.unit_price_gel)*Number(x.quantity),0);
+    return '<article style="padding:12px 0;border-top:1px solid #64748b55"><b>#'+safe(o.id.slice(0,8))+'</b> · '+safe(new Date(o.created_at).toLocaleString())+'<div>'+products.map(x=>safe(x.product_name)+' × '+Number(x.quantity)).join(', ')+'</div><strong>'+total.toFixed(2)+' ₾</strong><div>'+t().status+': '+safe(delivery?.status||o.status)+' · '+t().delivery+': '+safe(delivery?.method==='seller'?t().seller:delivery?.method==='tovex'?'TOVEX':'—')+'</div>'+(delivery?'<button type="button" class="tovex-track-btn" data-order-id="'+safe(o.id)+'" data-delivery-id="'+safe(delivery.id)+'">'+t().track+'</button><div class="tovex-track-panel" hidden><div class="tovex-track-msg" role="status"></div><div class="tovex-track-map"></div></div>':'<p class="tovex-track-msg">'+t().noDelivery+'</p>')+'</article>'
+   }).join('');
+  }catch(e){if(seq===loadSequence)rows.textContent=t().error+e.message}
+ }
+ rows.addEventListener('click',e=>{const btn=e.target.closest('.tovex-track-btn');if(btn)openTracking(btn)});
  document.getElementById('tovexBuyerRefresh').onclick=load;
- window.addEventListener('mm-auth-changed',load);document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(load,0)));setTimeout(load,1500);
+ window.addEventListener('mm-auth-changed',load);
+ document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(load,0)));
+ document.getElementById('tovexOrdersClose')?.addEventListener('click',stopTracking);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&active)updatePosition()});
+ setTimeout(load,1500);
 })();</script></body>
 </html>
