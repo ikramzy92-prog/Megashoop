@@ -516,7 +516,7 @@ $('mmAccountLogout').addEventListener('click',async()=>{const {error}=await db.a
 async function refreshHeaderAvatar(){const u=user;const path=u?.user_metadata?.avatar_path;if(!path){window.mmHeaderAvatarUrl=null;draw();return;}try{const {data}=await db.storage.from('buyer-avatars').createSignedUrl(path,1800);if(u?.id===user?.id){window.mmHeaderAvatarUrl=data?.signedUrl||null;draw();}}catch(e){console.warn('Avatar',e)}}
 window.addEventListener('mm-auth-changed',()=>{if(user?.id!==window.mmAvatarLoadedFor){window.mmAvatarLoadedFor=user?.id;refreshHeaderAvatar()}});
 window.addEventListener('mm-profile-saved',()=>refreshHeaderAvatar());
-db.auth.onAuthStateChange((_event,session)=>{user=session?.user||null;draw();setTimeout(mmCheckSellerStore,0);if(session?.user&&session.user.app_metadata?.provider==='google'&&!session.user.phone_confirmed_at){setTimeout(()=>{document.getElementById('mmPhoneVerifyOverlay').hidden=false;},400);}});
+db.auth.onAuthStateChange((_event,session)=>{user=session?.user||null;draw();setTimeout(mmCheckSellerStore,0);/* Phone verification opens only on an explicit account action, never during session restoration. */});
 db.auth.getSession().then(({data})=>{user=data.session?.user||null;draw();mmCheckSellerStore()}).catch(()=>draw());
 const observer=new MutationObserver(()=>draw());observer.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});draw();
 </script>
