@@ -4,8 +4,8 @@
 <body><main class="wrap"><header><div class="logo">TOVEX <span style="color:#fff;font-size:13px;letter-spacing:0">COURIER</span></div><span class="tag" id="tag">Вход</span></header><h1>Кабинет курьера</h1><p class="muted">Безопасный доступ к доставкам TOVEX</p>
 <section class="card" id="loginCard"><h2>Вход курьера</h2><form id="loginForm"><label for="email">Электронная почта</label><input id="email" type="email" autocomplete="username" required placeholder="courier@example.com"><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" required placeholder="Ваш пароль"><button class="btn" type="submit" id="loginBtn">Войти</button></form><div id="loginMessage" class="message" role="status" aria-live="polite"></div></section>
 <section class="card hidden" id="profileCard"><h2>Мой профиль</h2><div class="line"><span class="muted">Курьер</span><strong id="name"></strong></div><div class="line"><span class="muted">Тип</span><strong id="type"></strong></div><div class="line"><span class="muted">Статус</span><strong class="status">Активен</strong></div><button class="btn secondary" id="logoutBtn">Выйти</button></section>
-<section class="card hidden" id="ordersCard"><h2>Мои доставки</h2><p class="muted">Вход работает. Отображение реальных заказов подключим после проверки прав доступа к назначенным доставкам.</p><div class="notice">Пока реальные адреса и телефоны покупателей не загружаются. Это защищает данные клиентов.</div></section>
-<section class="card"><h2>GPS-отслеживание</h2><p class="muted">GPS будет доступен после подключения назначения заказов и защищённого сохранения координат.</p><div class="notice">Сейчас геолокация не запрашивается и не передаётся.</div><button class="btn secondary" disabled>Включить GPS — скоро</button></section>
+<section class="card hidden" id="ordersCard"><h2>Мои доставки</h2><p class="muted">Здесь отображаются только доставки, назначенные вашему аккаунту.</p><button class="btn secondary" id="refreshBtn" type="button">Обновить доставки</button><div id="deliveryList" class="message" aria-live="polite">Загрузка...</div></section>
+<section class="card hidden" id="gpsCard"><h2>GPS-отслеживание</h2><p class="muted">Выберите назначенную доставку. Местоположение передаётся только после нажатия кнопки.</p><label for="deliverySelect">Доставка для отслеживания</label><select id="deliverySelect" style="background:#0b222c;color:white;border:1px solid #49636a;padding:13px;border-radius:12px;width:100%;font-size:16px;margin:8px 0 12px"></select><button class="btn" id="gpsStart" type="button" disabled>Включить GPS</button><button class="btn secondary" id="gpsStop" type="button" disabled>Остановить GPS</button><div id="gpsMessage" class="message" role="status" aria-live="polite">GPS выключен.</div><div class="notice">Для работы нужен HTTPS и разрешение геолокации. На iPhone при блокировке экрана Safari может перестать обновлять координаты. Не оставляйте GPS включённым после доставки.</div></section>
 <p class="footer">TOVEX · Кабинет курьера · Авторизация Supabase</p></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
@@ -15,9 +15,11 @@ const SUPABASE_URL = 'https://mrslybtwzfcovpsyuexf.supabase.co';
 const SUPABASE_PUBLIC_KEY = 'sb_publishable_AnpUjix60jDfpZDGlcO6vQ_XIyxcpDd';
 const $=id=>document.getElementById(id);
 let client=null;
+let activeUser=null, deliveries=[], gpsWatchId=null, gpsDeliveryId=null, gpsBusy=false, lastSent=0;
+const $gps=()=>navigator.geolocation;
 function showError(message){$('loginMessage').textContent=message;$('loginMessage').className='message error'}
-function loginView(){ $('loginCard').classList.remove('hidden');$('profileCard').classList.add('hidden');$('ordersCard').classList.add('hidden');$('tag').textContent='Вход'; }
-function profileView(profile){$('name').textContent=profile.full_name||'Курьер';$('type').textContent=profile.courier_type==='seller'?'Курьер продавца':'Курьер TOVEX';$('loginCard').classList.add('hidden');$('profileCard').classList.remove('hidden');$('ordersCard').classList.remove('hidden');$('tag').textContent='Активен';$('password').value='';}
+function loginView(){ stopGPS();activeUser=null;$('gpsCard').classList.add('hidden');  $('loginCard').classList.remove('hidden');$('profileCard').classList.add('hidden');$('ordersCard').classList.add('hidden');$('tag').textContent='Вход'; }
+function profileView(profile){$('name').textContent=profile.full_name||'Курьер';$('type').textContent=profile.courier_type==='seller'?'Курьер продавца':'Курьер TOVEX';$('loginCard').classList.add('hidden');$('profileCard').classList.remove('hidden');$('ordersCard').classList.remove('hidden');$('gpsCard').classList.remove('hidden');$('tag').textContent='Активен';$('password').value='';}
 async function checkSession(){
   if(!client)return;
   const {data:{user},error:authError}=await client.auth.getUser();
@@ -25,7 +27,7 @@ async function checkSession(){
   const {data:profile,error}=await client.from('tovex_couriers').select('id,full_name,courier_type,is_active').eq('id',user.id).maybeSingle();
   if(error){loginView();showError('Не удалось проверить права курьера: '+error.message);return;}
   if(!profile||profile.is_active!==true){await client.auth.signOut();loginView();showError('Для этого аккаунта нет активного профиля курьера. Обратитесь к администратору TOVEX.');return;}
-  profileView(profile);
+  activeUser=user.id;profileView(profile);await loadDeliveries();
 }
 if(!window.supabase){showError('Не загрузилась библиотека Supabase. Проверьте интернет и обновите страницу.');}
 else if(SUPABASE_URL.startsWith('PASTE_')||SUPABASE_PUBLIC_KEY.startsWith('PASTE_')){showError('Сначала укажите Project URL и publishable/anon key Supabase в файле courier/index.html.');}
@@ -33,6 +35,66 @@ else {
   try {client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLIC_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});checkSession();}
   catch(e){showError('Ошибка настроек Supabase: '+e.message)}
 }
+
+function gpsInfo(text, error=false){$('gpsMessage').textContent=text;$('gpsMessage').className='message '+(error?'error':'ok');}
+function stopGPS(){
+ if(gpsWatchId!==null && navigator.geolocation)navigator.geolocation.clearWatch(gpsWatchId);
+ gpsWatchId=null;gpsDeliveryId=null;lastSent=0;
+ $('gpsStop').disabled=true;$('gpsStart').disabled=!deliveries.length;
+ if($('gpsMessage'))gpsInfo('GPS выключен.');
+}
+async function loadDeliveries(){
+ if(!client||!activeUser)return;
+ const list=$('deliveryList');list.textContent='Загружаем назначенные доставки...';
+ const {data,error}=await client.from('tovex_deliveries')
+  .select('id,order_id,store_id,method,status,updated_at,gps_updated_at')
+  .eq('courier_id',activeUser).order('updated_at',{ascending:false}).limit(50);
+ if(error){list.textContent='Ошибка загрузки: '+error.message;return;}
+ deliveries=data||[];
+ const select=$('deliverySelect'),previous=select.value;
+ select.replaceChildren();
+ if(!deliveries.length){list.textContent='Назначенных доставок пока нет. Администратор или продавец должен назначить заказ на вас.';select.add(new Option('Нет назначенных доставок',''));$('gpsStart').disabled=true;return;}
+ list.replaceChildren();
+ deliveries.forEach(d=>{
+  const item=document.createElement('div');item.className='card';item.style.margin='10px 0';item.style.padding='12px';
+  const label=document.createElement('strong');label.textContent='Доставка '+d.id.slice(0,8)+'…';
+  const detail=document.createElement('div');detail.className='muted';detail.style.marginTop='6px';
+  detail.textContent='Заказ: '+d.order_id.slice(0,8)+'… · Статус: '+d.status+' · Магазин: '+d.store_id;
+  item.append(label,detail);list.append(item);
+  if(!['delivered','cancelled'].includes((d.status||'').toLowerCase()))select.add(new Option('Доставка '+d.id.slice(0,8)+'… · '+d.status,d.id));
+ });
+ if(previous && [...select.options].some(o=>o.value===previous))select.value=previous;
+ $('gpsStart').disabled=gpsWatchId!==null||!select.value;
+ if(!select.value && gpsWatchId===null)gpsInfo('Нет активных доставок для GPS.');
+}
+async function sendPosition(pos){
+ if(!client||!gpsDeliveryId||gpsBusy)return;
+ const now=Date.now();if(now-lastSent<10000)return;
+ const lat=pos.coords.latitude,lon=pos.coords.longitude;
+ if(!Number.isFinite(lat)||!Number.isFinite(lon))return;
+ gpsBusy=true;
+ try{
+  const {data,error}=await client.rpc('tovex_update_courier_gps',{p_delivery_id:gpsDeliveryId,p_latitude:lat,p_longitude:lon});
+  if(error)throw error;
+  if(data!==true){gpsInfo('Доставка не разрешает передачу GPS (проверьте назначение и статус).',true);stopGPS();return;}
+  lastSent=Date.now();gpsInfo('Координаты переданы · '+new Date().toLocaleTimeString('ru-RU')+' · точность около '+Math.round(pos.coords.accuracy)+' м');
+ }catch(e){gpsInfo('Ошибка отправки GPS: '+e.message,true)}finally{gpsBusy=false}
+}
+$('refreshBtn').addEventListener('click',loadDeliveries);
+$('deliverySelect').addEventListener('change',()=>{$('gpsStart').disabled=!$('deliverySelect').value||gpsWatchId!==null});
+$('gpsStart').addEventListener('click',()=>{
+ if(!activeUser||!$('deliverySelect').value)return;
+ if(!window.isSecureContext||!navigator.geolocation){gpsInfo('Для GPS откройте сайт через HTTPS в браузере с поддержкой геолокации.',true);return;}
+ gpsDeliveryId=$('deliverySelect').value;gpsInfo('Запрашиваем разрешение на геолокацию...');
+ $('gpsStart').disabled=true;$('gpsStop').disabled=false;$('deliverySelect').disabled=true;
+ gpsWatchId=navigator.geolocation.watchPosition(sendPosition,e=>{
+  gpsInfo('Геолокация недоступна: '+e.message,true);
+  if(e.code===1)stopGPS();
+ },{enableHighAccuracy:true,maximumAge:5000,timeout:20000});
+});
+$('gpsStop').addEventListener('click',()=>{stopGPS();$('deliverySelect').disabled=false;});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&gpsWatchId!==null)gpsInfo('Страница в фоне: обновления GPS могут остановиться.');});
+
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!client)return;const btn=$('loginBtn');btn.disabled=true;showError('Проверяем данные...');try{const {error}=await client.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;$('loginMessage').textContent='';await checkSession();}catch(err){showError('Не удалось войти: '+err.message)}finally{btn.disabled=false}});
-$('logoutBtn').addEventListener('click',async()=>{if(client)await client.auth.signOut();loginView();$('loginMessage').textContent='';});
+$('logoutBtn').addEventListener('click',async()=>{stopGPS();$('deliverySelect').disabled=false;if(client)await client.auth.signOut();loginView();$('loginMessage').textContent='';});
 </script></body></html>
