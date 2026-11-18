@@ -24,7 +24,7 @@
 <section class="card" id="loginCard"><h2>Вход курьера</h2><form id="loginForm"><label for="email">Электронная почта</label><input id="email" type="email" autocomplete="username" required placeholder="courier@example.com"><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" required placeholder="Ваш пароль"><button class="btn" type="submit" id="loginBtn">Войти</button></form><button class="btnlink" id="showSignup" type="button">Нет аккаунта? Зарегистрироваться</button><div id="loginMessage" class="message" role="status" aria-live="polite"></div></section>
 <section class="card hidden" id="signupCard"><h2>Регистрация курьера</h2><p class="hint">Создайте аккаунт. Подтвердите email, затем дождитесь активации профиля курьера администратором TOVEX. Регистрация сама по себе не даёт права выполнять доставки.</p><form id="signupForm"><label>Имя и фамилия<input id="signupName" required maxlength="120" autocomplete="name"></label><label>Email<input id="signupEmail" type="email" required autocomplete="email"></label><label>Телефон Грузии (+995)<input id="signupPhone" type="tel" required placeholder="+995 5XX XXX XXX" autocomplete="tel"></label><label>Пароль (от 8 символов)<input id="signupPassword" type="password" required minlength="8" autocomplete="new-password"></label><button class="btn" type="submit" id="signupBtn">Зарегистрироваться</button></form><div id="signupMessage" class="message" role="status"></div><button class="btn secondary" id="backLogin" type="button">Вернуться ко входу</button></section>
 <section class="card hidden" id="profileCard"><h2>Мой профиль</h2><div class="line"><span class="muted">Курьер</span><strong id="name"></strong></div><div class="line"><span class="muted">Тип</span><strong id="type"></strong></div><div class="line"><span class="muted">Статус</span><strong class="status">Активен</strong></div><div class="line"><span class="muted">Работодатель</span><strong id="employer">—</strong></div><div class="notice" id="employmentNotice">Смена магазина возможна только после подтверждённого увольнения. Выход из аккаунта не увольняет.</div><button class="btn secondary" id="logoutBtn">Выйти</button></section>
-<section class="card hidden" id="vehicleCard"><h2>Автомобиль и документы</h2><p class="hint">Фотографии сохраняются в закрытых хранилищах. Не загружайте настоящие документы до проверки правил доступа.</p><form id="vehicleForm"><label>Тип транспорта<select id="vehicleType"><option value="car">Автомобиль</option><option value="motorcycle">Мотоцикл</option><option value="scooter">Скутер</option><option value="bicycle">Велосипед</option></select></label><label>Государственный номер<input id="vehiclePlate" maxlength="30" placeholder="Номер автомобиля"></label><div class="photo-fields-group"><label class="filefield">Фото автомобиля спереди<span class="photo-select">Выбрать фото</span><input type="file" id="vehicleFront" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Фото автомобиля сзади<span class="photo-select">Выбрать фото</span><input type="file" id="vehicleBack" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Фото автомобиля сбоку<span class="photo-select">Выбрать фото</span><input type="file" id="vehicleSide" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Техпаспорт автомобиля — лицевая сторона<span class="photo-select">Выбрать фото</span><input type="file" id="registrationFront" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Техпаспорт автомобиля — обратная сторона<span class="photo-select">Выбрать фото</span><input type="file" id="registrationBack" accept="image/jpeg,image/png,image/webp" required></label></div><button class="btn" id="uploadBtn" type="submit">Загрузить фотографии</button></form><div class="message" id="vehicleMessage" role="status"></div></section>
+<section class="card hidden" id="vehicleCard"><h2>Автомобиль и документы</h2><p class="hint">Фотографии сохраняются в закрытых хранилищах. Не загружайте настоящие документы до проверки правил доступа.</p><div id="vehicleSaved" class="hidden" role="status" style="padding:14px;border:1px solid #388b74;border-radius:12px;background:#123e36;margin:12px 0"><strong>✓ Фотографии сохранены</strong><p class="hint">Документы загружены. Проверка администратором ещё не подтверждена.</p><button type="button" id="replaceVehiclePhotos" class="btn secondary">Обновить фотографии</button></div><form id="vehicleForm"><label>Тип транспорта<select id="vehicleType"><option value="car">Автомобиль</option><option value="motorcycle">Мотоцикл</option><option value="scooter">Скутер</option><option value="bicycle">Велосипед</option></select></label><label>Государственный номер<input id="vehiclePlate" maxlength="30" placeholder="Номер автомобиля"></label><div class="photo-fields-group"><label class="filefield">Фото автомобиля спереди<span class="photo-select">Выбрать фото</span><input type="file" id="vehicleFront" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Фото автомобиля сзади<span class="photo-select">Выбрать фото</span><input type="file" id="vehicleBack" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Фото автомобиля сбоку<span class="photo-select">Выбрать фото</span><input type="file" id="vehicleSide" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Техпаспорт автомобиля — лицевая сторона<span class="photo-select">Выбрать фото</span><input type="file" id="registrationFront" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Техпаспорт автомобиля — обратная сторона<span class="photo-select">Выбрать фото</span><input type="file" id="registrationBack" accept="image/jpeg,image/png,image/webp" required></label></div><button class="btn" id="uploadBtn" type="submit">Загрузить фотографии</button></form><div class="message" id="vehicleMessage" role="status"></div></section>
 <section class="card hidden" id="ordersCard"><h2>Мои доставки</h2><p class="muted">Здесь отображаются только доставки, назначенные вашему аккаунту.</p><button class="btn secondary" id="refreshBtn" type="button">Обновить доставки</button><div id="deliveryList" class="message" aria-live="polite">Загрузка...</div></section>
 <section class="card hidden" id="gpsCard"><h2>GPS-отслеживание</h2><p class="muted">Выберите назначенную доставку. Местоположение передаётся только после нажатия кнопки.</p><label for="deliverySelect">Доставка для отслеживания</label><select id="deliverySelect" style="background:#0b222c;color:white;border:1px solid #49636a;padding:13px;border-radius:12px;width:100%;font-size:16px;margin:8px 0 12px"></select><button class="btn" id="gpsStart" type="button" disabled>Включить GPS</button><button class="btn secondary" id="gpsStop" type="button" disabled>Остановить GPS</button><div id="gpsMessage" class="message" role="status" aria-live="polite">GPS выключен.</div><div class="notice">Для работы нужен HTTPS и разрешение геолокации. На iPhone при блокировке экрана Safari может перестать обновлять координаты. Не оставляйте GPS включённым после доставки.</div></section>
 <p class="footer">TOVEX · Кабинет курьера · Авторизация Supabase</p></main>
@@ -55,6 +55,7 @@ async function checkSession(){
    }else{
      $('employer').textContent=profile.courier_type==='tovex'?'TOVEX':'Не назначен';
    }
+   await checkVehiclePhotos();
    await loadDeliveries();
 }
 if(!window.supabase){showError('Не загрузилась библиотека Supabase. Проверьте интернет и обновите страницу.');}
@@ -132,7 +133,69 @@ for(const [fieldId] of courierUploadFields){
   info.append(state);preview.classList.remove('hidden');
  });
 }
-$('vehicleForm').addEventListener('submit',async e=>{e.preventDefault();if(!client||!activeUser)return;const btn=$('uploadBtn'),msg=$('vehicleMessage');btn.disabled=true;try{const files=courierUploadFields.map(([id,bucket,kind])=>({file:$(id).files[0],bucket,kind}));if(files.some(x=>!x.file))throw Error('Выберите все пять фотографий.');for(const x of files){if(x.file.size>10*1024*1024)throw Error('Размер каждого файла не должен превышать 10 МБ.');if(!['image/jpeg','image/png','image/webp'].includes(x.file.type))throw Error('Разрешены только JPG, PNG и WebP.');}const plate=$('vehiclePlate').value.trim();if(!plate)throw Error('Укажите номер транспорта.');const {error:profileError}=await client.from('tovex_couriers').update({vehicle_type:$('vehicleType').value,vehicle_plate:plate}).eq('id',activeUser);if(profileError)throw profileError;for(const x of files){const ext=x.file.type==='image/png'?'png':x.file.type==='image/webp'?'webp':'jpg';const path=activeUser+'/'+x.kind+'-'+crypto.randomUUID()+'.'+ext;const {error}=await client.storage.from(x.bucket).upload(path,x.file,{contentType:x.file.type,upsert:false});if(error)throw Error(x.kind+': '+error.message)}msg.textContent='Пять фотографий загружены. Проверка документов администратором ещё не выполнена.';msg.className='message ok';for(const [fieldId] of courierUploadFields){const preview=$(fieldId+'Preview');if(preview&&!preview.classList.contains('hidden')){preview.classList.add('uploaded');const state=preview.querySelector('strong');if(state)state.textContent='✓ Загружено';}}}catch(err){msg.textContent='Не удалось завершить загрузку: '+err.message+'. Некоторые файлы могли сохраниться — проверьте Storage перед повтором.';msg.className='message error'}finally{btn.disabled=false}});
+// Verify the actual private Storage objects on each login, not a browser-local flag.
+const vehicleKinds=courierUploadFields.map(([id,bucket,kind])=>({id,bucket,kind}));
+let storedVehicleKinds=new Set();
+let vehiclePhotoRefresh=0;
+async function checkVehiclePhotos(){
+ if(!client||!activeUser)return;
+ const myRefresh=++vehiclePhotoRefresh, msg=$('vehicleMessage');
+ msg.textContent='Проверяем ранее загруженные фотографии…';msg.className='message';
+ const found=new Set();
+ try{
+  for(const bucket of [...new Set(vehicleKinds.map(x=>x.bucket))]){
+   const {data,error}=await client.storage.from(bucket).list(activeUser,{limit:100,sortBy:{column:'created_at',order:'desc'}});
+   if(error)throw Error(bucket+': '+error.message);
+   for(const entry of data||[]){
+    for(const x of vehicleKinds){if(x.bucket===bucket&&entry.name.startsWith(x.kind+'-'))found.add(x.id)}
+   }
+  }
+  if(myRefresh!==vehiclePhotoRefresh)return;
+  storedVehicleKinds=found;
+  const complete=vehicleKinds.every(x=>found.has(x.id));
+  $('vehicleSaved').classList.toggle('hidden',!complete);
+  $('vehicleForm').classList.toggle('hidden',complete);
+  for(const x of vehicleKinds){
+   const field=$(x.id).closest('.filefield');
+   field.classList.toggle('hidden',found.has(x.id));
+   $(x.id).required=!found.has(x.id);
+  }
+  if(complete){msg.textContent='Все пять фотографий найдены в закрытом хранилище. Статус проверки документов уточняется у администратора.';msg.className='message ok'}
+  else {msg.textContent=found.size?'Сохранено '+found.size+' из 5 фотографий. Загрузите только недостающие.':'Фотографии пока не найдены. Загрузите пять фотографий.';msg.className='message'}
+ }catch(err){
+  if(myRefresh!==vehiclePhotoRefresh)return;
+  // Do not claim the files are absent when Storage access is denied.
+  $('vehicleSaved').classList.add('hidden');$('vehicleForm').classList.add('hidden');
+  msg.textContent='Не удалось проверить сохранённые фотографии: '+err.message+'. Проверьте права доступа к Storage (list для собственной папки).';msg.className='message error';
+ }
+}
+$('replaceVehiclePhotos').addEventListener('click',()=>{
+ storedVehicleKinds.clear();$('vehicleSaved').classList.add('hidden');$('vehicleForm').classList.remove('hidden');
+ for(const x of vehicleKinds){$(x.id).closest('.filefield').classList.remove('hidden');$(x.id).required=true;}
+ $('vehicleMessage').textContent='Вы можете повторно загрузить все фотографии. Старые файлы останутся в Storage до удаления администратором.';
+});
+$('vehicleForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!client||!activeUser)return;
+ const btn=$('uploadBtn'),msg=$('vehicleMessage');btn.disabled=true;
+ try{
+  const pending=vehicleKinds.filter(x=>!storedVehicleKinds.has(x.id));
+  const files=pending.map(x=>({...x,file:$(x.id).files[0]}));
+  if(files.some(x=>!x.file))throw Error('Выберите все недостающие фотографии.');
+  for(const x of files){if(x.file.size>10*1024*1024)throw Error('Размер каждого файла не должен превышать 10 МБ.');if(!['image/jpeg','image/png','image/webp'].includes(x.file.type))throw Error('Разрешены только JPG, PNG и WebP.');}
+  const plate=$('vehiclePlate').value.trim();
+  if(!plate)throw Error('Укажите номер транспорта.');
+  const {error:profileError}=await client.from('tovex_couriers').update({vehicle_type:$('vehicleType').value,vehicle_plate:plate}).eq('id',activeUser);
+  if(profileError)throw profileError;
+  for(const x of files){
+   const ext=x.file.type==='image/png'?'png':x.file.type==='image/webp'?'webp':'jpg';
+   const path=activeUser+'/'+x.kind+'-'+crypto.randomUUID()+'.'+ext;
+   const {error}=await client.storage.from(x.bucket).upload(path,x.file,{contentType:x.file.type,upsert:false});
+   if(error)throw Error(x.kind+': '+error.message);
+  }
+  await checkVehiclePhotos();
+ }catch(err){msg.textContent='Не удалось завершить загрузку: '+err.message+'. Некоторые файлы могли сохраниться — повторно проверьте страницу.';msg.className='message error'}
+ finally{btn.disabled=false}
+});
 $('refreshBtn').addEventListener('click',loadDeliveries);
 $('deliverySelect').addEventListener('change',()=>{$('gpsStart').disabled=!$('deliverySelect').value||gpsWatchId!==null});
 $('gpsStart').addEventListener('click',()=>{
