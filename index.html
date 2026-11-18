@@ -365,7 +365,7 @@ footer {background:#050d1e!important;border-top-color:#273b5c!important}
 </style>
 <style id="tovex-cart-rise-shake">
 /* Cart drawer rises during product flight, then gently rocks at delivery. */
-#cart.tovex-cart-rise{animation:tovexCartRise 1.25s cubic-bezier(.2,.85,.2,1) both!important;transform-origin:bottom right}
+#cart.tovex-cart-rise{animation:tovexCartRise 1.65s cubic-bezier(.2,.85,.2,1) both!important;transform-origin:bottom right}
 @keyframes tovexCartRise{0%{transform:translateY(100%);opacity:.45}65%{transform:translateY(-12px);opacity:1}100%{transform:translateY(0);opacity:1}}
 #cart.tovex-cart-shake{animation:tovexCartShake .75s ease-in-out!important;transform-origin:bottom right}
 @keyframes tovexCartShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-1.5deg)}40%{transform:rotate(1.4deg)}60%{transform:rotate(-.8deg)}80%{transform:rotate(.4deg)}}
@@ -487,53 +487,63 @@ function renderProducts(){const box=$('products');box.replaceChildren();const qu
 function animateToCart(source){
  const mobile=window.matchMedia('(max-width: 720px)').matches;
  const mobileTarget=document.querySelector('#tovexMobileNav button[data-go="cart"]');
- const target=(mobile&&mobileTarget)?mobileTarget:$('cartToggle');
+ const target=(mobile&&mobileTarget)?mobileTarget:document.getElementById('cartToggle');
  if(!source||!target)return;
- const bump=()=>{
-  target.classList.remove(mobile?'tovex-mobile-cart-bump':'cart-bump');
-  void target.offsetWidth;
-  target.classList.add(mobile?'tovex-mobile-cart-bump':'cart-bump');
- };
- if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-  if(mobile){bump();}else{window.mmCartOpen?.();}
-  return;
- }
- const a=source.getBoundingClientRect(),b=target.getBoundingClientRect();
- if(a.width===0||a.height===0||b.width===0)return;
- const w=Math.min(a.width,mobile?78:110),h=Math.min(a.height,mobile?78:100);
- const x=a.left+a.width/2-w/2,y=a.top+a.height/2-h/2;
- const flyer=source.cloneNode(false);flyer.removeAttribute('id');flyer.className='fly-cart-item';
- Object.assign(flyer.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px',zIndex:'210000'});
- document.body.appendChild(flyer);
- const dx=b.left+b.width/2-(x+w/2),dy=b.top+b.height/2-(y+h/2);
  const drawer=document.getElementById('cart');
+ const bump=()=>{
+  const klass=mobile?'tovex-mobile-cart-bump':'cart-bump';
+  target.classList.remove(klass);
+  void target.offsetWidth;
+  target.classList.add(klass);
+ };
  const openDrawer=()=>{
   if(typeof window.mmCartOpen==='function')window.mmCartOpen();
   if(drawer){
-   drawer.classList.remove('tovex-cart-rise');void drawer.offsetWidth;
+   drawer.classList.remove('tovex-cart-rise','tovex-cart-shake');
+   void drawer.offsetWidth;
    drawer.classList.add('tovex-cart-rise');
-   drawer.addEventListener('animationend',()=>drawer.classList.remove('tovex-cart-rise'),{once:true});
   }
  };
- // On phones, the flying image goes to the visible bottom cart icon.
- // Keep the cart panel closed until delivery so it cannot hide the animation.
- const riseTimer=mobile?null:window.setTimeout(openDrawer,620);
- const anim=flyer.animate([
-  {transform:'translate(0,0) scale(1)',opacity:1,offset:0},
-  {transform:`translate(${dx*.27}px,${dy*.23-65}px) scale(.94)`,opacity:1,offset:.32},
-  {transform:`translate(${dx*.70}px,${dy*.67-35}px) scale(.65)`,opacity:1,offset:.72},
-  {transform:`translate(${dx}px,${dy}px) scale(.13)`,opacity:.15,offset:1}
- ],{duration:mobile?2250:1900,easing:'cubic-bezier(.42,0,.58,1)'});
- anim.onfinish=()=>{
-  flyer.remove();bump();
-  if(!mobile&&drawer){
-   drawer.classList.remove('tovex-cart-shake');void drawer.offsetWidth;
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  openDrawer();bump();return;
+ }
+ const a=source.getBoundingClientRect(),b=target.getBoundingClientRect();
+ if(a.width===0||a.height===0||b.width===0){openDrawer();bump();return;}
+ const w=Math.min(a.width,mobile?82:112),h=Math.min(a.height,mobile?82:105);
+ const x=a.left+a.width/2-w/2,y=a.top+a.height/2-h/2;
+ const flyer=source.cloneNode(false);
+ flyer.removeAttribute('id');flyer.className='fly-cart-item';
+ Object.assign(flyer.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px',zIndex:'210000'});
+ document.body.appendChild(flyer);
+ const dx=b.left+b.width/2-(x+w/2),dy=b.top+b.height/2-(y+h/2);
+ const duration=3200;
+ let finished=false;
+ // Show the drawer while the product is in flight, not before the flight starts.
+ const riseTimer=window.setTimeout(openDrawer,1550);
+ const finish=()=>{
+  if(finished)return;finished=true;
+  window.clearTimeout(riseTimer);
+  flyer.remove();
+  if(drawer?.hidden)openDrawer();
+  bump();
+  if(drawer){
+   drawer.classList.remove('tovex-cart-rise','tovex-cart-shake');
+   void drawer.offsetWidth;
    drawer.classList.add('tovex-cart-shake');
-   drawer.addEventListener('animationend',()=>drawer.classList.remove('tovex-cart-shake'),{once:true});
   }
  };
- anim.oncancel=()=>{if(riseTimer!==null)window.clearTimeout(riseTimer);flyer.remove()};
+ try{
+  const anim=flyer.animate([
+   {transform:'translate(0,0) scale(1)',opacity:1,offset:0},
+   {transform:`translate(${dx*.20}px,${dy*.20-55}px) scale(.98)`,opacity:1,offset:.28},
+   {transform:`translate(${dx*.68}px,${dy*.63-45}px) scale(.73)`,opacity:1,offset:.72},
+   {transform:`translate(${dx}px,${dy}px) scale(.18)`,opacity:.25,offset:1}
+  ],{duration,easing:'cubic-bezier(.42,0,.58,1)'});
+  anim.onfinish=finish;
+  anim.oncancel=finish;
+ }catch(error){finish();}
 }
+
 function addToCart(product){if(window.mmRoleGuard && !window.mmRoleGuard.canBuy()){window.mmRoleGuard.warn();return false;}if(!window.mmBuyerUser){window.mmPendingPurchase=()=>{if(addToCart(product)){const picture=document.querySelector('.card img');if(picture&&typeof animateToCart==='function')animateToCart(picture)}};document.getElementById('mmAccountOpen')?.click();return false;}const id=idOf(product);const existing=cart.find(p=>p.id===id);if((existing?.quantity||0)>=stockOf(product)){alert(t().shortage);return false}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),price:priceOf(product),quantity:1,image:product.image_url||'',stock:stockOf(product)});updateCount();renderCart();return true}
 function renderCart(){const box=$('cartItems');box.replaceChildren();for(const item of cart){const row=document.createElement('div');row.className='cart-row mm-cart-item';const pic=document.createElement('img');pic.className='mm-cart-thumb';pic.alt=item.name;pic.src=item.image||'https://placehold.co/120x120/253144/ffffff?text=Product';pic.onerror=()=>{pic.onerror=null;pic.src='https://placehold.co/120x120/253144/ffffff?text=Product'};const detail=document.createElement('div');detail.className='mm-cart-detail';const label=document.createElement('strong');label.textContent=item.name;const amount=document.createElement('span');amount.textContent=money(item.price*item.quantity);const qty=document.createElement('div');qty.className='mm-cart-qty';const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label','Decrease quantity');minus.onclick=()=>{item.quantity--;if(item.quantity<1)cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};const count=document.createElement('span');count.textContent=String(item.quantity);const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label','Increase quantity');plus.onclick=()=>{if(item.stock&&item.quantity>=item.stock){alert(t().shortage);return}item.quantity++;updateCount();renderCart()};qty.append(minus,count,plus);const remove=document.createElement('button');remove.className='remove';remove.textContent=t().remove;remove.onclick=()=>{cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};detail.append(label,amount,qty,remove);row.append(pic,detail);box.append(row)}$('total').textContent=t().total+' '+money(cart.reduce((s,p)=>s+p.price*p.quantity,0))}
 function updateLanguage(){document.documentElement.lang=lang;$('subtitle').textContent=t().subtitle;const heroText={ka:['ხარისხი ყველა დეტალში','პროფესიონალური ხელსაწყოები','პროდუქციის ნახვა'],ru:['КАЧЕСТВО В КАЖДОЙ ДЕТАЛИ','Профессиональные инструменты','Смотреть товары'],az:['HƏR DETALDA KEYFİYYƏT','Peşəkar alətlər','Məhsullara bax']};$('heroKicker').textContent=heroText[lang][0];$('heroTitle').textContent=heroText[lang][1];$('heroDescription').textContent=t().subtitle;$('heroCta').textContent=heroText[lang][2];$('catalogTitle').textContent=t().catalog;$('search').placeholder=t().search;$('cartTitle').textContent=t().cartTitle;const checkoutButton=$('mmCheckoutJump');if(checkoutButton)checkoutButton.textContent=({ka:'შეკვეთის გაფორმება',ru:'Оформить заказ',az:'Sifarişi rəsmiləşdir'})[lang]||'შეკვეთის გაფორმება';$('checkoutNote').textContent=t().note;$('footer').textContent='© 2026 Modern Market. '+t().footer;$('status').textContent=loading?t().loading:loadError?t().error:t().found+' '+products.length;document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));updateCount();renderProducts();renderCart()}
