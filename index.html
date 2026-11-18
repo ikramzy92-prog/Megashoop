@@ -746,5 +746,28 @@ $('mmPhoneConfirm').onclick=async()=>{const token=$('mmPhoneOtp').value.trim(),n
  translate();
 })();
 </script>
+<script id="tovex-registration-i18n-fix">
+(()=>{'use strict';
+const tr={
+ka:{sellerNote:'🪪 გამყიდველის რეგისტრაციის შემდეგ: დაადასტურეთ ტელეფონი +995, შემდეგ გაიარეთ პირადობის მოწმობისა და სახის შემოწმება. გაყიდვები ხელმისაწვდომი იქნება მხოლოდ დამტკიცების შემდეგ.',google:'Google-ით გაგრძელება',googleNote:'შესვლის შემდეგ საჭიროა +995 ნომრის დადასტურება.',phoneTitle:'ტელეფონის დადასტურება',phoneInfo:'შეკვეთებზე წვდომისთვის დაადასტურეთ ქართული ნომერი SMS-კოდით.',phoneLabel:'ტელეფონი +995',phoneSend:'SMS-კოდის გაგზავნა',phoneCode:'SMS-კოდი',phonePlaceholder:'დადასტურების კოდი',phoneConfirm:'ტელეფონის დადასტურება',phoneStatus:'დაადასტურეთ ნომერი SMS-კოდით.',sellerTitle:'🪪 შემდეგი ნაბიჯი — გამყიდველის პირადობის დადასტურება',sellerInfo:'გამყიდველის ანგარიში შექმნილია ან შესვლა შესრულებულია. გაყიდვების დასაწყებად დაადასტურეთ +995 ნომერი და გაიარეთ დოკუმენტისა და სახის შემოწმება.',steps:['დაადასტურეთ ტელეფონის ნომერი SMS-კოდით.','გადაიღეთ დოკუმენტის ორივე მხარე დაცული სერვისის მეშვეობით.','გაიარეთ სახისა და ცოცხალი ადამიანის შემოწმება.','დაელოდეთ განაცხადის დამტკიცებას.'],kycStatus:'დოკუმენტების შემოწმება ჯერ არ არის ჩართული. უსაფრთხოების მიზნით ეს დემოვერსია არ იღებს და არ ინახავს პირადობის მოწმობის ფოტოებს.',sellerPhone:'ტელეფონის +995 დადასტურება',sellerKyc:'დოკუმენტისა და სახის შემოწმება (მალე)'},
+ru:{sellerNote:'🪪 После регистрации продавца: подтверждение телефона +995, проверка удостоверения и лица. Продажи доступны только после одобрения.',google:'Продолжить через Google',googleNote:'После входа потребуется подтверждение номера +995.',phoneTitle:'Подтверждение телефона',phoneInfo:'Для доступа к заказам подтвердите грузинский номер по SMS.',phoneLabel:'Телефон +995',phoneSend:'Отправить SMS-код',phoneCode:'Код из SMS',phonePlaceholder:'Код подтверждения',phoneConfirm:'Подтвердить телефон',phoneStatus:'Подтвердите номер SMS-кодом.',sellerTitle:'🪪 Следующий шаг — подтверждение личности продавца',sellerInfo:'Аккаунт продавца создан или выполнен вход. Чтобы начать продавать, подтвердите телефон +995 и пройдите проверку удостоверения и лица.',steps:['Подтвердите номер телефона по SMS.','Сфотографируйте документ с двух сторон через защищённый сервис.','Пройдите проверку лица и присутствия живого человека.','Дождитесь одобрения заявки.'],kycStatus:'Проверка документов пока не подключена. Для безопасности сайт не принимает и не хранит фотографии удостоверений в этой демоверсии.',sellerPhone:'Подтвердить телефон +995',sellerKyc:'Проверить удостоверение и лицо (скоро)'},
+az:{sellerNote:'🪪 Satıcı qeydiyyatından sonra: +995 telefon nömrəsini təsdiqləyin, şəxsiyyət vəsiqəsi və üz yoxlamasından keçin. Satış yalnız təsdiqdən sonra mümkündür.',google:'Google ilə davam et',googleNote:'Daxil olduqdan sonra +995 nömrəsini təsdiqləmək lazımdır.',phoneTitle:'Telefon nömrəsinin təsdiqi',phoneInfo:'Sifarişlərə baxmaq üçün Gürcüstan nömrəsini SMS ilə təsdiqləyin.',phoneLabel:'Telefon +995',phoneSend:'SMS kodu göndər',phoneCode:'SMS kodu',phonePlaceholder:'Təsdiq kodu',phoneConfirm:'Telefonu təsdiqlə',phoneStatus:'Nömrəni SMS kodu ilə təsdiqləyin.',sellerTitle:'🪪 Növbəti addım — satıcının şəxsiyyətinin təsdiqi',sellerInfo:'Satıcı hesabı yaradılıb və ya giriş edilib. Satışa başlamaq üçün +995 nömrəsini təsdiqləyin, sənəd və üz yoxlamasından keçin.',steps:['Telefon nömrəsini SMS kodu ilə təsdiqləyin.','Təhlükəsiz xidmət vasitəsilə sənədin hər iki tərəfinin şəklini çəkin.','Üz və canlılıq yoxlamasından keçin.','Müraciətin təsdiqini gözləyin.'],kycStatus:'Sənəd yoxlaması hələ qoşulmayıb. Təhlükəsizlik üçün bu demo şəxsiyyət sənədinin fotolarını qəbul etmir və saxlamır.',sellerPhone:'Telefonu +995 təsdiqlə',sellerKyc:'Sənəd və üz yoxlaması (tezliklə)'}};
+const $=id=>document.getElementById(id);
+function apply(){const l=document.documentElement.lang;const d=tr[l]||tr.ka;
+const set=(id,value)=>{const e=$(id);if(e)e.textContent=value;};
+set('tovexSellerSignupNote',d.sellerNote);set('tovexGoogleText',d.google);set('tovexGoogleNote',d.googleNote);
+set('mmPhoneVerifyTitle',d.phoneTitle);set('mmPhoneVerifyInfo',d.phoneInfo);
+const num=$('mmPhoneVerifyNumber');if(num){const label=document.querySelector('label[for="mmPhoneVerifyNumber"]');if(label)label.textContent=d.phoneLabel;}
+set('mmPhoneSend',d.phoneSend);const codeLabel=document.querySelector('label[for="mmPhoneOtp"]');if(codeLabel)codeLabel.textContent=d.phoneCode;
+const otp=$('mmPhoneOtp');if(otp)otp.placeholder=d.phonePlaceholder;set('mmPhoneConfirm',d.phoneConfirm);
+const status=$('mmPhoneVerifyStatus');if(status&&(!status.dataset.tovexTouched||Object.values(tr).some(x=>x.phoneStatus===status.textContent.trim())))status.textContent=d.phoneStatus;
+set('tovexSellerTitle',d.sellerTitle);const dlg=$('tovexSellerVerification');if(dlg){const section=dlg.querySelector('section');if(section){const info=section.querySelector(':scope > p:not([id])');if(info)info.textContent=d.sellerInfo;section.querySelectorAll('ol li').forEach((li,i)=>{if(d.steps[i])li.textContent=d.steps[i];});}}
+set('tovexKycStatus',d.kycStatus);set('tovexSellerPhoneVerify',d.sellerPhone);set('tovexKycStart',d.sellerKyc);
+}
+document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>queueMicrotask(apply)));
+const observer=new MutationObserver(()=>apply());observer.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+apply();
+})();
+</script>
 </body>
 </html>
