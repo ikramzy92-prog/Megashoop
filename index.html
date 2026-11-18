@@ -971,7 +971,11 @@ document.addEventListener('click', function(event){
   const checkout=event.target.closest('#mmCheckoutJump');
   if(checkout && !window.mmBuyerUser){
     event.preventDefault();event.stopImmediatePropagation();
-    document.getElementById('mmAccountOpen')?.click();
+    if(window.matchMedia('(max-width: 760px)').matches && window.tovexMobileAuthPrompt){
+      window.tovexMobileAuthPrompt();
+    }else{
+      document.getElementById('mmAccountOpen')?.click();
+    }
   }
 }, true);
 </script>
@@ -1122,6 +1126,49 @@ document.addEventListener('DOMContentLoaded',()=>{syncCartInfo();document.queryS
  nav.addEventListener('click',e=>{const btn=e.target.closest('button[data-go]');if(!btn)return;const action=btn.dataset.go;nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===btn));if(action==='home'){window.scrollTo({top:0,behavior:'smooth'})}else if(action==='catalog'){document.getElementById('categoryNav')?.scrollIntoView({behavior:'smooth',block:'start'})}else if(action==='cart'){document.getElementById('cartToggle')?.click()}else if(action==='profile'){const profile=document.getElementById('mmBuyerProfileBtn');if(profile&&!profile.hidden)profile.click();else document.getElementById('mmAccountOpen')?.click()}});
  document.querySelector('.languages')?.addEventListener('click',()=>setTimeout(update,30));
  const toggle=document.getElementById('cartToggle');if(toggle){new MutationObserver(update).observe(toggle,{childList:true,characterData:true,subtree:true})}update();
+})();
+</script>
+
+<style id="tovex-mobile-checkout-google-style">
+#tovexMobileAuthShade[hidden]{display:none!important}
+#tovexMobileAuthShade{position:fixed;inset:0;z-index:200220;background:rgba(2,8,20,.82);display:grid;place-items:center;padding:16px;backdrop-filter:blur(6px)}
+#tovexMobileAuthBox{position:relative;width:min(100%,400px);padding:27px 20px 22px;border:1px solid #315476;border-radius:22px;background:linear-gradient(155deg,#102441,#08172d);box-shadow:0 22px 70px #000b;text-align:center;color:#f4f7ff}
+#tovexMobileAuthBox h2{font-size:21px;margin:8px 22px 12px;line-height:1.25}
+#tovexMobileAuthBox p{font-size:13px;line-height:1.5;color:#bacbe0;margin:0 0 21px}
+#tovexMobileAuthBox button{font:inherit;cursor:pointer}
+#tovexMobileAuthClose{position:absolute;right:12px;top:10px;border:0;background:transparent;color:#d7e4f4;font-size:28px;padding:3px 10px}
+#tovexMobileGoogle,#tovexMobileEmail{width:100%;min-height:50px;border-radius:12px;font-size:14px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:12px}
+#tovexMobileGoogle{border:1px solid #ddd;background:#fff;color:#242424}
+#tovexMobileEmail{border:1px solid #3a9679;background:#0c614f;color:#fff;margin-top:12px}
+#tovexMobileAuthBox .tovex-google-g{font-weight:900;font-size:23px;font-family:Arial,sans-serif;color:#4285f4}
+@media(min-width:761px){#tovexMobileAuthShade{display:none!important}}
+</style>
+<div id="tovexMobileAuthShade" hidden role="presentation"><section id="tovexMobileAuthBox" role="dialog" aria-modal="true" aria-labelledby="tovexMobileAuthTitle">
+<button id="tovexMobileAuthClose" type="button" aria-label="Close">×</button>
+<div style="font-size:25px;color:#f1bd4c;font-weight:900;letter-spacing:1px">TOVEX</div>
+<h2 id="tovexMobileAuthTitle"></h2><p id="tovexMobileAuthDesc"></p>
+<button id="tovexMobileGoogle" type="button"><span class="tovex-google-g">G</span><span id="tovexMobileGoogleLabel"></span></button>
+<button id="tovexMobileEmail" type="button"><span id="tovexMobileEmailLabel"></span></button>
+</section></div>
+<script id="tovex-mobile-checkout-google-js">
+(()=>{'use strict';
+const el=id=>document.getElementById(id),shade=el('tovexMobileAuthShade');
+const translations={
+ ru:['Войдите для оформления заказа','Ваши товары останутся в корзине. После входа вы сможете продолжить покупку.','Продолжить через Google','Войти через электронную почту'],
+ ka:['შედით შეკვეთის გასაფორმებლად','პროდუქტები დარჩება კალათაში. შესვლის შემდეგ გააგრძელებთ შეკვეთას.','Google-ით გაგრძელება','ელფოსტით შესვლა'],
+ az:['Sifarişi rəsmiləşdirmək üçün daxil olun','Məhsullar səbətdə qalacaq. Girişdən sonra sifarişə davam edin.','Google ilə davam et','E-poçt ilə daxil ol']};
+function lang(){return document.documentElement.lang in translations?document.documentElement.lang:'ru'}
+function translate(){const t=translations[lang()];['tovexMobileAuthTitle','tovexMobileAuthDesc','tovexMobileGoogleLabel','tovexMobileEmailLabel'].forEach((id,i)=>el(id).textContent=t[i])}
+function close(){shade.hidden=true}
+window.tovexMobileAuthPrompt=()=>{translate();shade.hidden=false};
+el('tovexMobileAuthClose').addEventListener('click',close);
+shade.addEventListener('click',e=>{if(e.target===shade)close()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!shade.hidden)close()});
+el('tovexMobileGoogle').addEventListener('click',()=>{close();const google=el('tovexGoogleLogin');if(google){google.click()}else{el('mmAccountOpen')?.click()}});
+el('tovexMobileEmail').addEventListener('click',()=>{close();el('mmAccountOpen')?.click()});
+document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(translate,0)));
+window.addEventListener('mm-auth-changed',()=>{if(window.mmBuyerUser)close()});
+translate();
 })();
 </script>
 </body>
