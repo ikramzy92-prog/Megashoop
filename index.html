@@ -223,7 +223,49 @@ section.hero{display:none!important}
 .mm-product-rating{margin:8px 0;color:#f4c66e;font-size:13px}.mm-product-rating button{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer}
 .mm-buyer-close{position:absolute;right:15px;top:10px;background:transparent;border:0;color:white;font-size:27px}
 .mm-buyer-status{color:#f6ce7d;white-space:pre-wrap;margin:12px 0}
-</style><style id="mm-fix-checkout-auth">#mmCheckoutShade[hidden],#mmCheckoutDialog[hidden],#mmPhoneVerifyOverlay[hidden]{display:none!important}#mmCheckoutShade{position:fixed;inset:0;background:#000b;z-index:200250}#mmCheckoutDialog{position:fixed;z-index:200251;top:50%;left:50%;transform:translate(-50%,-50%);width:min(660px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;background:#141a24;border:1px solid #806032;border-radius:14px;padding:20px}#mmCheckoutDialog .mm-checkout{margin:0;border:0;padding:10px}#mmCheckoutClose{position:sticky;top:0;float:right;z-index:3;border:0;background:#30343d;color:white;border-radius:6px;font-size:28px;width:40px;height:40px}#mmPhoneVerifyOverlay{position:fixed;inset:0;background:#000c;z-index:200300;display:grid;place-items:center;padding:12px}#mmPhoneVerifyOverlay .mm-phone-verify-box{position:relative;width:min(440px,100%);max-height:95dvh;overflow:auto;background:#171b23;border:1px solid #806032;border-radius:16px;padding:24px}#mmPhoneVerifyOverlay label{display:block;margin:12px 0 6px}#mmPhoneVerifyOverlay input{width:100%;padding:12px;border-radius:8px;background:#0e131c;border:1px solid #555e6b;color:#fff}#mmPhoneVerifyStatus{color:#f0c56c;white-space:pre-wrap}#mmPhoneSignupFields input{width:100%}@media(max-width:620px){#mmCheckoutDialog{padding:8px}#mmCheckoutDialog .mm-checkout{padding:12px}.mm-auth-dialog{max-height:95dvh;overflow:auto}}</style></head>
+</style><style id="mm-fix-checkout-auth">#mmCheckoutShade[hidden],#mmCheckoutDialog[hidden],#mmPhoneVerifyOverlay[hidden]{display:none!important}#mmCheckoutShade{position:fixed;inset:0;background:#000b;z-index:200250}#mmCheckoutDialog{position:fixed;z-index:200251;top:50%;left:50%;transform:translate(-50%,-50%);width:min(660px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;background:#141a24;border:1px solid #806032;border-radius:14px;padding:20px}#mmCheckoutDialog .mm-checkout{margin:0;border:0;padding:10px}#mmCheckoutClose{position:sticky;top:0;float:right;z-index:3;border:0;background:#30343d;color:white;border-radius:6px;font-size:28px;width:40px;height:40px}#mmPhoneVerifyOverlay{position:fixed;inset:0;background:#000c;z-index:200300;display:grid;place-items:center;padding:12px}#mmPhoneVerifyOverlay .mm-phone-verify-box{position:relative;width:min(440px,100%);max-height:95dvh;overflow:auto;background:#171b23;border:1px solid #806032;border-radius:16px;padding:24px}#mmPhoneVerifyOverlay label{display:block;margin:12px 0 6px}#mmPhoneVerifyOverlay input{width:100%;padding:12px;border-radius:8px;background:#0e131c;border:1px solid #555e6b;color:#fff}#mmPhoneVerifyStatus{color:#f0c56c;white-space:pre-wrap}#mmPhoneSignupFields input{width:100%}@media(max-width:620px){#mmCheckoutDialog{padding:8px}#mmCheckoutDialog .mm-checkout{padding:12px}.mm-auth-dialog{max-height:95dvh;overflow:auto}}</style><style id="tovex-recommendation-cards-2026">
+/* Upgrade existing recommendation block only; keep original site theme. */
+.mm-rec-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.mm-rec-item{display:flex;flex-direction:column;gap:0;padding:0;overflow:hidden;background:linear-gradient(145deg,#141c29,#10151e);border:1px solid #344052;border-radius:13px;cursor:default;min-width:0;box-shadow:0 5px 18px #0005}
+.mm-rec-item:hover{border-color:#d9a749}
+.mm-rec-visual{height:205px;position:relative;background:#141b26;overflow:hidden}
+.mm-rec-item .mm-rec-visual img{display:block;width:100%;height:100%;object-fit:contain;background:#151b24;border-radius:0}
+.mm-rec-discount{position:absolute;left:10px;top:10px;background:#f2c35c;color:#17140e;border-radius:6px;padding:5px 9px;font-weight:900;font-size:12px}
+.mm-rec-item .mm-rec-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-height:39px;margin:10px 12px 5px;font-size:13px;line-height:1.4}
+.mm-rec-rating{margin:0 12px 5px;font-size:12px;color:#aab2bf}.mm-rec-stars{color:#f7bc38;font-weight:800}
+.mm-rec-stock{margin:0 12px 7px;font-size:12px;color:#8fca9e}
+.mm-rec-prices{margin:auto 12px 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.mm-rec-item .mm-rec-price{color:#f6bd4e;font-weight:900;font-size:20px}.mm-rec-prices del{color:#9ba3af;font-size:12px}
+.mm-rec-item .mm-rec-buy{width:calc(100% - 24px);margin:0 12px 12px;padding:11px 7px;font-size:13px;border-radius:7px}
+@media(max-width:1050px){.mm-rec-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:680px){.mm-rec-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mm-rec-visual{height:145px}.mm-rec-item .mm-rec-name{font-size:12px;margin:9px 9px 5px}.mm-rec-rating,.mm-rec-stock{margin-left:9px;margin-right:9px;font-size:11px}.mm-rec-prices{margin-left:9px;margin-right:9px}.mm-rec-item .mm-rec-price{font-size:17px}.mm-rec-item .mm-rec-buy{width:calc(100% - 18px);margin:0 9px 9px;font-size:12px}}
+</style><style id="mm-compact-recommendations-2026">
+/* Compact cards only in the existing recommendations area. */
+.mm-rec-grid{grid-template-columns:repeat(4,minmax(0,220px));gap:12px;justify-content:start}
+.mm-rec-visual{height:145px}
+.mm-rec-item .mm-rec-name{font-size:12px;min-height:34px;margin:8px 10px 4px}
+.mm-rec-rating,.mm-rec-stock{margin-left:10px;margin-right:10px;font-size:11px}
+.mm-rec-prices{margin:6px 10px 9px;gap:7px}
+.mm-rec-item .mm-rec-price{font-size:17px}
+.mm-rec-item .mm-rec-buy{width:calc(100% - 20px);margin:0 10px 10px;padding:9px 6px;font-size:12px}
+.mm-rec-discount{font-size:11px;padding:4px 7px}
+@media(max-width:950px){.mm-rec-grid{grid-template-columns:repeat(3,minmax(0,210px))}}
+@media(max-width:680px){.mm-rec-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.mm-rec-visual{height:120px}.mm-rec-item .mm-rec-name{font-size:11px;min-height:31px}.mm-rec-item .mm-rec-price{font-size:16px}}
+</style>
+<style id="mm-medium-small-recommendations-2026">
+/* Smaller, balanced product cards; no other storefront elements affected. */
+.mm-rec-grid{grid-template-columns:repeat(5,minmax(0,175px));gap:11px;justify-content:start}
+.mm-rec-visual{height:112px}
+.mm-rec-item .mm-rec-name{font-size:11px;min-height:31px;margin:7px 9px 3px}
+.mm-rec-rating,.mm-rec-stock{margin-left:9px;margin-right:9px;font-size:10px}
+.mm-rec-prices{margin:5px 9px 7px;gap:6px}
+.mm-rec-item .mm-rec-price{font-size:16px}
+.mm-rec-item .mm-rec-buy{width:calc(100% - 18px);margin:0 9px 9px;padding:8px 5px;font-size:11px}
+.mm-rec-discount{font-size:10px;padding:3px 6px;top:7px;left:7px}
+@media(max-width:1050px){.mm-rec-grid{grid-template-columns:repeat(4,minmax(0,175px))}}
+@media(max-width:760px){.mm-rec-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.mm-rec-visual{height:105px}}
+@media(max-width:480px){.mm-rec-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.mm-rec-visual{height:108px}}
+</style>
+</head>
 <body>
 <header><div class="wrap">
 <div class="top"><div class="brand"><span class="brand-name">Modern <span>Market</span></span><span aria-label="საქართველოს დროშა — флаг Грузии" class="georgia-flag" role="img"><svg aria-hidden="true" viewbox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect fill="#fff" height="40" width="60"></rect><path d="M0 16h60v8H0zM26 0h8v40h-8z" fill="#d82135"></path><g fill="#d82135"><path d="M12 5h2v4h4v2h-4v4h-2v-4H8V9h4zM46 5h2v4h4v2h-4v4h-2v-4h-4V9h4zM12 25h2v4h4v2h-4v4h-2v-4H8v-2h4zM46 25h2v4h4v2h-4v4h-2v-4h-4v-2h4z"></path></g></svg></span></div><div class="languages"><button data-lang="ka" type="button">🇬🇪 ქართული</button><button data-lang="ru" type="button">🇷🇺 Русский</button><button data-lang="az" type="button">🇦🇿 Azərbaycan</button></div><div class="mm-account" id="mmAccountBar"><button class="mm-primary" id="mmAccountOpen" type="button">👤 შესვლა / რეგისტრაცია</button><img alt="Avatar" hidden="" id="mmHeaderAvatar" style="width:39px;height:39px;object-fit:cover;border-radius:50%;border:2px solid #eabb61"/><span class="mm-account-email" hidden="" id="mmAccountEmail"></span><a aria-label="Seller Back Office" hidden="" href="/backoffice/" id="mmSellerBackoffice" style="display:none">🏪 Back Office</a><button hidden="" id="mmBuyerProfileBtn" type="button">👤 პროფილი / შეკვეთები</button><button hidden="" id="mmAccountLogout" type="button">გასვლა</button></div></div>
@@ -349,6 +391,21 @@ const remember=(type,value)=>{const v=String(value||'').trim().slice(0,120);if(!
 const section=document.createElement('section');section.className='mm-rec';section.setAttribute('aria-label','Recommendations');
 const anchor=document.getElementById('catalog')||document.querySelector('main');if(!anchor)return;anchor.parentNode.insertBefore(section,anchor);
 const safeImg=p=>p.image_url||'https://placehold.co/400x300/253144/ffffff?text=Modern+Market';
+const ratingCache=new Map();let ratingsLoading=false;
+async function fetchRatings(){
+ if(ratingsLoading||!Array.isArray(products)||!products.length)return;
+ ratingsLoading=true;
+ try{
+  const url=SUPABASE_URL+'/rest/v1/mm_product_reviews?select=product_id,rating&limit=10000';
+  const res=await fetch(url,{headers:{apikey:SUPABASE_KEY}});
+  if(!res.ok)return;
+  const rows=await res.json();if(!Array.isArray(rows))return;
+  ratingCache.clear();for(const row of rows){const id=String(row.product_id??'');const value=Number(row.rating);if(!id||!Number.isInteger(value)||value<1||value>5)continue;const x=ratingCache.get(id)||{sum:0,count:0};x.sum+=value;x.count++;ratingCache.set(id,x)}
+  for(const x of ratingCache.values())x.avg=x.sum/x.count;
+  render();
+ }catch(e){}finally{ratingsLoading=false}
+}
+
 function render(){
  const locale=typeof lang!=='undefined'&&dictionary[lang]?lang:'ka',d=dictionary[locale];
  section.replaceChildren();const actions=document.createElement('div');actions.className='mm-rec-actions';const title=document.createElement('h2');title.textContent='✨ '+d.title;const clear=document.createElement('button');clear.type='button';clear.className='mm-rec-clear';clear.textContent=d.clear;clear.hidden=!history.length;clear.onclick=()=>{history=[];try{localStorage.removeItem(KEY)}catch(e){}render()};actions.append(title,clear);section.append(actions);
@@ -357,14 +414,34 @@ function render(){
  const tokens=new Map();for(const h of history){const weight=h.type==='cart'?5:h.type==='view'?3:2;for(const w of words(h.value))tokens.set(w,(tokens.get(w)||0)+weight)}
  const ranked=products.map((p,i)=>{const name=typeof nameOf==='function'?nameOf(p):String(p.name||'');const n=normalize(name);let score=0;for(const [w,weight] of tokens)if(n.includes(w))score+=weight;return {p,i,score}}).filter(x=>!Number.isNaN(x.score));ranked.sort((a,b)=>b.score-a.score||a.i-b.i);
  const list=document.createElement('div');list.className='mm-rec-grid';const picked=(history.length?ranked:ranked.slice(0,4)).slice(0,4);
- for(const {p} of picked){const item=document.createElement('button');item.type='button';item.className='mm-rec-item';const img=document.createElement('img');img.loading='lazy';img.alt='';img.src=safeImg(p);img.onerror=()=>{img.onerror=null;img.src='https://placehold.co/400x300/253144/ffffff?text=Modern+Market'};const name=document.createElement('strong');name.textContent=nameOf(p);const price=document.createElement('span');price.textContent=money(priceOf(p));item.append(img,name,price);item.onclick=()=>{remember('view',nameOf(p));const input=document.getElementById('search');if(input){input.value=nameOf(p);input.dispatchEvent(new Event('input',{bubbles:true}))}document.getElementById('catalog')?.scrollIntoView({behavior:'smooth'})};list.append(item)}section.append(list)
+ for(const {p} of picked){
+  const item=document.createElement('article');item.className='mm-rec-item';
+  const visual=document.createElement('div');visual.className='mm-rec-visual';
+  const img=document.createElement('img');img.loading='lazy';img.alt=nameOf(p);img.src=safeImg(p);img.onerror=()=>{img.onerror=null;img.src='https://placehold.co/400x300/253144/ffffff?text=Modern+Market'};
+  visual.append(img);
+  const current=priceOf(p);
+  const old=Number(p.old_price??p.original_price??p.compare_at_price??p.price_before_discount??0);
+  if(Number.isFinite(old)&&old>current&&current>0){const discount=document.createElement('span');discount.className='mm-rec-discount';discount.textContent='−'+Math.round((1-current/old)*100)+'%';visual.append(discount)}
+  const name=document.createElement('strong');name.className='mm-rec-name';name.textContent=nameOf(p);
+  const rating=document.createElement('div');rating.className='mm-rec-rating';
+  const productId=idOf(p);const data=ratingCache.get(productId);
+  if(data&&data.count){const stars=document.createElement('span');stars.className='mm-rec-stars';stars.textContent='★ '+data.avg.toFixed(1);const count=document.createElement('span');count.textContent=' ('+data.count+')';rating.append(stars,count)}
+  else rating.textContent=({ka:'☆ შეფასებები ჯერ არ არის',ru:'☆ Пока нет оценок',az:'☆ Hələ qiymətləndirmə yoxdur'})[locale];
+  const stock=document.createElement('div');stock.className='mm-rec-stock';stock.textContent=(Number(stockOf(p))>0?'● '+({ka:'მარაგშია: ',ru:'В наличии: ',az:'Stokda: '})[locale]+stockOf(p):({ka:'არ არის მარაგში',ru:'Нет в наличии',az:'Stokda yoxdur'})[locale]);
+  const prices=document.createElement('div');prices.className='mm-rec-prices';const price=document.createElement('span');price.className='mm-rec-price';price.textContent=money(current);prices.append(price);
+  if(Number.isFinite(old)&&old>current&&current>0){const before=document.createElement('del');before.textContent=money(old);prices.append(before)}
+  const buy=document.createElement('button');buy.type='button';buy.className='gold mm-rec-buy';buy.textContent='🛒 '+(Number(stockOf(p))>0?({ka:'კალათაში დამატება',ru:'В корзину',az:'Səbətə əlavə et'})[locale]:({ka:'არ არის მარაგში',ru:'Нет в наличии',az:'Stokda yoxdur'})[locale]);buy.disabled=Number(stockOf(p))<=0;
+  buy.onclick=()=>{remember('cart',nameOf(p));if(typeof addToCart==='function'){const added=addToCart(p);if(added&&typeof animateToCart==='function')animateToCart(img)}else{const input=document.getElementById('search');if(input){input.value=nameOf(p);input.dispatchEvent(new Event('input',{bubbles:true}))}document.getElementById('catalog')?.scrollIntoView({behavior:'smooth'})}};
+  item.append(visual,name,rating,stock,prices,buy);list.append(item)
+ }
+ section.append(list)
 }
 let searchTimer;document.getElementById('search')?.addEventListener('input',e=>{clearTimeout(searchTimer);const term=e.target.value.trim();if(term.length>=3)searchTimer=setTimeout(()=>remember('search',term),650)});
 document.getElementById('products')?.addEventListener('click',e=>{const card=e.target.closest('.card');if(!card)return;const name=card.querySelector('h3')?.textContent;if(name)remember(e.target.closest('.buy')?'cart':'view',name)});
 document.getElementById('products')?.addEventListener('pointerover',e=>{const card=e.target.closest('.card');if(!card||card.dataset.mmViewed)return;card.dataset.mmViewed='1';setTimeout(()=>{if(card.matches(':hover')){const name=card.querySelector('h3')?.textContent;if(name)remember('view',name)}},1800)});
 const previousLoad=typeof loadProducts==='function'?loadProducts:null;
 if(previousLoad){const originalFetch=window.fetch;/* Product updates observed without replacing existing API functions */}
-const observer=new MutationObserver(()=>{if(document.getElementById('products')?.children.length)render()});const grid=document.getElementById('products');if(grid)observer.observe(grid,{childList:true});
+let ratingRequested=false;const observer=new MutationObserver(()=>{if(document.getElementById('products')?.children.length){render();if(!ratingsLoading&&!ratingRequested){ratingRequested=true;fetchRatings()}}});const grid=document.getElementById('products');if(grid)observer.observe(grid,{childList:true});
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(render,0)));
 render();
 })();
