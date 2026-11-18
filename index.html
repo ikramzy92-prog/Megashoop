@@ -293,6 +293,9 @@ section.hero{display:none!important}
  #products .price,.grid > .card .price{font-size:16px}
 }
 </style>
+<style id="mm-rating-actions-2026">
+.mm-rec-rating-action{cursor:pointer;border-radius:5px;padding:4px 0;transition:color .2s}.mm-rec-rating-action:hover,.mm-rec-rating-action:focus-visible{color:#ffd576;text-decoration:underline;outline-offset:3px}.mm-rating-help{color:#d9c7a3;line-height:1.55;padding:12px 14px;background:#25232a;border:1px solid #71542d;border-radius:9px}.mm-rate-go{margin:8px 0 14px;max-width:100%}
+</style>
 </head>
 <body>
 <header><div class="wrap">
@@ -455,6 +458,9 @@ function render(){
   const productId=idOf(p);const data=ratingCache.get(productId);
   if(data&&data.count){const stars=document.createElement('span');stars.className='mm-rec-stars';stars.textContent='★ '+data.avg.toFixed(1);const count=document.createElement('span');count.textContent=' ('+data.count+')';rating.append(stars,count)}
   else rating.textContent=({ka:'☆ შეფასებები ჯერ არ არის',ru:'☆ Пока нет оценок',az:'☆ Hələ qiymətləndirmə yoxdur'})[locale];
+   rating.classList.add('mm-rec-rating-action');rating.setAttribute('role','button');rating.tabIndex=0;rating.setAttribute('aria-label',({ka:'შეფასებები და შეფასების დატოვება',ru:'Отзывы и оценка товара',az:'Rəylər və məhsul qiymətləndirməsi'})[locale]);
+   const showRating=()=>window.mmOpenProductReviews?.(String(productId),nameOf(p));
+   rating.addEventListener('click',showRating);rating.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showRating()}});
   const stock=document.createElement('div');stock.className='mm-rec-stock';stock.textContent=(Number(stockOf(p))>0?'● '+({ka:'მარაგშია: ',ru:'В наличии: ',az:'Stokda: '})[locale]+stockOf(p):({ka:'არ არის მარაგში',ru:'Нет в наличии',az:'Stokda yoxdur'})[locale]);
   const prices=document.createElement('div');prices.className='mm-rec-prices';const price=document.createElement('span');price.className='mm-rec-price';price.textContent=money(current);prices.append(price);
   if(Number.isFinite(old)&&old>current&&current>0){const before=document.createElement('del');before.textContent=money(old);prices.append(before)}
@@ -771,7 +777,7 @@ async function ratings(){
   const box=el('div',undefined,'mm-product-rating');
   box.append(el('span',v.n?'⭐ '+(v.sum/v.n).toFixed(1)+' ('+v.n+')':'☆ '+t().noRating));
   if(v.sold)box.append(el('span',' · '+t().sales+': '+v.sold));
-  const b=el('button',t().ratingText);b.type='button';b.onclick=()=>openReviews(id,name);box.append(' ',b);
+  const b=el('button',t().ratingText+' ★');b.type='button';b.onclick=()=>openReviews(id,name);box.append(' ',b);
   card.querySelector('.info')?.insertBefore(box,card.querySelector('.buy'));
  }
 }
