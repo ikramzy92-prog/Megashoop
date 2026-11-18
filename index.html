@@ -437,6 +437,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 }
 @media(prefers-reduced-motion:reduce){#tovexMobileNav button[data-go="cart"].tovex-mobile-cart-bump{animation:none!important}}
 </style>
+<style id="tovex-category-scroll-fix">
+#catalogTitle{scroll-margin-top:18px!important}
+@media(max-width:700px){#catalogTitle{scroll-margin-top:12px!important}}
+</style>
 </head>
 <body>
 <header><div class="wrap">
@@ -1178,6 +1182,26 @@ el('tovexMobileEmail').addEventListener('click',()=>{close();el('mmAccountOpen')
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(translate,0)));
 window.addEventListener('mm-auth-changed',()=>{if(window.mmBuyerUser)close()});
 translate();
+})();
+</script>
+<script id="tovex-category-scroll-fix-js">
+/* Ensure category taps navigate to the product grid on both mobile and desktop. */
+(function(){
+  function goToProducts(){
+    var target=document.getElementById('catalogTitle');
+    if(!target)return;
+    var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      var top=target.getBoundingClientRect().top+window.pageYOffset-12;
+      window.scrollTo({top:Math.max(0,top),behavior:reduce?'auto':'smooth'});
+    });});
+  }
+  document.addEventListener('click',function(event){
+    var btn=event.target.closest && event.target.closest('[data-category],#allCategories');
+    if(!btn)return;
+    /* Existing category click handlers still select and filter the products. */
+    setTimeout(goToProducts,70);
+  });
 })();
 </script>
 </body>
