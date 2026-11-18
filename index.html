@@ -537,7 +537,52 @@ function animateToCart(source){
 function addToCart(product){if(window.mmRoleGuard && !window.mmRoleGuard.canBuy()){window.mmRoleGuard.warn();return false;}if(!window.mmBuyerUser){window.mmPendingPurchase=()=>{if(addToCart(product)){const picture=document.querySelector('.card img');if(picture&&typeof animateToCart==='function')animateToCart(picture)}};document.getElementById('mmAccountOpen')?.click();return false;}const id=idOf(product);const existing=cart.find(p=>p.id===id);if((existing?.quantity||0)>=stockOf(product)){alert(t().shortage);return false}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),price:priceOf(product),quantity:1,image:product.image_url||'',stock:stockOf(product)});updateCount();renderCart();return true}
 function renderCart(){const box=$('cartItems');box.replaceChildren();for(const item of cart){const row=document.createElement('div');row.className='cart-row mm-cart-item';const pic=document.createElement('img');pic.className='mm-cart-thumb';pic.alt=item.name;pic.src=item.image||'https://placehold.co/120x120/253144/ffffff?text=Product';pic.onerror=()=>{pic.onerror=null;pic.src='https://placehold.co/120x120/253144/ffffff?text=Product'};const detail=document.createElement('div');detail.className='mm-cart-detail';const label=document.createElement('strong');label.textContent=item.name;const amount=document.createElement('span');amount.textContent=money(item.price*item.quantity);const qty=document.createElement('div');qty.className='mm-cart-qty';const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label','Decrease quantity');minus.onclick=()=>{item.quantity--;if(item.quantity<1)cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};const count=document.createElement('span');count.textContent=String(item.quantity);const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label','Increase quantity');plus.onclick=()=>{if(item.stock&&item.quantity>=item.stock){alert(t().shortage);return}item.quantity++;updateCount();renderCart()};qty.append(minus,count,plus);const remove=document.createElement('button');remove.className='remove';remove.textContent=t().remove;remove.onclick=()=>{cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};detail.append(label,amount,qty,remove);row.append(pic,detail);box.append(row)}$('total').textContent=t().total+' '+money(cart.reduce((s,p)=>s+p.price*p.quantity,0))}
 function updateLanguage(){document.documentElement.lang=lang;$('subtitle').textContent=t().subtitle;const heroText={ka:['ხარისხი ყველა დეტალში','პროფესიონალური ხელსაწყოები','პროდუქციის ნახვა'],ru:['КАЧЕСТВО В КАЖДОЙ ДЕТАЛИ','Профессиональные инструменты','Смотреть товары'],az:['HƏR DETALDA KEYFİYYƏT','Peşəkar alətlər','Məhsullara bax']};$('heroKicker').textContent=heroText[lang][0];$('heroTitle').textContent=heroText[lang][1];$('heroDescription').textContent=t().subtitle;$('heroCta').textContent=heroText[lang][2];$('catalogTitle').textContent=t().catalog;$('search').placeholder=t().search;$('cartTitle').textContent=t().cartTitle;const checkoutButton=$('mmCheckoutJump');if(checkoutButton)checkoutButton.textContent=({ka:'შეკვეთის გაფორმება',ru:'Оформить заказ',az:'Sifarişi rəsmiləşdir'})[lang]||'შეკვეთის გაფორმება';$('checkoutNote').textContent=t().note;$('footer').textContent='© 2026 Modern Market. '+t().footer;$('status').textContent=loading?t().loading:loadError?t().error:t().found+' '+products.length;document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));updateCount();renderProducts();renderCart()}
-async function loadProducts(){try{const response=await fetch(SUPABASE_URL+'/rest/v1/products?select=*',{headers:{apikey:SUPABASE_KEY}});if(!response.ok)throw new Error('Supabase HTTP '+response.status);const data=await response.json();if(!Array.isArray(data))throw new Error('Invalid response');products=data;window.mmProductSnapshot=data;loadError=false}catch(error){console.error(error);loadError=true}finally{loading=false;updateLanguage()}}
+async function loadProducts(){
+ try{
+  const headers={apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`};
+  const [catalogResult,sellerResult,storesResult]=await Promise.allSettled([
+   fetch(SUPABASE_URL+'/rest/v1/products?select=*&limit=1000',{headers}),
+   fetch(SUPABASE_URL+'/rest/v1/seller_products?select=*&limit=1000',{headers}),
+   fetch(SUPABASE_URL+'/rest/v1/stores?select=id,status&limit=1000',{headers})
+  ]);
+  async function rows(result,label){
+   if(result.status!=='fulfilled') {console.warn('TOVEX '+label+' unavailable',result.reason);return null}
+   if(!result.value.ok){console.warn('TOVEX '+label+' HTTP '+result.value.status);return null}
+   const data=await result.value.json();return Array.isArray(data)?data:null;
+  }
+  const catalog=await rows(catalogResult,'products');
+  const seller=await rows(sellerResult,'seller_products');
+  const stores=await rows(storesResult,'stores');
+  if(!catalog&&!seller)throw new Error('Neither product catalog is available');
+  // Never publish unapproved seller inventory. RLS may additionally hide rows.
+  const approvedStores=new Set((stores||[]).filter(st=>st.status==='approved').map(st=>String(st.id)));
+  const sellerItems=(seller||[]).filter(p=>
+   approvedStores.has(String(p.store_id)) && p.status==='approved'
+  ).map(p=>({
+   ...p,
+   id:`seller-${p.id}`,
+   seller_product_id:p.id,
+   name:p.name,
+   name_ru:p.name_ru||p.name,
+   name_ka:p.name_ka||p.name,
+   name_az:p.name_az||p.name,
+   price:p.price_gel,
+   quantity:p.stock,
+   unit:p.unit||'шт',
+   image_url:p.image_url,
+   category:p.category,
+   tovex_seller_product:true
+  }));
+  const seen=new Set();
+  products=[...(catalog||[]),...sellerItems].filter(p=>{
+   const id=String(p.id??'');if(id&&seen.has(id))return false;if(id)seen.add(id);return true;
+  });
+  window.mmProductSnapshot=products;
+  loadError=false;
+  console.info('TOVEX catalog:',(catalog||[]).length,'seller approved:',sellerItems.length);
+ }catch(error){console.error(error);loadError=true}
+ finally{loading=false;updateLanguage()}
+}
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>{lang=b.dataset.lang;try{localStorage.setItem('megashoop-language',lang)}catch(e){}updateLanguage()}));
 $('search').addEventListener('input',renderProducts);
 $('cartToggle').addEventListener('click',()=>window.mmCartOpen?.());
