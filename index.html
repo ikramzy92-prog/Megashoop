@@ -862,11 +862,28 @@ function updateJump(){if(jump)jump.textContent=jumpLabels[document.documentEleme
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(updateJump,0)));
 updateJump();
 if(jump)jump.addEventListener('click',()=>{const panel=$('mmCheckoutPanel'),field=$('mmOrderForm')?.querySelector('input[name="customer"]');panel?.scrollIntoView({behavior:'smooth',block:'start'});field?.focus({preventScroll:true})});
-if(form&&status)form.addEventListener('submit',async e=>{e.preventDefault();const d=local();status.replaceChildren();if(typeof cart==='undefined'||!cart.length){status.textContent=d[10];return;}
-const f=new FormData(form),map=String(f.get('maplink')||'').trim();let url;try{url=new URL(map)}catch{}if(!url||url.protocol!=='https:'||!((url.hostname==='maps.app.goo.gl')||(url.hostname==='goo.gl')||(url.hostname==='google.com')||url.hostname.endsWith('.google.com')||(url.hostname==='google.ge')||(url.hostname==='www.google.ge'))){status.textContent=d[14];return;}
-const items=cart.map(p=>`${p.name} × ${p.quantity} — ${p.price*p.quantity} GEL`).join('\n');const total=cart.reduce((n,p)=>n+p.price*p.quantity,0);
-const message=`ModernMarket — ORDER DRAFT (NOT SUBMITTED)\nName: ${f.get('customer')}\nEmail: ${f.get('email')}\nPhone: ${f.get('phone')}\nAddress: ${f.get('address')}\nGoogle Maps: ${map}\n\n${items}\nTotal: ${total} GEL`;
-const note=document.createElement('p');note.textContent=d[11];const button=document.createElement('button');button.type='button';button.className='gold';button.textContent=d[12];button.onclick=async()=>{try{await navigator.clipboard.writeText(message);button.textContent=d[13]}catch{const ta=document.createElement('textarea');ta.readOnly=true;ta.value=message;status.append(ta);ta.select()}};status.append(note,button);
+if(form&&status)form.addEventListener('submit',async e=>{
+ e.preventDefault();status.replaceChildren();
+ const txt={ru:['Войдите в аккаунт покупателя, чтобы оформить заказ.','В корзине пока нет товаров.','Этот товар из старого каталога пока нельзя оформить онлайн. Заказ не отправлен.','Отправляем заказ…','Заказ успешно создан! Номер: ','Ошибка оформления: '],ka:['შეკვეთის გასაფორმებლად შედით ანგარიშში.','კალათა ცარიელია.','ძველი კატალოგის პროდუქტის ონლაინ შეკვეთა ჯერ მიუწვდომელია.','შეკვეთა იგზავნება…','შეკვეთა შეიქმნა! ნომერი: ','შეკვეთის შეცდომა: '],az:['Sifariş üçün hesaba daxil olun.','Səbət boşdur.','Köhnə kataloq məhsulunun onlayn sifarişi hələ mümkün deyil.','Sifariş göndərilir…','Sifariş yaradıldı! Nömrə: ','Sifariş xətası: ']}[document.documentElement.lang]||null;
+ const d=txt||['Войдите в аккаунт.','Корзина пуста.','Товар пока недоступен для заказа.','Отправляем…','Заказ создан: ','Ошибка: '];
+ const db=window.mmBuyerDb;
+ const {data:{user},error:authError}=db?await db.auth.getUser():{data:{user:null},error:null};
+ if(authError||!user){status.textContent=d[0];document.getElementById('mmAccountOpen')?.click();return;}
+ const cart=typeof window.mmGetCart==='function'?window.mmGetCart():[];
+ if(!cart.length){status.textContent=d[1];return;}
+ if(cart.some(x=>!x.id?.toString().startsWith('seller-'))){status.textContent=d[2];return;}
+ const f=new FormData(form),map=String(f.get('maplink')||'').trim();
+ if(map){let url;try{url=new URL(map)}catch{}if(!url||url.protocol!=='https:'||!((url.hostname==='maps.app.goo.gl')||(url.hostname==='goo.gl')||(url.hostname==='google.com')||url.hostname.endsWith('.google.com')||(url.hostname==='google.ge')||(url.hostname==='www.google.ge'))){status.textContent=local()[14];return;}}
+ const button=$('mmPrepareOrder');button.disabled=true;status.textContent=d[3];
+ try{
+  const items=cart.map(x=>({seller_product_id:Number(String(x.id).replace(/^seller-/,'')),quantity:Number(x.quantity)}));
+  const {data,error}=await db.rpc('tovex_checkout',{p_customer_name:String(f.get('customer')||''),p_customer_phone:String(f.get('phone')||''),p_delivery_address:String(f.get('address')||''),p_map_link:map,p_items:items});
+  if(error)throw error;
+  const ids=(data?.orders||[]).map(o=>String(o.order_id).slice(0,8)).join(', ');
+  status.textContent=d[4]+ids+' · '+(document.documentElement.lang==='ru'?'Посмотрите раздел «Мои заказы».':'');
+  window.dispatchEvent(new Event('mm-auth-changed'));
+ }catch(err){status.textContent=d[5]+(err?.message||String(err));}
+ finally{button.disabled=false;}
 });
 })();
 </script>
@@ -1446,5 +1463,19 @@ header .search-row .mm-search-box{border:1px solid #e9b64e!important;box-shadow:
  sync();refreshCount();
 })();
 </script>
-</body>
+<script id="tovex-live-buyer-orders">(()=>{
+ const dict={ru:['Мои заказы TOVEX','Загрузка…','Пока нет заказов TOVEX','Статус','Доставка','Магазин','Обновить','Ошибка: '],ka:['ჩემი TOVEX შეკვეთები','იტვირთება…','TOVEX შეკვეთები ჯერ არ არის','სტატუსი','მიწოდება','მაღაზია','განახლება','შეცდომა: '],az:['TOVEX sifarişlərim','Yüklənir…','TOVEX sifarişi yoxdur','Status','Çatdırılma','Mağaza','Yenilə','Xəta: ']};
+ const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const panel=document.createElement('section');panel.id='tovexLiveBuyerPanel';panel.style='margin:18px 0;padding:18px;border:1px solid #64748b55;border-radius:12px';
+ panel.innerHTML='<h3 id="tovexBuyerTitle"></h3><button type="button" id="tovexBuyerRefresh" style="padding:8px 12px;margin:8px 0">↻</button><div id="tovexBuyerRows"></div>';
+ const target=document.getElementById('tovexOrdersContent')||document.getElementById('mmBuyerOrders')||document.body;
+ target.appendChild(panel);
+ const t=()=>dict[document.documentElement.lang]||dict.ka;
+ async function load(){const db=window.mmBuyerDb;const rows=document.getElementById('tovexBuyerRows');document.getElementById('tovexBuyerTitle').textContent=t()[0];document.getElementById('tovexBuyerRefresh').textContent=t()[6];if(!db){rows.textContent='Supabase unavailable';return;}const {data:{user}}=await db.auth.getUser();if(!user){rows.textContent='';return;}rows.textContent=t()[1];
+ try{const a=await db.from('tovex_orders').select('id,created_at,status,delivery_address').eq('buyer_id',user.id).order('created_at',{ascending:false}).limit(50);if(a.error)throw a.error;const orders=a.data||[];if(!orders.length){rows.textContent=t()[2];return;}const ids=orders.map(o=>o.id);const [b,c]=await Promise.all([db.from('tovex_order_items').select('order_id,product_name,quantity,unit_price_gel').in('order_id',ids),db.from('tovex_deliveries').select('order_id,store_id,method,status').in('order_id',ids)]);if(b.error)throw b.error;if(c.error)throw c.error;
+ rows.innerHTML=orders.map(o=>{const products=(b.data||[]).filter(x=>x.order_id===o.id);const delivery=(c.data||[]).find(x=>x.order_id===o.id);const total=products.reduce((s,x)=>s+Number(x.unit_price_gel)*Number(x.quantity),0);return '<article style="padding:12px 0;border-top:1px solid #64748b55"><b>#'+safe(o.id.slice(0,8))+'</b> · '+safe(new Date(o.created_at).toLocaleString())+'<div>'+products.map(x=>safe(x.product_name)+' × '+Number(x.quantity)).join(', ')+'</div><strong>'+total.toFixed(2)+' ₾</strong><div>'+t()[3]+': '+safe(delivery?.status||o.status)+' · '+t()[4]+': '+safe(delivery?.method==='seller'?'Курьер магазина':delivery?.method==='tovex'?'TOVEX':'—')+'</div></article>'}).join('');
+ }catch(e){rows.textContent=t()[7]+e.message;}}
+ document.getElementById('tovexBuyerRefresh').onclick=load;
+ window.addEventListener('mm-auth-changed',load);document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(load,0)));setTimeout(load,1500);
+})();</script></body>
 </html>
