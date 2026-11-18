@@ -481,6 +481,25 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #mmRolePicker .mm-role-options label:has(input[value="seller"]){background:rgba(13,116,89,.23)!important;color:#b9f8d9!important;border:1px solid rgba(71,211,160,.72)!important;backdrop-filter:blur(8px)}
 #mmRolePicker .mm-role-options label:has(input[value="seller"]:checked){background:rgba(16,133,96,.42)!important;border-color:#6ae6b4!important;box-shadow:0 0 16px #19bf8630}
 </style>
+<style id="tovex-translucent-green-login">
+/* Login only: translucent emerald, without changing registration or seller controls. */
+#mmAccountBar #mmAccountOpen:not([hidden]){
+ background:rgba(15,126,91,.26)!important;
+ color:#c2ffe4!important;
+ border:1px solid #47d3a0!important;
+ border-radius:9px!important;
+ box-shadow:inset 0 1px 0 #ffffff14!important;
+ backdrop-filter:blur(8px);
+ -webkit-backdrop-filter:blur(8px);
+ font-weight:800;
+ transition:background .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+#mmAccountBar #mmAccountOpen:not([hidden]):hover{
+ background:rgba(18,145,104,.44)!important;
+ border-color:#79efc1!important;
+ box-shadow:0 0 17px rgba(26,190,135,.18)!important;
+}
+</style>
 </head>
 <body>
 <header><div class="wrap">
