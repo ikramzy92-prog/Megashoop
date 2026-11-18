@@ -265,6 +265,29 @@ section.hero{display:none!important}
 @media(max-width:760px){.mm-rec-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.mm-rec-visual{height:105px}}
 @media(max-width:480px){.mm-rec-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.mm-rec-visual{height:108px}}
 </style>
+<style id="mm-unified-small-product-cards">
+/* Matching compact card dimensions with distinct section colors. */
+.mm-rec-grid{grid-template-columns:repeat(auto-fill,minmax(0,175px));gap:13px;justify-content:start}
+.mm-rec-item{background:linear-gradient(155deg,#29241d,#1c1b1a);border-color:#73552d}
+.mm-rec-visual{height:112px}
+/* The lower, on-sale catalog is separate from the recommendation cards. */
+#products.grid,.grid:has(> .card){grid-template-columns:repeat(auto-fill,minmax(0,175px));gap:13px;justify-content:start}
+#products .card,.grid > .card{width:100%;min-width:0;background:linear-gradient(155deg,#1e2935,#131b27);border:1px solid #425971;border-radius:13px;box-shadow:0 7px 18px #0005}
+#products .photo,.grid > .card .photo{height:112px;background:#222f3e}
+#products .photo img,.grid > .card .photo img{object-fit:contain}
+#products .info,.grid > .card .info{padding:10px;display:flex;flex-direction:column;min-height:163px}
+#products .info h3,.grid > .card .info h3{font-size:12px;line-height:1.35;min-height:33px;margin:0 0 5px;overflow-wrap:anywhere}
+#products .price,.grid > .card .price{font-size:18px;margin:8px 0}
+#products .stock,.grid > .card .stock{font-size:11px}
+#products .mm-product-rating,.grid > .card .mm-product-rating{font-size:10px;line-height:1.35;margin:6px 0}
+#products .buy,.grid > .card .buy{margin-top:auto;min-height:36px;padding:8px 5px;font-size:11px;border-radius:8px}
+@media(max-width:480px){
+ .mm-rec-grid,#products.grid,.grid:has(> .card){grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ #products .photo,.grid > .card .photo{height:108px}
+ #products .info,.grid > .card .info{padding:9px;min-height:155px}
+ #products .price,.grid > .card .price{font-size:16px}
+}
+</style>
 </head>
 <body>
 <header><div class="wrap">
