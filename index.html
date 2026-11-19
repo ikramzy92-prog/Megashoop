@@ -972,7 +972,7 @@ const desc=document.createElement('p');desc.className='mm-showcase-desc';
 const link=document.createElement('a');link.href='#catalogTitle';link.className='gold mm-showcase-link';
 link.addEventListener('click',()=>{tile.click();});
 copy.append(kicker,title,desc,link);
-const pic=document.createElement('div');pic.className='mm-showcase-picture';const img=document.createElement('img');img.src=src;img.alt=row[1];img.loading='lazy';pic.append(img);el.append(copy,pic);host.append(el);
+const pic=document.createElement('div');pic.className='mm-showcase-picture';const img=document.createElement('img');img.src=src;img.alt=row[1];img.loading=slides.length===0?'eager':'lazy';img.decoding='async';if(slides.length===0)img.fetchPriority='high';pic.append(img);el.append(copy,pic);host.append(el);
 const dot=document.createElement('button');dot.type='button';dot.className='mm-showcase-dot';dot.setAttribute('aria-label','Slide '+(slides.length+1));dot.addEventListener('click',()=>{show(slides.indexOf(el));restart()});dots.append(dot);
 slides.push(el);
 }
