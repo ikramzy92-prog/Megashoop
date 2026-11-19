@@ -518,7 +518,16 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #mmRolePicker .mm-role-options .tovex-courier-role span{color:inherit!important;font-weight:800}
 @media(max-width:420px){#mmRolePicker .mm-role-options{grid-template-columns:1fr!important}}
 </style>
-</head>
+<style id="tovex-multisearch-css">
+.search-row .mm-search-box #search{padding-right:145px!important}
+.tovex-search-tools{position:absolute;right:54px;top:50%;transform:translateY(-50%);display:flex;gap:3px;z-index:3}
+.tovex-search-tools button{width:35px;height:37px;display:grid;place-items:center;background:transparent;color:#60e5b3;border:0;border-radius:7px;padding:6px;cursor:pointer}
+.tovex-search-tools button:hover,.tovex-search-tools button[aria-pressed="true"]{background:#134335;color:#fff}
+.tovex-search-tools svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tovex-search-feedback{font-size:12px;color:#9fe9cb;min-height:0;padding:0 0 6px;line-height:1.5}
+.tovex-search-feedback:empty{display:none}
+@media(max-width:767px){.search-row .mm-search-box #search{padding-right:121px!important}.tovex-search-tools{right:41px;gap:0}.tovex-search-tools button{width:30px;height:33px;padding:5px}.tovex-search-tools svg{width:19px;height:19px}}
+</style></head>
 <body>
 <header><div class="wrap">
 <div class="top"><div class="brand"><span class="brand-name">TOVEX</span><span aria-label="საქართველოს დროშა — флаг Грузии" class="georgia-flag" role="img"><svg aria-hidden="true" viewbox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect fill="#fff" height="40" width="60"></rect><path d="M0 16h60v8H0zM26 0h8v40h-8z" fill="#d82135"></path><g fill="#d82135"><path d="M12 5h2v4h4v2h-4v4h-2v-4H8V9h4zM46 5h2v4h4v2h-4v4h-2v-4h-4V9h4zM12 25h2v4h4v2h-4v4h-2v-4H8v-2h4zM46 25h2v4h4v2h-4v4h-2v-4h-4v-2h4z"></path></g></svg></span></div><div class="languages"><button data-lang="ka" type="button">🇬🇪 ქართული</button><button data-lang="ru" type="button">🇷🇺 Русский</button><button data-lang="az" type="button">🇦🇿 Azərbaycan</button></div><div class="mm-account" id="mmAccountBar"><button class="mm-primary" id="mmAccountOpen" type="button">👤 შესვლა</button><button id="tovexBuyerSignupOpen" type="button">📝 რეგისტრაცია</button><img alt="Avatar" hidden="" id="mmHeaderAvatar" style="width:39px;height:39px;object-fit:cover;border-radius:50%;border:2px solid #eabb61"/><span class="mm-account-email" hidden="" id="mmAccountEmail"></span><button id="tovexSellerJoin" type="button" hidden="">🏪 Стать продавцом</button><a aria-label="Seller Back Office" hidden="" href="/backoffice/" id="mmSellerBackoffice" style="display:none">🏪 Back Office</a><button hidden="" id="mmBuyerProfileBtn" type="button">👤 პროფილი</button><button hidden="" id="mmBuyerOrdersBtn" type="button">📦 ჩემი შეკვეთები <span id="mmOrdersBadge" hidden></span></button><button hidden="" id="mmAccountLogout" type="button">გასვლა</button></div></div>
@@ -1018,7 +1027,7 @@ async function mmCheckSellerStore(){
  try{
   const {data,error}=await db.from('stores').select('id').eq('owner_id',currentId).eq('status','approved').limit(1);
   if(error)throw error;
-  if(user?.id===currentId){mmSellerVerifiedId=(data&&data.length)?currentId:null;draw();if(mmSellerVerifiedId===currentId && !window.location.pathname.startsWith('/backoffice/')){window.location.assign('/backoffice/');return;}}
+  if(user?.id===currentId){mmSellerVerifiedId=(data&&data.length)?currentId:null;draw();}
  }catch(err){console.warn('Store ownership lookup failed:',err?.message||err);}
 }
 
@@ -1576,5 +1585,37 @@ header .search-row .mm-search-box{border:1px solid #e9b64e!important;box-shadow:
  document.getElementById('tovexOrdersClose')?.addEventListener('click',stopTracking);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&active)updatePosition()});
  setTimeout(load,1500);
-})();</script></body>
+})();</script><script id="tovex-multisearch-js">
+(()=>{
+ const search=document.getElementById('search');const box=document.querySelector('.mm-search-box');if(!search||!box)return;
+ const tools=document.createElement('div');tools.className='tovex-search-tools';
+ tools.innerHTML='<button type="button" id="tovexPhotoSearch" aria-label="Поиск по фотографии" title="Поиск по фотографии"><svg viewBox="0 0 24 24"><path d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="4"/></svg></button><button type="button" id="tovexVoiceSearch" aria-label="Голосовой поиск" title="Голосовой поиск"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4m-4 0h8"/></svg></button>';
+ const upload=document.createElement('input');upload.type='file';upload.accept='image/*';upload.hidden=true;upload.id='tovexSearchImage';
+ const feedback=document.createElement('div');feedback.className='tovex-search-feedback';feedback.setAttribute('role','status');
+ box.append(tools,upload);box.parentElement.insertAdjacentElement('afterend',feedback);
+ const words={ru:{photo:'Выберите фотографию товара',voice:'Говорите название товара…',unsupported:'В этом браузере голосовой ввод недоступен. Попробуйте Chrome или используйте клавиатуру.',noMatch:'Не удалось надёжно сравнить фото с каталогом. Попробуйте текстовый поиск.',found:'Найдены визуально похожие товары (предварительный результат).',error:'Не удалось обработать фотографию.'},ka:{photo:'აირჩიეთ პროდუქტის ფოტო',voice:'თქვით პროდუქტის სახელი…',unsupported:'ხმოვანი ძიება ამ ბრაუზერში მიუწვდომელია. გამოიყენეთ ტექსტური ძიება.',noMatch:'ფოტოს შედარება ვერ მოხერხდა. სცადეთ ტექსტური ძიება.',found:'ვიზუალურად მსგავსი პროდუქტები (წინასწარი შედეგი).',error:'ფოტოს დამუშავება ვერ მოხერხდა.'},az:{photo:'Məhsulun şəklini seçin',voice:'Məhsulun adını söyləyin…',unsupported:'Bu brauzerdə səsli axtarış dəstəklənmir. Mətnlə axtarın.',noMatch:'Şəkli kataloqla müqayisə etmək mümkün olmadı. Mətnlə axtarın.',found:'Vizual olaraq oxşar məhsullar (ilkin nəticə).',error:'Şəkli emal etmək mümkün olmadı.'}};
+ const language=()=>document.documentElement.lang?.split('-')[0]||'ru';const tr=k=>(words[language()]||words.ru)[k];
+ const trigger=()=>{search.dispatchEvent(new Event('input',{bubbles:true}));document.getElementById('mmSearchButton')?.click();};
+ document.getElementById('tovexVoiceSearch').onclick=()=>{
+  const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){feedback.textContent=tr('unsupported');return}
+  const rec=new Speech();rec.lang=({ka:'ka-GE',ru:'ru-RU',az:'az-AZ'})[language()]||'ru-RU';rec.interimResults=false;rec.maxAlternatives=1;
+  const btn=document.getElementById('tovexVoiceSearch');btn.setAttribute('aria-pressed','true');feedback.textContent=tr('voice');
+  rec.onresult=e=>{search.value=e.results[0][0].transcript;feedback.textContent='';trigger();document.getElementById('catalogTitle')?.scrollIntoView({behavior:'smooth',block:'start'})};
+  rec.onerror=e=>{feedback.textContent=e.error==='not-allowed'?'Доступ к микрофону запрещён':tr('unsupported')};
+  rec.onend=()=>btn.setAttribute('aria-pressed','false');try{rec.start()}catch(e){feedback.textContent=tr('unsupported')}
+ };
+ document.getElementById('tovexPhotoSearch').onclick=()=>{feedback.textContent=tr('photo');upload.click()};
+ // Lightweight browser-side color comparison, not semantic AI image recognition.
+ const histogram=async src=>{const img=new Image();img.crossOrigin='anonymous';img.src=src;await img.decode();const c=document.createElement('canvas');c.width=32;c.height=32;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0,32,32);const pixels=ctx.getImageData(0,0,32,32).data;const bins=new Float32Array(48);let count=0;for(let i=0;i<pixels.length;i+=4){if(pixels[i+3]<80)continue;for(let ch=0;ch<3;ch++)bins[ch*16+Math.min(15,pixels[i+ch]>>4)]++;count++}if(!count)throw Error('empty');for(let i=0;i<48;i++)bins[i]/=count;return bins};
+ upload.onchange=async()=>{const file=upload.files?.[0];if(!file)return;const url=URL.createObjectURL(file);feedback.textContent='⏳ '+tr('photo');try{
+  const target=await histogram(url);const candidates=[...document.querySelectorAll('#products .card')].map(card=>({card,img:card.querySelector('.photo img')})).filter(x=>x.img?.src).slice(0,100);
+  const matches=[];for(const item of candidates){try{const h=await histogram(item.img.src);let d=0;for(let i=0;i<48;i++)d+=Math.abs(h[i]-target[i]);matches.push({...item,d})}catch(e){}}
+  if(matches.length<1){feedback.textContent=tr('noMatch');return}
+  matches.sort((a,b)=>a.d-b.d);const best=matches.slice(0,8);const names=best.map(x=>x.card.querySelector('.info h3')?.textContent?.trim()).filter(Boolean);
+  if(!names.length){feedback.textContent=tr('noMatch');return}
+  search.value='';trigger();const all=[...document.querySelectorAll('#products .card')];const selected=new Set(best.map(x=>x.card));all.forEach(x=>x.hidden=!selected.has(x));const host=document.getElementById('products');best.forEach(x=>host.append(x.card));feedback.textContent=tr('found')+' '+names.length;
+  const reset=()=>{search.removeEventListener('input',reset);feedback.textContent='';trigger()};search.addEventListener('input',reset,{once:true});
+ }catch(e){feedback.textContent=tr('error')}finally{URL.revokeObjectURL(url);upload.value=''}};
+})();
+</script></body>
 </html>
