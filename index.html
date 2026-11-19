@@ -1018,7 +1018,7 @@ async function mmCheckSellerStore(){
  try{
   const {data,error}=await db.from('stores').select('id').eq('owner_id',currentId).eq('status','approved').limit(1);
   if(error)throw error;
-  if(user?.id===currentId){mmSellerVerifiedId=(data&&data.length)?currentId:null;draw();}
+  if(user?.id===currentId){mmSellerVerifiedId=(data&&data.length)?currentId:null;draw();if(mmSellerVerifiedId===currentId && !window.location.pathname.startsWith('/backoffice/')){window.location.assign('/backoffice/');return;}}
  }catch(err){console.warn('Store ownership lookup failed:',err?.message||err);}
 }
 
