@@ -973,6 +973,24 @@ import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 const URL='https://mrslybtwzfcovpsyuexf.supabase.co';
 const PUBLIC_KEY='sb_publishable_AnpUjix60jDfpZDGlcO6vQ_XIyxcpDd';
 const db=createClient(URL,PUBLIC_KEY);window.mmBuyerDb=db;
+// TOVEX: redirect only server-approved, active courier profiles.
+// A signup role or editable user_metadata never grants courier access.
+let tovexCourierRoutingId=null;
+let tovexCourierRoutingBusy=false;
+async function tovexRouteApprovedCourier(authUser){
+ if(!authUser?.id || tovexCourierRoutingBusy || tovexCourierRoutingId===authUser.id)return false;
+ tovexCourierRoutingBusy=true;
+ try{
+  const {data,error}=await db.from('tovex_couriers')
+   .select('id,is_active').eq('id',authUser.id).maybeSingle();
+  if(error){console.warn('Courier role lookup:',error.message);return false;}
+  if(!data || data.is_active!==true)return false;
+  tovexCourierRoutingId=authUser.id;
+  window.location.assign('/courier/');
+  return true;
+ }finally{tovexCourierRoutingBusy=false;}
+}
+
 // OAuth uses Supabase's configured Google provider; no credentials are collected here.
 document.getElementById('tovexGoogleLogin')?.addEventListener('click',async()=>{
  const btn=document.getElementById('tovexGoogleLogin');const status=document.getElementById('mmAuthFeedback');
@@ -1017,7 +1035,7 @@ $('tovexSellerJoin').addEventListener('click',()=>{
 });
 $('mmAccountOpen').addEventListener('click',()=>{switchMode('login');open()});$('tovexBuyerSignupOpen').addEventListener('click',()=>{switchMode('signup');const buyer=document.querySelector('input[name=mmRole][value=buyer]');if(buyer)buyer.checked=true;open()});$('mmAuthClose').addEventListener('click',close);$('mmAuthOverlay').addEventListener('click',e=>{if(e.target===$('mmAuthOverlay'))close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('mmAuthOverlay').hidden)close()});
 $('mmAuthLoginTab').addEventListener('click',()=>switchMode('login'));$('mmAuthSignupTab').addEventListener('click',()=>switchMode('signup'));
-$('mmAuthForm').addEventListener('submit',async e=>{e.preventDefault();if(processing)return;const email=$('mmAuthEmail').value.trim(),password=$('mmAuthPassword').value;const phone=$('mmAuthPhone')?.value.replace(/[\s()\-]/g,'')||'';const feedback=$('mmAuthFeedback');if(mode==='signup'&&!/^\+9955\d{8}$/.test(phone)){feedback.textContent=({ru:'Введите обязательный грузинский номер +9955XXXXXXXX.',ka:'შეიყვანეთ ქართული ნომერი +9955XXXXXXXX.',az:'Məcburi Gürcüstan nömrəsini daxil edin: +9955XXXXXXXX.'})[lang()];return}if(password.length<8){feedback.textContent=w().password;return}processing=true;$('mmAuthSubmit').disabled=true;feedback.textContent=w().loading;try{const result=mode==='signup'?await db.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname,data:{account_role:document.querySelector('input[name=mmRole]:checked')?.value||'buyer',required_phone:phone,phone_verified:false}}}):await db.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(mode==='signup'){feedback.textContent=result.data.session?w().created:w().confirm;if(result.data.session){user=result.data.user;draw();close();if(user?.user_metadata?.account_role==='seller' && user?.app_metadata?.seller_kyc_status!=='approved'){window.tovexOpenSellerVerification?.();return;}if(window.mmPendingPurchase){const action=window.mmPendingPurchase;window.mmPendingPurchase=null;action();}}}else{user=result.data.user;draw();close();if(user?.user_metadata?.account_role==='seller' && user?.app_metadata?.seller_kyc_status!=='approved'){window.tovexOpenSellerVerification?.();return;}if(window.mmPendingPurchase){const action=window.mmPendingPurchase;window.mmPendingPurchase=null;action();}}}catch(err){feedback.textContent=w().error+(err?.message||String(err))}finally{processing=false;$('mmAuthSubmit').disabled=false;}});
+$('mmAuthForm').addEventListener('submit',async e=>{e.preventDefault();if(processing)return;const email=$('mmAuthEmail').value.trim(),password=$('mmAuthPassword').value;const phone=$('mmAuthPhone')?.value.replace(/[\s()\-]/g,'')||'';const feedback=$('mmAuthFeedback');if(mode==='signup'&&!/^\+9955\d{8}$/.test(phone)){feedback.textContent=({ru:'Введите обязательный грузинский номер +9955XXXXXXXX.',ka:'შეიყვანეთ ქართული ნომერი +9955XXXXXXXX.',az:'Məcburi Gürcüstan nömrəsini daxil edin: +9955XXXXXXXX.'})[lang()];return}if(password.length<8){feedback.textContent=w().password;return}processing=true;$('mmAuthSubmit').disabled=true;feedback.textContent=w().loading;try{const result=mode==='signup'?await db.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname,data:{account_role:document.querySelector('input[name=mmRole]:checked')?.value||'buyer',required_phone:phone,phone_verified:false}}}):await db.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(mode==='signup'){feedback.textContent=result.data.session?w().created:w().confirm;if(result.data.session){user=result.data.user;draw();close();if(user?.user_metadata?.account_role==='seller' && user?.app_metadata?.seller_kyc_status!=='approved'){window.tovexOpenSellerVerification?.();return;}if(window.mmPendingPurchase){const action=window.mmPendingPurchase;window.mmPendingPurchase=null;action();}}}else{user=result.data.user;draw();close();if(await tovexRouteApprovedCourier(user))return;if(user?.user_metadata?.account_role==='seller' && user?.app_metadata?.seller_kyc_status!=='approved'){window.tovexOpenSellerVerification?.();return;}if(window.mmPendingPurchase){const action=window.mmPendingPurchase;window.mmPendingPurchase=null;action();}}}catch(err){feedback.textContent=w().error+(err?.message||String(err))}finally{processing=false;$('mmAuthSubmit').disabled=false;}});
 $('mmAccountLogout').addEventListener('click',async()=>{
   const logoutButton=$('mmAccountLogout');
   if(logoutButton.disabled)return;
@@ -1037,8 +1055,8 @@ $('mmAccountLogout').addEventListener('click',async()=>{
 async function refreshHeaderAvatar(){const u=user;const path=u?.user_metadata?.avatar_path;if(!path){window.mmHeaderAvatarUrl=null;draw();return;}try{const {data}=await db.storage.from('buyer-avatars').createSignedUrl(path,1800);if(u?.id===user?.id){window.mmHeaderAvatarUrl=data?.signedUrl||null;draw();}}catch(e){console.warn('Avatar',e)}}
 window.addEventListener('mm-auth-changed',()=>{if(user?.id!==window.mmAvatarLoadedFor){window.mmAvatarLoadedFor=user?.id;refreshHeaderAvatar()}});
 window.addEventListener('mm-profile-saved',()=>refreshHeaderAvatar());
-db.auth.onAuthStateChange((_event,session)=>{user=session?.user||null;draw();setTimeout(mmCheckSellerStore,0);/* Phone verification opens only on an explicit account action, never during session restoration. */});
-db.auth.getSession().then(({data})=>{user=data.session?.user||null;draw();mmCheckSellerStore()}).catch(()=>draw());
+db.auth.onAuthStateChange((_event,session)=>{user=session?.user||null;draw();setTimeout(()=>tovexRouteApprovedCourier(user),0);setTimeout(mmCheckSellerStore,0);/* Phone verification opens only on an explicit account action, never during session restoration. */});
+db.auth.getSession().then(({data})=>{user=data.session?.user||null;draw();mmCheckSellerStore();tovexRouteApprovedCourier(user)}).catch(()=>draw());
 const observer=new MutationObserver(()=>draw());observer.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});draw();
 </script>
 <div class="mm-buyer-modal" hidden="" id="mmBuyerModal"><div aria-labelledby="mmBuyerTitle" aria-modal="true" class="mm-buyer-window" role="dialog">
