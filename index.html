@@ -706,8 +706,8 @@ const idOf=p=>String(p.id??p['идентифи']??nameOf(p));
 const money=n=>Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₾';
 function updateCount(){const count=cart.reduce((s,p)=>s+p.quantity,0);$('cartToggle').textContent='🛒 '+t().cart+' ('+count+')'}
 function renderProducts(){const box=$('products');box.replaceChildren();const query=$('search').value.toLocaleLowerCase().trim();const items=products.filter(p=>nameOf(p).toLocaleLowerCase().includes(query));if(!loading&&!loadError&&!items.length){const p=document.createElement('p');p.textContent=t().empty;box.append(p)}
- for(const product of items){const card=document.createElement('article');card.className='card';const photo=document.createElement('div');photo.className='photo';const img=document.createElement('img');img.alt=nameOf(product);img.loading='lazy';img.src=product.image_url||'https://placehold.co/400x300/253144/ffffff?text=Modern Market';img.onerror=()=>{img.onerror=null;img.src='https://placehold.co/400x300/253144/ffffff?text=Modern Market'};photo.append(img);
- const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);const price=document.createElement('div');price.className='price';price.textContent=money(priceOf(product));const oldPrice=oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<=0;buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(name,price,stock,buy);card.append(photo,info);box.append(card)} }
+ for(const product of items){const card=document.createElement('article');card.className='card';card.dataset.productId=idOf(product);const photo=document.createElement('div');photo.className='photo';const img=document.createElement('img');img.alt=nameOf(product);img.loading='lazy';img.src=product.image_url||'https://placehold.co/400x300/253144/ffffff?text=Modern Market';img.onerror=()=>{img.onerror=null;img.src='https://placehold.co/400x300/253144/ffffff?text=Modern Market'};photo.append(img);
+ const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);const price=document.createElement('div');price.className='price';price.textContent=money(priceOf(product));const oldPrice=oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<=0;buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price,name,stock,buy);card.append(photo,info);box.append(card)} }
 function animateToCart(source){
  const mobile=window.matchMedia('(max-width: 720px)').matches;
  const mobileTarget=document.querySelector('#tovexMobileNav button[data-go="cart"]');
@@ -938,11 +938,25 @@ updateCategoryHeading();
 })();
 </script>
 <script>
+function tovexReviewButton(locale, average, count, openReviews) {
+ const button=document.createElement('button');
+ const labels={ka:'შეფასებები',ru:'Отзывы',en:'Reviews'};
+ button.type='button';
+ button.className='tovex-review-summary';
+ button.setAttribute('aria-label',(labels[locale]||labels.ka)+': '+count);
+ button.innerHTML='<span class="tovex-score"><svg class="tovex-star" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 1 3.4 6.9 7.6 1.1-5.5 5.4 1.3 7.6-6.8-3.6-6.8 3.6 1.3-7.6L1 9l7.6-1.1z"/></svg><span></span></span><span class="tovex-review-count"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3C6 3 1 6.8 1 11.5c0 2.4 1.3 4.6 3.4 6.2L3 22l5-2.2c1.3.2 2.6.3 4 .3 6 0 11-3.8 11-8.6S18 3 12 3z"/></svg><span></span></span>';
+ button.querySelector('.tovex-score span').textContent=count?average.toFixed(1):'—';
+ button.querySelector('.tovex-review-count span').textContent=new Intl.NumberFormat(locale).format(count).replace(/,/g,' ');
+ button.onclick=openReviews;
+ return button;
+}
+</script>
+<script>
 /* Recommendations v1: privacy-friendly, local to this browser, no paid services. */
 (()=>{
 'use strict';
 const KEY='modernmarket.interests.v2';
-const dictionary={ka:{title:'თქვენთვის რეკომენდებული',desc:'თქვენი ძიებისა და ნანახი პროდუქტების მიხედვით',clear:'ისტორიის წაშლა',empty:'დაათვალიერეთ პროდუქტები პერსონალური რეკომენდაციების მისაღებად'},ru:{title:'Рекомендуем для вас',desc:'На основе ваших поисков и просмотренных товаров',clear:'Очистить историю',empty:'Посмотрите товары, чтобы появились персональные рекомендации'},en:{title:'Recommended for you',desc:'Based on your searches and views',clear:'Clear history',empty:'Browse products to get recommendations'}};
+const dictionary={ka:{title:'თქვენთვის რეკომენდებული',desc:'თქვენი ძიებისა და ნანახი პროდუქტების მიხედვით',clear:'ისტორიის წაშლა',empty:'დაათვალიერეთ პროდუქტები პერსონალური რეკომენდაციების მისაღებად'},ru:{title:'Рекомендуем',desc:'На основе ваших поисков и просмотренных товаров',clear:'Очистить историю',empty:'Посмотрите товары, чтобы появились персональные рекомендации'},en:{title:'Recommended for you',desc:'Based on your searches and views',clear:'Clear history',empty:'Browse products to get recommendations'}};
 let history=[];try{const h=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(h))history=h.filter(x=>x&&typeof x.value==='string').slice(-80)}catch(e){}
 const normalize=x=>String(x||'').toLocaleLowerCase().trim();
 const words=x=>normalize(x).split(/[^\p{L}\p{N}]+/u).filter(w=>w.length>=3);
@@ -967,14 +981,14 @@ async function fetchRatings(){
 
 function render(){
  const locale=typeof lang!=='undefined'&&dictionary[lang]?lang:'ka',d=dictionary[locale];
- section.replaceChildren();const actions=document.createElement('div');actions.className='mm-rec-actions';const title=document.createElement('h2');title.textContent='✨ '+d.title;const clear=document.createElement('button');clear.type='button';clear.className='mm-rec-clear';clear.textContent=d.clear;clear.hidden=!history.length;clear.onclick=()=>{history=[];try{localStorage.removeItem(KEY)}catch(e){}render()};actions.append(title,clear);section.append(actions);
+ section.replaceChildren();const actions=document.createElement('div');actions.className='mm-rec-actions';const title=document.createElement('h2');title.textContent=d.title;const clear=document.createElement('button');clear.type='button';clear.className='mm-rec-clear';clear.textContent=d.clear;clear.hidden=!history.length;clear.onclick=()=>{history=[];try{localStorage.removeItem(KEY)}catch(e){}render()};actions.append(title,clear);section.append(actions);
  const desc=document.createElement('p');desc.textContent=history.length?d.desc:d.empty;section.append(desc);
  if(typeof products==='undefined'||!Array.isArray(products)||!products.length)return;
  const tokens=new Map();for(const h of history){const weight=h.type==='cart'?5:h.type==='view'?3:2;for(const w of words(h.value))tokens.set(w,(tokens.get(w)||0)+weight)}
  const ranked=products.map((p,i)=>{const name=typeof nameOf==='function'?nameOf(p):String(p.name||'');const n=normalize(name);let score=0;for(const [w,weight] of tokens)if(n.includes(w))score+=weight;return {p,i,score}}).filter(x=>!Number.isNaN(x.score));ranked.sort((a,b)=>b.score-a.score||a.i-b.i);
  const list=document.createElement('div');list.className='mm-rec-grid';const picked=(history.length?ranked:ranked.slice(0,4)).slice(0,4);
  for(const {p} of picked){
-  const item=document.createElement('article');item.className='mm-rec-item';
+  const item=document.createElement('article');item.className='mm-rec-item';item.dataset.productId=idOf(p);
   const visual=document.createElement('div');visual.className='mm-rec-visual';
   const img=document.createElement('img');img.loading='lazy';img.alt=nameOf(p);img.src=safeImg(p);img.onerror=()=>{img.onerror=null;img.src='https://placehold.co/400x300/253144/ffffff?text=Modern+Market'};
   visual.append(img);
@@ -982,19 +996,16 @@ function render(){
   const old=oldPriceOf(p);
   if(Number.isFinite(old)&&old>current&&current>0){const discount=document.createElement('span');discount.className='mm-rec-discount';discount.textContent='−'+Math.round((1-current/old)*100)+'%';visual.append(discount)}
   const name=document.createElement('strong');name.className='mm-rec-name';name.textContent=nameOf(p);
-  const rating=document.createElement('div');rating.className='mm-rec-rating';
   const productId=idOf(p);const data=ratingCache.get(productId);
-  if(data&&data.count){const stars=document.createElement('span');stars.className='mm-rec-stars';stars.textContent='★ '+data.avg.toFixed(1);const count=document.createElement('span');count.textContent=' ('+data.count+')';rating.append(stars,count)}
-  else rating.textContent=({ka:'☆ შეფასებები ჯერ არ არის',ru:'☆ Пока нет оценок',en:'☆ No ratings yet'})[locale];
-   rating.classList.add('mm-rec-rating-action');rating.setAttribute('role','button');rating.tabIndex=0;rating.setAttribute('aria-label',({ka:'შეფასებები და შეფასების დატოვება',ru:'Отзывы и оценка товара',en:'Reviews and product ratings'})[locale]);
-   const showRating=()=>window.mmOpenProductReviews?.(String(productId),nameOf(p));
-   rating.addEventListener('click',showRating);rating.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showRating()}});
+  const rating=tovexReviewButton(locale,data?.avg,data?.count||0,
+    ()=>window.mmOpenProductReviews?.(productId,nameOf(p)));
+  rating.classList.add('mm-rec-rating');
   const stock=document.createElement('div');stock.className='mm-rec-stock';stock.textContent=(Number(stockOf(p))>0?'● '+({ka:'მარაგშია: ',ru:'В наличии: ',en:'In stock: '})[locale]+stockOf(p):({ka:'არ არის მარაგში',ru:'Нет в наличии',en:'Out of stock'})[locale]);
   const prices=document.createElement('div');prices.className='mm-rec-prices';const price=document.createElement('span');price.className='mm-rec-price';price.textContent=money(current);prices.append(price);
   if(Number.isFinite(old)&&old>current&&current>0){const before=document.createElement('del');before.textContent=money(old);prices.append(before)}
   const buy=document.createElement('button');buy.type='button';buy.className='gold mm-rec-buy';buy.textContent='🛒 '+(Number(stockOf(p))>0?({ka:'კალათაში დამატება',ru:'В корзину',en:'Add to cart'})[locale]:({ka:'არ არის მარაგში',ru:'Нет в наличии',en:'Out of stock'})[locale]);buy.disabled=Number(stockOf(p))<=0;
   buy.onclick=()=>{remember('cart',nameOf(p));if(typeof addToCart==='function'){const added=addToCart(p);if(added&&typeof animateToCart==='function')animateToCart(img)}else{const input=document.getElementById('search');if(input){input.value=nameOf(p);input.dispatchEvent(new Event('input',{bubbles:true}))}document.getElementById('catalog')?.scrollIntoView({behavior:'smooth'})}};
-  item.append(visual,name,rating,stock,prices,buy);list.append(item)
+  item.append(visual,prices,name,rating,stock,buy);list.append(item)
  }
  section.append(list)
 }
@@ -1003,11 +1014,11 @@ document.getElementById('products')?.addEventListener('click',e=>{const card=e.t
 document.getElementById('products')?.addEventListener('pointerover',e=>{const card=e.target.closest('.card');if(!card||card.dataset.mmViewed)return;card.dataset.mmViewed='1';setTimeout(()=>{if(card.matches(':hover')){const name=card.querySelector('h3')?.textContent;if(name)remember('view',name)}},1800)});
 const previousLoad=typeof loadProducts==='function'?loadProducts:null;
 if(previousLoad){const originalFetch=window.fetch;/* Product updates observed without replacing existing API functions */}
-let ratingRequested=false;
+let ratingRequested=false;let recommendationsVisible=false;
 const requestRecommendationRatings=()=>{if(ratingRequested||ratingsLoading||!Array.isArray(products)||!products.length)return;ratingRequested=true;fetchRatings()};
-const recViewportObserver=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){requestRecommendationRatings();recViewportObserver.disconnect()}},{rootMargin:'250px'});
+const recViewportObserver=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){recommendationsVisible=true;requestRecommendationRatings();recViewportObserver.disconnect()}},{rootMargin:'250px'});
 recViewportObserver.observe(section);
-const observer=new MutationObserver(()=>{if(document.getElementById('products')?.children.length)render()});
+const observer=new MutationObserver(()=>{if(document.getElementById('products')?.children.length){render();if(recommendationsVisible)requestRecommendationRatings()}});
 const grid=document.getElementById('products');if(grid)observer.observe(grid,{childList:true});
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(render,0)));
 render();
@@ -1336,23 +1347,20 @@ async function ratings(){
  db().from('mm_buyer_orders').select('id').eq('status','delivered').limit(10000),
  db().from('mm_buyer_order_items').select('order_id,product_id,quantity').limit(10000)
  ]);
- if(r.error||o.error||oi.error)return;
- const stats=new Map(),delivered=new Set(o.data.map(x=>x.id));
- for(const x of r.data){const v=stats.get(x.product_id)||{sum:0,n:0,sold:0};v.sum+=x.rating;v.n++;stats.set(x.product_id,v)}
- for(const x of oi.data){if(!delivered.has(x.order_id))continue;const v=stats.get(x.product_id)||{sum:0,n:0,sold:0};v.sold+=x.quantity;stats.set(x.product_id,v)}
+ if(r.error)return;
+ const stats=new Map(),delivered=new Set((o.data||[]).map(x=>x.id));
+ for(const x of r.data){const id=String(x.product_id),v=stats.get(id)||{sum:0,n:0,sold:0};v.sum+=Number(x.rating);v.n++;stats.set(id,v)}
+ for(const x of oi.data||[]){if(!delivered.has(x.order_id))continue;const id=String(x.product_id),v=stats.get(id)||{sum:0,n:0,sold:0};v.sold+=Number(x.quantity);stats.set(id,v)}
  for(const card of cards){
-  const index=Array.from(cards).indexOf(card);
-  // The catalog's filtered order is not necessarily the database order: resolve by visible product name.
-  const name=card.querySelector('h3')?.textContent;
-  const product=(window.mmProductSnapshot||[]).find(p=>String(p['имя']??p.name??'Modern Market')===name);
-  if(!product)continue;
-  const id=String(product.id??product['идентифи']??name),v=stats.get(id)||{sum:0,n:0,sold:0};
-  const old=card.querySelector('.mm-product-rating');if(old)old.remove();
+  const title=card.querySelector('h3');
+  const id=card.dataset.productId;
+  if(!title||!id)continue;
+  const v=stats.get(id)||{sum:0,n:0,sold:0};
+  card.querySelector('.mm-product-rating')?.remove();
   const box=el('div',undefined,'mm-product-rating');
-  box.append(el('span',v.n?'⭐ '+(v.sum/v.n).toFixed(1)+' ('+v.n+')':'☆ '+t().noRating));
-  if(v.sold)box.append(el('span',' · '+t().sales+': '+v.sold));
-  const b=el('button',t().ratingText+' ★');b.type='button';b.onclick=()=>openReviews(id,name);box.append(' ',b);
-  card.querySelector('.info')?.insertBefore(box,card.querySelector('.buy'));
+  box.append(tovexReviewButton(document.documentElement.lang,v.sum/v.n,v.n,()=>openReviews(id,title.textContent)));
+  if(v.sold)box.append(el('span',t().sales+': '+v.sold,'tovex-sold'));
+  title.after(box);
  }
 }
 const originalFetch=window.fetch;
@@ -1779,7 +1787,7 @@ header .search-row .mm-search-box{border:1px solid #e9b64e!important;box-shadow:
  }catch(e){feedback.textContent=tr('error')}finally{URL.revokeObjectURL(url);upload.value=''}};
 })();
 </script>
-<script id="tovex-apple-labels">(()=>{const dict={ru:'Продолжить с Apple',ka:'Apple-ით გაგრძელება',en:'Continue with Apple'};const update=()=>{const lang=window.(localStorage.getItem('mm_lang')==='az'?'en':localStorage.getItem('mm_lang'))||document.documentElement.lang||'ru';for(const id of ['tovexAppleText','tovexMobileAppleLabel']){const e=document.getElementById(id);if(e)e.textContent=dict[lang]||dict.ru;}};document.addEventListener('DOMContentLoaded',update);document.querySelectorAll('.languages button').forEach(b=>b.addEventListener('click',()=>setTimeout(update,0)));})();</script>
+<script id="tovex-apple-labels">(()=>{const dict={ru:'Продолжить с Apple',ka:'Apple-ით გაგრძელება',en:'Continue with Apple'};const update=()=>{const lang=(localStorage.getItem('mm_lang')==='az'?'en':localStorage.getItem('mm_lang'))||document.documentElement.lang||'ru';for(const id of ['tovexAppleText','tovexMobileAppleLabel']){const e=document.getElementById(id);if(e)e.textContent=dict[lang]||dict.ru;}};document.addEventListener('DOMContentLoaded',update);document.querySelectorAll('.languages button').forEach(b=>b.addEventListener('click',()=>setTimeout(update,0)));})();</script>
 <script id="tovex-georgia-phone-normalize">
 document.addEventListener('DOMContentLoaded',()=>{
  const el=document.getElementById('mmAuthPhone');if(!el)return;
@@ -1788,39 +1796,41 @@ document.addEventListener('DOMContentLoaded',()=>{
  el.addEventListener('paste',()=>setTimeout(normalize,0));
 });
 </script>
-<style id="tovex-variants-css">#tovexVariantPicker[hidden]{display:none!important}#tovexVariantPicker{position:fixed;inset:0;z-index:210000;background:#000c;display:grid;place-items:center;padding:14px}#tovexVariantPicker .tv-dialog{width:min(510px,100%);max-height:85dvh;overflow:auto;background:#101e32;border:1px solid #2e9c7a;border-radius:15px;padding:20px;color:#fff}#tovexVariantChoices{display:grid;gap:8px;margin:18px 0}.tovex-variant-choice{background:#183b38;color:white;border:1px solid #428b76;border-radius:9px;padding:12px;text-align:left;cursor:pointer}.tovex-variant-choice:disabled{opacity:.4;cursor:not-allowed}</style><div id="tovexVariantPicker" hidden role="dialog" aria-modal="true" aria-label="Выберите размер"><div class="tv-dialog"><button type="button" id="tovexVariantClose" style="float:right;background:transparent;color:white;border:0;font-size:26px">×</button><h2 id="tovexVariantTitle"></h2><p>Выберите размер или характеристики товара</p><div id="tovexVariantChoices"></div></div></div><script>document.getElementById('tovexVariantClose').onclick=()=>document.getElementById('tovexVariantPicker').hidden=true;</script></
+<style id="tovex-variants-css">#tovexVariantPicker[hidden]{display:none!important}#tovexVariantPicker{position:fixed;inset:0;z-index:210000;background:#000c;display:grid;place-items:center;padding:14px}#tovexVariantPicker .tv-dialog{width:min(510px,100%);max-height:85dvh;overflow:auto;background:#101e32;border:1px solid #2e9c7a;border-radius:15px;padding:20px;color:#fff}#tovexVariantChoices{display:grid;gap:8px;margin:18px 0}.tovex-variant-choice{background:#183b38;color:white;border:1px solid #428b76;border-radius:9px;padding:12px;text-align:left;cursor:pointer}.tovex-variant-choice:disabled{opacity:.4;cursor:not-allowed}</style><div id="tovexVariantPicker" hidden role="dialog" aria-modal="true" aria-label="Выберите размер"><div class="tv-dialog"><button type="button" id="tovexVariantClose" style="float:right;background:transparent;color:white;border:0;font-size:26px">×</button><h2 id="tovexVariantTitle"></h2><p>Выберите размер или характеристики товара</p><div id="tovexVariantChoices"></div></div></div><script>document.getElementById('tovexVariantClose').onclick=()=>document.getElementById('tovexVariantPicker').hidden=true;</script>
 <style id="tovex-favorites-reviews-v1">
-/* Product hearts and real Supabase review counts, compact Ozon-style presentation. */
 .mm-rec-visual,#products .photo{position:relative}
-.tovex-heart{position:absolute;right:7px;top:7px;z-index:3;display:grid;place-items:center;width:32px;height:32px;padding:0;border:1px solid #ffffff65;border-radius:50%;background:#0a1933a8;color:#fff;font-size:22px;line-height:1;cursor:pointer;backdrop-filter:blur(6px);transition:transform .18s,background .18s,color .18s}
-.tovex-heart:hover{transform:scale(1.09)}.tovex-heart[aria-pressed="true"]{color:#ff6389;background:#381a38d9;border-color:#ff83a1}
-.mm-rec-rating{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-height:20px}
-.mm-rec-stars{color:#ffbf45!important}.mm-rec-rating-action{color:#c9d7e9!important}
-#products .mm-product-rating{display:flex;align-items:center;gap:6px;flex-wrap:wrap;color:#cbd6e8!important}
-#products .mm-product-rating button{color:#a6dafa!important}
-@media(max-width:480px){.tovex-heart{width:29px;height:29px;font-size:20px;right:5px;top:5px}}
+.mm-rec-item .mm-rec-visual{overflow:hidden;border-radius:10px}
+.tovex-heart{position:absolute;right:4px;top:3px;z-index:3;display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#fff;cursor:pointer}
+.tovex-heart svg{width:20px;height:20px;fill:transparent;stroke:currentColor;stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 1px 2px #0008);transition:fill .15s,transform .15s;pointer-events:none}
+.tovex-heart:hover svg{transform:scale(1.1)}
+.tovex-heart[aria-pressed="true"] svg{fill:#fa557a;stroke:#fa557a}
+.tovex-heart:focus-visible,.tovex-review-summary:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.mm-rec-item .mm-rec-prices{margin-top:5px;margin-bottom:0}
+.mm-rec-item .mm-rec-name{margin-top:1px;margin-bottom:2px;min-height:0;font-weight:500}
+#products .info .price{margin-bottom:2px}
+.mm-rec-item .tovex-review-summary,#products .mm-product-rating .tovex-review-summary{display:inline-flex;align-items:center;gap:11px;width:fit-content;max-width:100%;padding:0;border:0;background:none;color:#f4f4f5;text-decoration:none;font:inherit;font-size:12px!important;line-height:1.2;min-height:20px;white-space:nowrap;cursor:pointer}
+.tovex-review-summary .tovex-score,.tovex-review-summary .tovex-review-count{display:inline-flex;align-items:center;gap:4px;color:#f4f4f5;font-weight:500}
+.tovex-review-summary .tovex-review-count{color:#b9bcc3}
+.tovex-review-summary svg{width:13px;height:13px;flex:none;fill:currentColor;pointer-events:none}
+.tovex-review-summary .tovex-star{color:#ffbd19}
+#products .mm-product-rating{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 5px;color:#b9bcc3}
 </style>
 <script id="tovex-favorites-reviews-js">
+
 (()=>{'use strict';
  const KEY='tovex.favorites.local.v1';let favorites=[];
  try{const value=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(value))favorites=value.map(String)}catch(e){}
  const lang=()=>document.documentElement.lang||'ka';
  const labels={ka:['რჩეულებში დამატება','რჩეულებიდან წაშლა','რჩეულებში შენახულია'],ru:['В избранное','Убрать из избранного','Добавлено в избранное'],en:['Add to favorites','Remove from favorites','Saved to favorites']};
  const tr=()=>labels[lang()]||labels.ka;
- const findProduct=(card)=>{
-  const name=(card.querySelector('.mm-rec-name, .info h3')?.textContent||'').trim();
-  const list=window.mmProductSnapshot||[];
-  const match=list.find(p=>String(p['имя']??p.name??p.name_ru??'').trim()===name);
-  return match?String(match.id??match['идентифи']??name):'name:'+name;
- };
  const refresh=()=>{
   document.querySelectorAll('.mm-rec-item, #products .card').forEach(card=>{
    const visual=card.querySelector('.mm-rec-visual, .photo');if(!visual)return;
-   const id=findProduct(card);if(!id||id==='name:')return;
+   const id=card.dataset.productId;if(!id)return;
    let button=visual.querySelector('.tovex-heart');
-   if(!button){button=document.createElement('button');button.type='button';button.className='tovex-heart';visual.append(button)}
+   if(!button){button=document.createElement('button');button.type='button';button.className='tovex-heart';button.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.8 4.6a5.3 5.3 0 0 0-7.5 0L12 5.9l-1.3-1.3a5.3 5.3 0 0 0-7.5 7.5L12 21l8.8-8.9a5.3 5.3 0 0 0 0-7.5Z"/></svg>';visual.append(button)}
    button.dataset.favoriteId=id;const active=favorites.includes(id);
-   button.textContent=active?'♥':'♡';button.setAttribute('aria-pressed',String(active));button.setAttribute('aria-label',active?tr()[1]:tr()[0]);button.title=active?tr()[1]:tr()[0];
+   button.setAttribute('aria-pressed',String(active));button.setAttribute('aria-label',active?tr()[1]:tr()[0]);button.title=active?tr()[1]:tr()[0];
   });
  };
  document.addEventListener('click',e=>{
@@ -1828,13 +1838,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   e.preventDefault();e.stopPropagation();const id=b.dataset.favoriteId;if(!id)return;
   favorites=favorites.includes(id)?favorites.filter(x=>x!==id):[...favorites,id];
   try{localStorage.setItem(KEY,JSON.stringify(favorites))}catch(e){}
-  document.querySelectorAll('.tovex-heart').forEach(el=>{if(el.dataset.favoriteId!==id)return;const active=favorites.includes(id);el.textContent=active?'♥':'♡';el.setAttribute('aria-pressed',String(active));el.setAttribute('aria-label',active?tr()[1]:tr()[0]);el.title=active?tr()[1]:tr()[0]});
+  document.querySelectorAll('.tovex-heart').forEach(el=>{if(el.dataset.favoriteId!==id)return;const active=favorites.includes(id);el.setAttribute('aria-pressed',String(active));el.setAttribute('aria-label',active?tr()[1]:tr()[0]);el.title=active?tr()[1]:tr()[0]});
  },true);
  const observer=new MutationObserver(()=>{requestAnimationFrame(refresh)});
- for(const selector of ['#products','.mm-rec-grid']){const node=document.querySelector(selector);if(node)observer.observe(node,{childList:true})}
+ for(const selector of ['#products','.mm-rec']){const node=document.querySelector(selector);if(node)observer.observe(node,{childList:true})}
  document.querySelectorAll('[data-lang]').forEach(el=>el.addEventListener('click',()=>setTimeout(refresh,0)));
  refresh();
 })();
 </script>
-body>
+</body>
 </html>
