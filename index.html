@@ -659,7 +659,7 @@ function animateToCart(source){
 const tovexVariantCache=new Map();
 async function addToCart(product){
  if(!product.tovex_seller_product)return tovexAddToCartBase(product);
- const baseId=String(product.id);let variants=tovexVariantCache.get(baseId);
+ const baseId=String(product.id).replace(/^seller-/, '');if(!/^\d+$/.test(baseId)){console.error('TOVEX invalid seller product ID',product.id);alert('Некорректный ID товара');return false;}let variants=tovexVariantCache.get(baseId);
  if(!variants){try{const response=await fetch(SUPABASE_URL+'/rest/v1/product_variants?select=id,size,color,sku,stock,price,price_gel&product_id=eq.'+encodeURIComponent(baseId)+'&order=id.asc',{headers:{apikey:SUPABASE_KEY}});if(!response.ok){const details=await response.text();console.error('TOVEX product_variants HTTP '+response.status,details);throw new Error('Не удалось загрузить варианты (HTTP '+response.status+'). Проверьте консоль браузера.')}variants=await response.json();tovexVariantCache.set(baseId,variants)}catch(e){alert(e.message);return false}}
  if(!variants.length)return tovexAddToCartBase(product);
  const overlay=document.getElementById('tovexVariantPicker');const list=document.getElementById('tovexVariantChoices');list.replaceChildren();document.getElementById('tovexVariantTitle').textContent=nameOf(product);overlay.hidden=false;
