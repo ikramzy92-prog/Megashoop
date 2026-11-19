@@ -1001,9 +1001,9 @@ jump.addEventListener('click',()=>{panel.hidden=false;setTimeout(()=>{panel.scro
 </script>
 <script id="mm-auth-script" type="module">
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const URL='https://mrslybtwzfcovpsyuexf.supabase.co';
+const SUPABASE_AUTH_ENDPOINT='https://mrslybtwzfcovpsyuexf.supabase.co';
 const PUBLIC_KEY='sb_publishable_AnpUjix60jDfpZDGlcO6vQ_XIyxcpDd';
-const db=createClient(URL,PUBLIC_KEY);window.mmBuyerDb=db;
+const db=createClient(SUPABASE_AUTH_ENDPOINT,PUBLIC_KEY);window.mmBuyerDb=db;
 // TOVEX: redirect only server-approved, active courier profiles.
 // A signup role or editable user_metadata never grants courier access.
 let tovexCourierRoutingId=null;
