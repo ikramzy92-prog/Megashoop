@@ -696,14 +696,30 @@ let lang='ka';try{const saved=localStorage.getItem('megashoop-language')==='az'?
 let products=[],cart=[],loading=true,loadError=false;window.mmGetCart=()=>cart.map(x=>({...x}));
 const t=()=>translations[lang];
 const tovexMissingImage='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTIwIj48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iIzE3MjYzMiIvPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzg0OTM5ZSIgc3Ryb2tlLXdpZHRoPSIyLjUiPjxyZWN0IHg9IjU1IiB5PSI0MCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjQwIiByeD0iNSIvPjxjaXJjbGUgY3g9IjY4IiBjeT0iNTIiIHI9IjQiLz48cGF0aCBkPSJtNTcgNzUgMTQtMTQgOCA3IDktMTIgMTUgMTciLz48L2c+PC9zdmc+';
-const nameOf=p=>String(p['имя']??p.name??'Modern Market');
+const originalProductName = p => String(p['имя'] || p.name || p.name_ru || p.name_ka || p.name_en || 'TOVEX').trim();
+const commonProductNames = [
+ [/^свитер(?=$|\s)/i, 'Sweater', 'სვიტერი'],
+ [/^шурупов[её]рт(?=$|\s)/i, 'Drill driver', 'ხრახნდამჭერი'],
+ [/^болгарка(?=$|\s)/i, 'Angle grinder', 'კუთხსახეხი'],
+ [/^мишка\s+тедд?и(?=$|\s)/i, 'Teddy bear', 'ტედი დათვი']
+];
+function nameOf(p) {
+ const translated = String(p['name_' + lang] || '').trim();
+ if (translated) return translated;
+ const original = originalProductName(p);
+ if (lang === 'ru') return original;
+ for (const [prefix, english, georgian] of commonProductNames) {
+  if (prefix.test(original)) return original.replace(prefix, lang === 'ka' ? georgian : english);
+ }
+ return original;
+}
 const originalPriceOf=p=>Number(p['цена']??p.price??0);
 const discountOf=p=>{const n=Number(p.discount_percent??0);return Number.isFinite(n)?Math.max(0,Math.min(100,n)):0};
 const priceOf=p=>{const base=originalPriceOf(p);return p.tovex_seller_product&&discountOf(p)>0?Math.round(base*(100-discountOf(p)))/100:base};
 const oldPriceOf=p=>{const base=originalPriceOf(p);const current=priceOf(p);if(p.tovex_seller_product&&discountOf(p)>0&&base>current)return base;const old=Number(p.old_price??p.original_price??p.compare_at_price??p.price_before_discount??0);return Number.isFinite(old)&&old>current?old:0};
 const stockOf=p=>Number(p['запас']??p.stock??0);
 const unitOf=p=>String(p['единица']??p.unit??'шт');
-const idOf=p=>String(p.id??p['идентифи']??nameOf(p));
+const idOf=p=>String(p.id??p['идентифи']??originalProductName(p));
 const money=n=>Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₾';
 function updateCount(){const count=cart.reduce((s,p)=>s+p.quantity,0);$('cartToggle').textContent='🛒 '+t().cart+' ('+count+')'}
 function renderProducts(){const box=$('products');box.replaceChildren();const query=$('search').value.toLocaleLowerCase().trim();const items=products.filter(p=>nameOf(p).toLocaleLowerCase().includes(query));if(!loading&&!loadError&&!items.length){const p=document.createElement('p');p.textContent=t().empty;box.append(p)}
@@ -807,9 +823,6 @@ async function loadProducts(){
    id:`seller-${p.id}`,
    seller_product_id:p.id,
    name:p.name,
-   name_ru:p.name_ru||p.name,
-   name_ka:p.name_ka||p.name,
-   name_az:p.name_az||p.name,
    price:p.price_gel,
    discount_percent:p.discount_percent??0,
    quantity:p.stock,
@@ -890,7 +903,7 @@ function tovexProductCategoryMatches(p,key){
  if(belongsElsewhere)return false;
  // Older records may have an empty, numeric, or unrecognized category field.
  // In that case identify the instrument by its actual product name.
- const title=tovexNormalizeCategory(nameOf(p));
+ const title=tovexNormalizeCategory(originalProductName(p));
  return (categoryKeywords[key]||[]).some(word=>title.includes(tovexNormalizeCategory(word)));
 }
 renderProducts=function(){
