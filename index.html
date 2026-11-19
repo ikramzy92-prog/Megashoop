@@ -730,7 +730,7 @@ const money=n=>Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maxi
 function updateCount(){const count=cart.reduce((s,p)=>s+p.quantity,0);$('cartToggle').textContent='🛒 '+t().cart+' ('+count+')'}
 function renderProducts(){const box=$('products');box.lang=lang;box.replaceChildren();const query=$('search').value.toLocaleLowerCase().trim();const items=products.filter(p=>nameOf(p).toLocaleLowerCase().includes(query));if(!loading&&!loadError&&!items.length){const p=document.createElement('p');p.textContent=t().empty;box.append(p)}
  for(const product of items){const card=document.createElement('article');card.className='card';card.dataset.productId=idOf(product);const photo=document.createElement('div');photo.className='photo';const img=document.createElement('img');img.alt=nameOf(product);img.loading='lazy';img.src=product.image_url||tovexMissingImage;img.onerror=()=>{img.onerror=null;img.src=tovexMissingImage};photo.append(img);
- const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);const price=document.createElement('div');price.className='price';price.textContent=money(priceOf(product));const oldPrice=oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<=0;buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price,name,stock,buy);card.append(photo,info);box.append(card)} }
+ const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);name.dataset.pdOpen='';name.tabIndex=0;name.setAttribute('role','button');const price=document.createElement('div');price.className='price';price.textContent=money(priceOf(product));const oldPrice=oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<=0;buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price,name,stock,buy);card.append(photo,info);box.append(card)} }
 function animateToCart(source){
  const mobile=window.matchMedia('(max-width: 720px)').matches;
  const mobileTarget=document.querySelector('#tovexMobileNav button[data-go="cart"]');
@@ -1015,7 +1015,7 @@ function render(){
   const current=priceOf(p);
   const old=oldPriceOf(p);
   if(Number.isFinite(old)&&old>current&&current>0){const discount=document.createElement('span');discount.className='mm-rec-discount';discount.textContent='−'+Math.round((1-current/old)*100)+'%';visual.append(discount)}
-  const name=document.createElement('strong');name.className='mm-rec-name';name.textContent=nameOf(p);
+  const name=document.createElement('strong');name.className='mm-rec-name';name.textContent=nameOf(p);name.dataset.pdOpen='';name.tabIndex=0;name.setAttribute('role','button');
   const productId=idOf(p);const data=ratingCache.get(productId);
   const rating=tovexReviewButton(locale,data?.avg,data?.count||0,
     ()=>window.mmOpenProductReviews?.(productId,nameOf(p)));
@@ -1884,5 +1884,79 @@ document.addEventListener('DOMContentLoaded',()=>{
  refresh();
 })();
 </script>
+<style>
+#productDetail{box-sizing:border-box;width:min(1120px,96vw);max-width:100%;max-height:92vh;max-height:92dvh;padding:0;border:1px solid #36545b;border-radius:18px;background:#111c22;color:#f2f7f6;overflow:auto;overscroll-behavior:contain}
+#productDetail::backdrop{background:#040b10cf}
+.pd-top{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid #33444b;color:#78dfbd;letter-spacing:.1em}
+#productDetail button{cursor:pointer;font:inherit}
+.pd-close,.pd-reviews{border:0;background:transparent;color:inherit;min-height:44px}
+.pd-close{width:44px;font-size:28px!important}
+.pd-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr) minmax(185px,.75fr);gap:24px;padding:22px;align-items:start}
+.pd-photo{display:block;width:100%;height:clamp(250px,42vw,470px);object-fit:contain;background:#0b141a;border-radius:14px}
+.pd-thumbs{display:flex;gap:8px;overflow:auto;margin-top:8px}
+.pd-thumbs button{flex:none;padding:2px;background:#18282e;border:1px solid #395055;border-radius:8px}
+.pd-thumbs button[aria-pressed=true]{border-color:#63e6b5}
+.pd-thumbs img{display:block;width:52px;height:58px;object-fit:contain}
+.pd-copy{overflow-wrap:anywhere}.pd-copy h2{font-size:clamp(22px,3vw,32px);line-height:1.16;margin:2px 0 12px}
+.pd-copy p{white-space:pre-line;color:#c6d3d3}
+.pd-reviews{padding:0;color:#86e9c7;text-decoration:underline}
+.pd-order{background:#1a2a30;border-radius:14px;padding:16px;display:grid;gap:10px}
+.pd-price{font-size:24px}.pd-order del,.pd-order small{color:#bfcccc}.pd-add{min-height:44px;border:0;background:#087951;color:white;border-radius:9px;padding:10px}.pd-add:disabled{opacity:.55}
+[data-pd-open],.card .photo img,.mm-rec-visual img{cursor:pointer}
+@media(max-width:760px){#productDetail{width:100%;max-height:100dvh;border-radius:12px}.pd-layout{grid-template-columns:minmax(0,1fr);gap:14px;padding:14px 14px calc(16px + env(safe-area-inset-bottom,0px))}.pd-photo{height:clamp(200px,40vh,360px)}.pd-top{position:sticky;top:0;background:#111c22;z-index:1}}
+</style>
+<dialog id="productDetail" aria-labelledby="pdTitle"><div class="pd-top"><strong>TOVEX</strong><button type="button" class="pd-close">×</button></div>
+<div class="pd-layout"><div><img class="pd-photo" alt=""><div class="pd-thumbs"></div></div>
+<div class="pd-copy"><h2 id="pdTitle"></h2><p class="pd-brand"></p><button type="button" class="pd-reviews"></button><p class="pd-sku"></p><p class="pd-desc"></p></div>
+<div class="pd-order"><strong class="pd-price"></strong><del hidden></del><small></small><button type="button" class="pd-add"></button></div></div></dialog>
+<script>
+(()=>{
+ const dialog=document.getElementById('productDetail');
+ const get=selector=>dialog.querySelector(selector);
+ const labels={ru:['Закрыть','Отзывы','Артикул','Фото'],en:['Close','Reviews','SKU','Photo'],ka:['დახურვა','შეფასებები','არტიკული','ფოტო']};
+ let current;
+ function openProduct(product){
+  current=product;
+  const words=labels[lang],name=nameOf(product);
+  get('#pdTitle').textContent=name;
+  get('.pd-close').setAttribute('aria-label',words[0]);
+  get('.pd-reviews').textContent=words[1];
+  get('.pd-brand').textContent=product.brand||'';
+  get('.pd-sku').textContent=product.sku?words[2]+' · '+product.sku:'';
+  get('.pd-desc').textContent=product['description_'+lang]||product.description||'';
+  get('.pd-price').textContent=money(priceOf(product));
+  const old=oldPriceOf(product);
+  get('del').hidden=!(old>priceOf(product));get('del').textContent=old?money(old):'';
+  get('small').textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);
+  get('.pd-add').disabled=stockOf(product)<=0;get('.pd-add').textContent=stockOf(product)>0?t().buy:t().sold;
+  const photos=[product.image_url,...[product.images,product.image_urls,product.photos].filter(Array.isArray).flat()].map(value=>typeof value==='string'?value:value?.url).filter(Boolean);
+  const gallery=[...new Set(photos)],photo=get('.pd-photo'),thumbs=get('.pd-thumbs');
+  photo.alt=name;photo.onerror=()=>{photo.onerror=null;photo.src=tovexMissingImage};
+  photo.src=gallery[0]||tovexMissingImage;thumbs.replaceChildren();
+  if(gallery.length>1)gallery.forEach((url,index)=>{
+   const button=document.createElement('button'),img=document.createElement('img');
+   button.type='button';button.setAttribute('aria-label',words[3]+' '+(index+1));
+   button.setAttribute('aria-pressed',String(index===0));img.alt='';img.src=url;
+   button.onclick=()=>{photo.src=url;for(const other of thumbs.children)other.setAttribute('aria-pressed',String(other===button))};
+   button.append(img);thumbs.append(button);
+  });
+  dialog.showModal();dialog.scrollTop=0;
+ }
+ function activate(e){
+  const target=e.target.closest('[data-pd-open],.photo img,.mm-rec-visual img');
+  if(!target)return;
+  const card=target.closest('[data-product-id]');
+  const product=card&&products.find(p=>idOf(p)===card.dataset.productId);
+  if(product){e.preventDefault();openProduct(product)}
+ }
+ document.addEventListener('click',activate);
+ document.addEventListener('keydown',e=>{if(e.target.matches('[data-pd-open]')&&(e.key==='Enter'||e.key===' '))activate(e)});
+ get('.pd-close').onclick=()=>dialog.close();
+ dialog.onclick=e=>{if(e.target===dialog)dialog.close()};
+ get('.pd-add').onclick=()=>{dialog.close();addToCart(current)};
+ get('.pd-reviews').onclick=()=>{dialog.close();window.mmOpenProductReviews?.(idOf(current),nameOf(current))};
+})();
+</script>
+
 </body>
 </html>
