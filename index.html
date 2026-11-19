@@ -903,7 +903,12 @@ document.getElementById('products')?.addEventListener('click',e=>{const card=e.t
 document.getElementById('products')?.addEventListener('pointerover',e=>{const card=e.target.closest('.card');if(!card||card.dataset.mmViewed)return;card.dataset.mmViewed='1';setTimeout(()=>{if(card.matches(':hover')){const name=card.querySelector('h3')?.textContent;if(name)remember('view',name)}},1800)});
 const previousLoad=typeof loadProducts==='function'?loadProducts:null;
 if(previousLoad){const originalFetch=window.fetch;/* Product updates observed without replacing existing API functions */}
-let ratingRequested=false;const observer=new MutationObserver(()=>{if(document.getElementById('products')?.children.length){render();if(!ratingsLoading&&!ratingRequested){ratingRequested=true;fetchRatings()}}});const grid=document.getElementById('products');if(grid)observer.observe(grid,{childList:true});
+let ratingRequested=false;
+const requestRecommendationRatings=()=>{if(ratingRequested||ratingsLoading||!Array.isArray(products)||!products.length)return;ratingRequested=true;fetchRatings()};
+const recViewportObserver=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){requestRecommendationRatings();recViewportObserver.disconnect()}},{rootMargin:'250px'});
+recViewportObserver.observe(section);
+const observer=new MutationObserver(()=>{if(document.getElementById('products')?.children.length)render()});
+const grid=document.getElementById('products');if(grid)observer.observe(grid,{childList:true});
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(render,0)));
 render();
 })();
@@ -1253,8 +1258,18 @@ async function ratings(){
 const originalFetch=window.fetch;
 // Observe catalog changes and refresh rating badges without altering the existing product rendering.
 let timeout;const productHost=$('products');
-if(productHost)new MutationObserver(()=>{clearTimeout(timeout);timeout=setTimeout(ratings,250)}).observe(productHost,{childList:true});
-setTimeout(ratings,1200);
+let ratingsVisible=false;
+if(productHost){
+ const ratingsViewportObserver=new IntersectionObserver(entries=>{
+  if(entries.some(e=>e.isIntersecting)){
+   ratingsVisible=true;
+   ratingsViewportObserver.disconnect();
+   ratings();
+  }
+ },{rootMargin:'250px'});
+ ratingsViewportObserver.observe(productHost);
+ new MutationObserver(()=>{if(!ratingsVisible)return;clearTimeout(timeout);timeout=setTimeout(ratings,400)}).observe(productHost,{childList:true});
+}
 </script><script>
 // Buyer authentication is required before opening the checkout form.
 document.addEventListener('click', function(event){
