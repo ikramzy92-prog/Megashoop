@@ -659,8 +659,8 @@ footer{background:#06142b!important;border-top-color:#296bb1!important}
 
 <section hidden tabindex="-1" id="productDetail" translate="no" aria-labelledby="pdTitle"><div class="pd-top"><strong translate="no">TOVEX</strong><button type="button" class="pd-close">×</button></div>
 <div class="pd-layout"><div><img class="pd-photo" alt=""><div class="pd-thumbs"></div></div>
-<div class="pd-copy"><h2 id="pdTitle"></h2><p class="pd-brand"></p><button type="button" class="pd-reviews"></button><p class="pd-sku"></p><p class="pd-desc"></p><div class="pd-options"></div>
-<div class="pd-order"><strong class="pd-price"></strong><del hidden></del><small></small><button type="button" class="pd-add"></button><button type="button" class="pd-now"></button></div></div></div></section>
+<div class="pd-copy"><h2 id="pdTitle"></h2><p class="pd-brand"></p><button type="button" class="pd-reviews"></button><p class="pd-sku"></p><div class="pd-options"></div>
+<div class="pd-order"><strong class="pd-price"></strong><del hidden></del><small></small><button type="button" class="pd-add"></button><button type="button" class="pd-now"></button></div><details class="pd-description"><summary></summary><p class="pd-desc"></p></details></div></div></section>
 <div id="tovexCartInfo" class="tovex-cart-info" aria-label="Информация о заказе">
   <div class="tovex-cart-promo"><label for="tovexPromoInput" data-cart-ka="🏷️ პრომოკოდი" data-cart-ru="🏷️ Промокод" data-cart-az="🏷️ Promokod">🏷️ Промокод</label><div class="tovex-promo-row"><input id="tovexPromoInput" type="text" disabled placeholder="Введите промокод" aria-label="Промокод (пока недоступен)"><button id="tovexPromoApply" type="button" disabled data-cart-ka="გამოყენება" data-cart-ru="Применить" data-cart-az="Tətbiq et">Применить</button></div><small data-cart-ka="პრომოკოდები ფასდაკლებების სისტემის ჩართვის შემდეგ ამუშავდება." data-cart-ru="Промокоды заработают после подключения системы скидок." data-cart-az="Promokodlar endirim sistemi qoşulduqdan sonra işləyəcək.">Промокоды заработают после подключения системы скидок.</small></div>
 
@@ -1939,6 +1939,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 #cart .pd-price{font-size:21px}
 #cart .pd-order{gap:7px 10px;padding:12px;border-radius:14px;background:#222632}
 #cart .pd-price{color:#faf6ff}
+.pd-description{margin:8px 0}.pd-description summary{cursor:pointer;padding:10px 0;color:#e6e7ef}.pd-description p{line-height:1.5}
 #cart .pd-add,#cart .pd-now{grid-column:1/-1;border:0;border-radius:10px;padding:10px;min-height:44px;font-weight:700}
 #cart .pd-add{background:#8844d2;color:#fff}
 #cart .pd-now{background:#eedfff;color:#53257c}
@@ -1960,7 +1961,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   get('.pd-reviews').textContent=words[1];
   get('.pd-brand').textContent=product.brand||'';
   get('.pd-sku').textContent=product.sku?words[2]+' · '+product.sku:'';
-  get('.pd-desc').textContent=product['description_'+lang]||product.description||'';
+  const description=String(product['description_'+lang]||product.description||'').trim();
+  const details=get('.pd-description');
+  details.open=false;
+  details.hidden=!description;
+  const summary={ru:'Описание товара',en:'Product description',ka:'პროდუქტის აღწერა'}[lang];
+  const georgian=/[ა-ჰ]/u.test(description)&&!product['description_'+lang];
+  get('.pd-description summary').textContent=summary+(georgian&&lang!=='ka'?(lang==='ru'?' · на грузинском':' · in Georgian'):'');
+  get('.pd-desc').textContent=description.replace(/^\s*#{1,6}\s+/gm,'').replace(/\*\*(.+?)\*\*/gs,'$1');
   get('.pd-price').textContent=money(priceOf(product));
   const old=oldPriceOf(product);
   get('del').hidden=!(old>priceOf(product));get('del').textContent=old?money(old):'';
