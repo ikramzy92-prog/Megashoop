@@ -527,7 +527,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .tovex-search-feedback{font-size:12px;color:#9fe9cb;min-height:0;padding:0 0 6px;line-height:1.5}
 .tovex-search-feedback:empty{display:none}
 @media(max-width:767px){.search-row .mm-search-box #search{padding-right:121px!important}.tovex-search-tools{right:41px;gap:0}.tovex-search-tools button{width:30px;height:33px;padding:5px}.tovex-search-tools svg{width:19px;height:19px}}
-</style></head>
+</style>
+</head>
 <body>
 <header><div class="wrap">
 <div class="top"><div class="brand"><span class="brand-name">TOVEX</span><span aria-label="საქართველოს დროშა — флаг Грузии" class="georgia-flag" role="img"><svg aria-hidden="true" viewbox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect fill="#fff" height="40" width="60"></rect><path d="M0 16h60v8H0zM26 0h8v40h-8z" fill="#d82135"></path><g fill="#d82135"><path d="M12 5h2v4h4v2h-4v4h-2v-4H8V9h4zM46 5h2v4h4v2h-4v4h-2v-4h-4V9h4zM12 25h2v4h4v2h-4v4h-2v-4H8v-2h4zM46 25h2v4h4v2h-4v4h-2v-4h-4v-2h4z"></path></g></svg></span></div><div class="languages"><button data-lang="ka" type="button">🇬🇪 ქართული</button><button data-lang="ru" type="button">🇷🇺 Русский</button><button data-lang="az" type="button">🇦🇿 Azərbaycan</button></div><div class="mm-account" id="mmAccountBar"><button class="mm-primary" id="mmAccountOpen" type="button">👤 შესვლა</button><button id="tovexBuyerSignupOpen" type="button">📝 რეგისტრაცია</button><img alt="Avatar" hidden="" id="mmHeaderAvatar" style="width:39px;height:39px;object-fit:cover;border-radius:50%;border:2px solid #eabb61"/><span class="mm-account-email" hidden="" id="mmAccountEmail"></span><button id="tovexSellerJoin" type="button" hidden="">🏪 Стать продавцом</button><a aria-label="Seller Back Office" hidden="" href="/backoffice/" id="mmSellerBackoffice" style="display:none">🏪 Back Office</a><button hidden="" id="mmBuyerProfileBtn" type="button">👤 პროფილი</button><button hidden="" id="mmBuyerOrdersBtn" type="button">📦 ჩემი შეკვეთები <span id="mmOrdersBadge" hidden></span></button><button hidden="" id="mmAccountLogout" type="button">გასვლა</button></div></div>
@@ -1027,7 +1028,7 @@ async function mmCheckSellerStore(){
  try{
   const {data,error}=await db.from('stores').select('id').eq('owner_id',currentId).eq('status','approved').limit(1);
   if(error)throw error;
-  if(user?.id===currentId){mmSellerVerifiedId=(data&&data.length)?currentId:null;draw();}
+  if(user?.id===currentId){mmSellerVerifiedId=(data&&data.length)?currentId:null;draw();if(mmSellerVerifiedId===currentId && !window.location.pathname.startsWith('/backoffice/')){window.location.assign('/backoffice/');return;}}
  }catch(err){console.warn('Store ownership lookup failed:',err?.message||err);}
 }
 
@@ -1617,5 +1618,6 @@ header .search-row .mm-search-box{border:1px solid #e9b64e!important;box-shadow:
   const reset=()=>{search.removeEventListener('input',reset);feedback.textContent='';trigger()};search.addEventListener('input',reset,{once:true});
  }catch(e){feedback.textContent=tr('error')}finally{URL.revokeObjectURL(url);upload.value=''}};
 })();
-</script></body>
+</script>
+</body>
 </html>
