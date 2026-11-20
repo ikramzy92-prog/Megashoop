@@ -332,7 +332,7 @@ async function load(){const {data:{user}}=await db.auth.getUser();if(!user){$('t
  $('tovexSellerOrderRows').textContent='Загрузка…';const {data,error}=await db.rpc('tovex_seller_orders');if(error){$('tovexSellerOrderRows').textContent='Ошибка: '+error.message;return;}
  orders=Array.isArray(data)?data:[];const select=$('tovexDeliveryOrder');select.innerHTML='';for(const o of orders){const opt=document.createElement('option');opt.value=o.delivery_id;opt.textContent='#'+o.order_id.slice(0,8)+' · '+o.customer_name;select.append(opt)}select.disabled=!orders.length;
  $('tovexDeliverySave').disabled=!orders.length;
- $('tovexSellerOrderRows').innerHTML=orders.length?orders.map(o=>'<article style="padding:12px;border-bottom:1px solid #344256"><b>#'+safe(o.order_id.slice(0,8))+'</b> · '+safe(o.created_at?.slice(0,16)?.replace('T',' '))+'<div>'+safe(o.customer_name)+' · '+safe(o.customer_phone)+'</div><div>'+safe(o.delivery_address)+'</div><div>'+o.items.map(p=>safe(p.product_name)+' × '+Number(p.quantity)).join(', ')+'</div><b>'+Number(o.total_gel).toFixed(2)+' ₾</b> · '+safe(o.status)+'<div><button class="ghost" type="button" data-delivery="'+safe(o.delivery_id)+'">🚚 Управлять доставкой</button></div></article>').join(''):'Пока нет заказов';
+ $('tovexSellerOrderRows').innerHTML=orders.length?orders.map(o=>('<article><div><b>#'+safe(o.order_id.slice(0,8))+'</b><div>'+safe(o.created_at?.slice(0,16)?.replace('T',' '))+'</div></div><div>'+safe(o.customer_name)+' · '+safe(o.customer_phone)+'<div>'+safe(o.delivery_address)+'</div><div>'+o.items.map(p=>safe(p.product_name)+' × '+Number(p.quantity)).join(', ')+'</div></div><div><b>'+Number(o.total_gel).toFixed(2)+' ₾</b> · '+safe(o.status)+'<div><button class="ghost" type="button" data-delivery="'+safe(o.delivery_id)+'">🚚 Управлять доставкой</button></div></div></article>')).join(''):'Пока нет заказов';
  $('tovexSellerOrderRows').querySelectorAll('[data-delivery]').forEach(b=>b.onclick=()=>{select.value=b.dataset.delivery;document.querySelector('[data-tab="delivery"]')?.click();sync()});sync();}
 function sync(){const o=orders.find(x=>x.delivery_id===$('tovexDeliveryOrder').value);if(!o)return;$('tovexDeliveryMethod').value=o.method||'seller';$('tovexDeliveryStatus').value=o.status||'new';$('tovexDeliveryPreview').textContent='#'+o.order_id.slice(0,8)+' · '+o.customer_name+' · '+o.status;}
 $('tovexDeliveryOrder').addEventListener('change',sync);
@@ -418,4 +418,24 @@ body{background:radial-gradient(ellipse at 98% 0%,#203440 0%,#141c22 40%,#10151a
 #warehouse>.grid>.metric b{font-size:21px;line-height:1.1;margin:0}
 @media(min-width:701px){#warehouse>.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:700px){#warehouse>.grid{grid-template-columns:repeat(2,minmax(0,1fr))}#warehouse>.grid>.metric:nth-child(3){border-inline-start:0}#warehouse>.grid>.metric:nth-child(n+3){border-top:1px solid #344048}}
+</style><style>@media screen{
+#catalog,#dashboard{max-width:1180px}#orders{max-width:880px}
+#catalog .g-title{margin:2px 0 12px}#gCatalogTitle{font-size:clamp(23px,2vw,30px)}
+#inventoryAdd{padding:7px 13px;font-size:15px;min-height:36px}
+#catalog .g-search{margin:0 0 12px;padding:0 10px;width:min(100%,480px);height:36px;box-sizing:border-box}
+#catalog #inventorySearch{margin:0;padding:4px 0;height:32px;min-height:0;font-size:14px}
+#catalog .g-cols{padding:6px 12px;gap:8px}#catalog .g-line{min-height:48px;font-size:14px}
+#catalog .g-name{gap:8px}#catalog .g-name img,#catalog .g-placeholder{width:36px;height:36px;border-radius:5px}
+#catalog .g-tray{padding:5px 10px;gap:6px}#catalog .g-action,#catalog .g-tray summary{padding:4px 8px;min-height:28px;font-size:12px}#catalog .g-pill{padding:3px 7px}
+#dashboard .dash-heading{margin-bottom:8px}#dashboard .dash-grid,#dashboard .dash-two,#dashboard .dash-bottom{gap:8px}
+#dashboard .dash-metric{padding:8px 11px;min-height:0;margin:0}#dashboard .dash-metric strong{font-size:19px;margin:3px 0}
+#dashboard .metric-icon{font-size:14px;padding:4px}#dashboard .dash-panel{padding:10px;margin-bottom:0}#dashboard .dash-chart{height:100px;margin-top:3px}
+#dashboard .dash-donut{width:78px;height:78px;border-width:12px;margin:3px auto}#dashboard .dash-two,#dashboard .dash-bottom{margin-top:8px}
+#dashboard .product-thumb{width:34px;height:34px}#dashboard td,#dashboard th{padding:6px 8px}
+#orders .card{padding:10px 13px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}#orders h2{margin:0}
+#orders #tovexSellerRefresh,#orders button[data-delivery]{padding:5px 9px;min-height:30px;font-size:13px}
+#orders #tovexSellerOrderRows{width:100%;margin-top:0!important}#orders article{padding:7px 0!important;line-height:1.4;overflow-wrap:anywhere}
+@media(min-width:701px){#orders article{display:grid;grid-template-columns:minmax(110px,.8fr) minmax(170px,1.5fr) minmax(140px,1fr);gap:4px 12px;align-items:center}}
+@media(max-width:700px){#catalog .g-cols{padding:6px 10px}#catalog .g-action,#catalog .g-more,#orders button[data-delivery]{min-height:36px}}
+}
 </style></body></html>
