@@ -383,9 +383,9 @@ footer {background:#050d1e!important;border-top-color:#273b5c!important}
 </style>
 <style id="tovex-cart-rise-shake">
 /* Cart drawer rises during product flight, then gently rocks at delivery. */
-#cart.tovex-cart-rise{animation:tovexCartRise 1.65s cubic-bezier(.2,.85,.2,1) both!important;transform-origin:bottom right}
-@keyframes tovexCartRise{0%{transform:translateY(100%);opacity:.45}65%{transform:translateY(-12px);opacity:1}100%{transform:translateY(0);opacity:1}}
-#cart.tovex-cart-shake{animation:tovexCartShake .75s ease-in-out!important;transform-origin:bottom right}
+#cart.tovex-cart-rise{animation:tovexCartRise 1s ease-out!important;transform-origin:top center}
+@keyframes tovexCartRise{0%{transform:translateX(88%);opacity:.5}38%{transform:translateX(0) rotate(-2deg);opacity:1}57%{transform:rotate(1.6deg)}75%{transform:rotate(-.9deg)}88%{transform:rotate(.45deg)}100%{transform:none}}
+#cart.tovex-cart-shake{animation:tovexCartShake .75s ease-in-out!important;transform-origin:top center}
 @keyframes tovexCartShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-1.5deg)}40%{transform:rotate(1.4deg)}60%{transform:rotate(-.8deg)}80%{transform:rotate(.4deg)}}
 @media(prefers-reduced-motion:reduce){#cart.tovex-cart-rise,#cart.tovex-cart-shake{animation:none!important}}
 </style>
@@ -839,14 +839,8 @@ function animateToCart(source){
   void target.offsetWidth;
   target.classList.add(klass);
  };
- const openDrawer=()=>{
-  if(typeof window.mmCartOpen==='function')window.mmCartOpen();
-  if(drawer){
-   drawer.classList.remove('tovex-cart-rise','tovex-cart-shake');
-   void drawer.offsetWidth;
-   drawer.classList.add('tovex-cart-rise');
-  }
- };
+ window.tovexPrepareCartSound?.();
+ const openDrawer=()=>window.mmCartOpen?.();
  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   openDrawer();bump();return;
  }
@@ -869,11 +863,7 @@ function animateToCart(source){
   flyer.remove();
   if(drawer?.hidden)openDrawer();
   bump();
-  if(drawer){
-   drawer.classList.remove('tovex-cart-rise','tovex-cart-shake');
-   void drawer.offsetWidth;
-   drawer.classList.add('tovex-cart-shake');
-  }
+
  };
  try{
   const anim=flyer.animate([
@@ -904,7 +894,17 @@ async function loadDetailVariants(product){
 }
 function tovexAddToCartBase(product){if(window.mmRoleGuard && !window.mmRoleGuard.canBuy()){window.mmRoleGuard.warn();return false;}const id=idOf(product);const existing=cart.find(p=>p.id===id);const minimum=wholesaleMinimum(product);const next=existing?existing.quantity+1:minimum;if(next>stockOf(product)||(product.wholesale&&next>100)){alert(t().shortage);return false}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),minimum,price:wholesalePrice(product,next),quantity:next,image:product.image_url||'',stock:stockOf(product)});updateCount();renderCart();return true}
 function renderCart(){refreshWholesaleCart();const box=$('cartItems');box.replaceChildren();for(const item of cart){const row=document.createElement('div');row.className='cart-row mm-cart-item';const pic=document.createElement('img');pic.className='mm-cart-thumb';pic.alt=item.name;pic.src=item.image||tovexMissingImage;pic.onerror=()=>{pic.onerror=null;pic.src=tovexMissingImage};const detail=document.createElement('div');detail.className='mm-cart-detail';const label=document.createElement('strong');label.textContent=item.name;const amount=document.createElement('span');amount.textContent=money(item.price*item.quantity);const qty=document.createElement('div');qty.className='mm-cart-qty';const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label','Decrease quantity');minus.onclick=()=>{item.quantity--;if(item.quantity<(item.minimum||1))cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};const count=document.createElement('span');count.textContent=String(item.quantity);const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label','Increase quantity');plus.onclick=()=>{if(item.quantity>=item.stock||(item.wholesaleActive&&item.quantity>=100)){alert(t().shortage);return}item.quantity++;updateCount();renderCart()};qty.append(minus,count,plus);const remove=document.createElement('button');remove.className='remove';remove.textContent=t().remove;remove.onclick=()=>{cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};detail.append(label,amount,qty,remove);row.append(pic,detail);box.append(row)}$('total').textContent=t().total+' '+money(cart.reduce((s,p)=>s+p.price*p.quantity,0))}
-function updateLanguage(){const deliveryLink=document.getElementById('tovexDeliveryLink');if(deliveryLink)deliveryLink.textContent=({ka:'მიწოდება',ru:'Доставка',en:'Delivery'})[lang]||'მიწოდება';const cityName=({ka:'თბილისი',ru:'Тбилиси',en:'Tbilisi'})[lang]||'თბილისი';document.getElementById('tvHeaderCity').textContent=cityName;document.getElementById('tvHeaderDelivery').setAttribute('aria-label',cityName+' · '+({ka:'მიწოდება',ru:'Доставка',en:'Delivery'})[lang]);document.documentElement.lang=lang;$('subtitle').textContent=t().subtitle;const heroText={ka:['ხარისხი ყველა დეტალში','პროფესიონალური ხელსაწყოები','პროდუქციის ნახვა'],ru:['КАЧЕСТВО В КАЖДОЙ ДЕТАЛИ','Профессиональные инструменты','Смотреть товары'],en:['QUALITY IN EVERY DETAIL','Professional tools','Browse products']};$('heroKicker').textContent=heroText[lang][0];$('heroTitle').textContent=heroText[lang][1];$('heroDescription').textContent=t().subtitle;$('heroCta').textContent=heroText[lang][2];$('catalogTitle').textContent=t().catalog;$('search').placeholder=t().search;$('cartTitle').textContent=t().cartTitle;$('checkoutNote').textContent=t().note;$('footer').textContent='© 2026 TOVEX. '+t().footer;$('status').textContent=loading?t().loading:loadError?t().error:t().found+' '+products.length;document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));updateCount();renderProducts();renderCart()}
+function updateLanguage(){
+ const legalLabels={
+  ka:['კონფიდენციალურობის პოლიტიკა','გამოყენების პირობები','იურიდიული ინფორმაცია'],
+  ru:['Политика конфиденциальности','Условия использования','Правовая информация'],
+  en:['Privacy policy','Terms of use','Legal information']
+ }[lang];
+ const legal=document.getElementById('tovex-legal-links');
+ legal.querySelector('a[href="/privacy.html"]').textContent=legalLabels[0];
+ legal.querySelector('a[href="/terms.html"]').textContent=legalLabels[1];
+ legal.setAttribute('aria-label',legalLabels[2]);
+ const deliveryLink=document.getElementById('tovexDeliveryLink');if(deliveryLink)deliveryLink.textContent=({ka:'მიწოდება',ru:'Доставка',en:'Delivery'})[lang]||'მიწოდება';const cityName=({ka:'თბილისი',ru:'Тбилиси',en:'Tbilisi'})[lang]||'თბილისი';document.getElementById('tvHeaderCity').textContent=cityName;document.getElementById('tvHeaderDelivery').setAttribute('aria-label',cityName+' · '+({ka:'მიწოდება',ru:'Доставка',en:'Delivery'})[lang]);document.documentElement.lang=lang;$('subtitle').textContent=t().subtitle;const heroText={ka:['ხარისხი ყველა დეტალში','პროფესიონალური ხელსაწყოები','პროდუქციის ნახვა'],ru:['КАЧЕСТВО В КАЖДОЙ ДЕТАЛИ','Профессиональные инструменты','Смотреть товары'],en:['QUALITY IN EVERY DETAIL','Professional tools','Browse products']};$('heroKicker').textContent=heroText[lang][0];$('heroTitle').textContent=heroText[lang][1];$('heroDescription').textContent=t().subtitle;$('heroCta').textContent=heroText[lang][2];$('catalogTitle').textContent=t().catalog;$('search').placeholder=t().search;$('cartTitle').textContent=t().cartTitle;$('checkoutNote').textContent=t().note;$('footer').textContent='© 2026 TOVEX. '+t().footer;$('status').textContent=loading?t().loading:loadError?t().error:t().found+' '+products.length;document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));updateCount();renderProducts();renderCart()}
 async function loadProducts(){
  try{
   const headers={apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`};
@@ -1559,7 +1559,52 @@ body.mm-cart-open{overflow:hidden}
 (()=>{'use strict';
  const drawer=document.getElementById('cart'),shade=document.getElementById('mmCartBackdrop');
  const close=()=>{document.getElementById('productDetail').hidden=true;drawer.hidden=true;shade.hidden=true;document.body.classList.remove('mm-cart-open');document.getElementById('cartToggle')?.focus()};
- window.mmCartOpen=(detail=false)=>{drawer.classList.toggle('full-cart',detail!==true);if(detail!==true){document.getElementById('productDetail').hidden=true;document.getElementById('cartScroll').scrollTop=0}drawer.hidden=false;shade.hidden=false;document.body.classList.add('mm-cart-open');document.getElementById('mmCartClose')?.focus()};
+ let bellContext;
+ function prepareCartSound(){
+  const Audio=window.AudioContext || window.webkitAudioContext;
+  if (!Audio) return;
+  bellContext ||= new Audio();
+  if (bellContext.state !== 'running') return bellContext.resume();
+ }
+ window.tovexPrepareCartSound=()=>{try{prepareCartSound()?.catch(()=>{});}catch{}};
+ async function ringCartBell(){
+  try {
+   await prepareCartSound();
+   if (!bellContext || drawer.hidden) return;
+   const now = bellContext.currentTime;
+   for (const [frequency, volume, duration] of [[1046.5, 0.085, 0.68], [2532, 0.026, 0.38], [3920, 0.012, 0.17]]) {
+    const tone = bellContext.createOscillator();
+    const gain = bellContext.createGain();
+    tone.frequency.value = frequency;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(volume, now + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    tone.connect(gain);
+    gain.connect(bellContext.destination);
+    tone.onended = () => { tone.disconnect(); gain.disconnect(); };
+    tone.start(now);
+    tone.stop(now + duration);
+   }
+  } catch { /* Audio can be disabled by the browser. */ }
+ }
+ function signalCart(opening){
+  drawer.classList.remove('tovex-cart-rise','tovex-cart-shake');
+  void drawer.offsetWidth;
+  drawer.classList.add(opening?'tovex-cart-rise':'tovex-cart-shake');
+  const mobile=document.querySelector('#tovexMobileNav button[data-go="cart"]');
+  const target=mobile && mobile.getClientRects().length ? mobile : document.getElementById('cartToggle');
+  if(target){
+   const name=target===mobile?'tovex-mobile-cart-bump':'cart-bump';
+   target.classList.remove(name);
+   void target.offsetWidth;
+   target.classList.add(name);
+  }
+  void ringCartBell();
+ }
+ window.tovexCartAdded=()=>signalCart(false);
+ window.mmCartOpen=(detail=false)=>{
+  const ring = drawer.hidden || (detail !== true && !drawer.classList.contains('full-cart'));
+  drawer.classList.toggle('full-cart',detail!==true);if(detail!==true){document.getElementById('productDetail').hidden=true;document.getElementById('cartScroll').scrollTop=0}drawer.hidden=false;shade.hidden=false;if(ring)signalCart(true);document.body.classList.add('mm-cart-open');document.getElementById('mmCartClose')?.focus()};
  document.getElementById('mmCartClose')?.addEventListener('click',close);
  shade?.addEventListener('click',close);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.hidden)close()});
@@ -2063,6 +2108,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 #cart.full-cart #tovexCartInfo .tovex-cart-gift-art{display:none}
 #cart #mmCheckoutJump{display:flex!important;align-items:center;justify-content:space-between;gap:8px;background:#8442c4!important}
 #cart #mmCheckoutJump:disabled{opacity:.6}
+@media(max-width:767px){
+ #cart .pd-close{display:none}
+ #cart .mm-cart-close,#cart .pd-options button{min-width:44px;min-height:44px}
+ #cartScroll{min-width:0}
+ #cart .pd-copy{min-width:0;overflow-wrap:anywhere}
+ #tovex-legal-links{display:flex;flex-wrap:wrap;justify-content:center;gap:0 12px}
+ #tovex-legal-links a{display:inline-flex;align-items:center;max-width:100%;min-height:44px;margin:0!important}
+}
 #checkoutThumbs{display:flex;gap:5px;overflow:auto;margin-bottom:7px}
 #checkoutThumbs img{width:34px;height:40px;flex:none;object-fit:contain;border-radius:5px}
 #cart:not(.full-cart) #checkoutThumbs,#checkoutThumbs:empty{display:none}
@@ -2179,11 +2232,15 @@ document.addEventListener('DOMContentLoaded',()=>{
     const button=document.createElement('button'),label=[v.size,v.color].filter(Boolean).join(' / ')||v.sku||String(v.id);
     button.type='button';button.textContent=label;button.disabled=Number(v.stock)<=0;button.setAttribute('aria-pressed','false');
     button.onclick=()=>{
-     const price=Number(v.price_gel??v.price??priceOf(product));
+     const base=Number(v.price_gel??v.price??originalPriceOf(product));
+     const variant={...product,price:base,'цена':base};
+     const price=priceOf(variant),oldPrice=oldPriceOf(variant);
      const title=nameOf(product)+' — '+label;
      choice={...product,id:String(product.id).replace(/^seller-/,'')+'::'+v.id,name:title,'имя':title,['name_'+lang]:title,price,'цена':price,stock:Number(v.stock),'запас':Number(v.stock),discount_percent:0,tovex_seller_product:false};
      for(const other of host.querySelectorAll('button'))other.setAttribute('aria-pressed',String(other===button));
-     get('.pd-price').textContent=money(price);get('del').hidden=true;
+     get('.pd-price').textContent=money(price);
+     get('del').hidden=oldPrice<=price;
+     get('del').textContent=oldPrice>price?money(oldPrice):'';
      get('small').textContent=t().stock+' '+v.stock+' '+unitOf(product);
      if(v.sku)get('.pd-sku').textContent=words[2]+' · '+v.sku;
      setPurchaseEnabled(true);
@@ -2205,7 +2262,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  }
  document.addEventListener('click',activate);
  document.addEventListener('keydown',e=>{if(e.target.matches('[data-pd-open]')&&(e.key==='Enter'||e.key===' '))activate(e)});
- get('.pd-close').onclick=()=>{dialog.hidden=true;document.getElementById('mmCartClose').focus()};
+ get('.pd-close').onclick=()=>document.getElementById('mmCartClose').click();
 
  window.tovexShowProduct=openProduct;
  function setPurchaseEnabled(enabled){
@@ -2218,6 +2275,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    const alreadyAdded=cart.some(row=>row.id===idOf(selected));
    if(!(immediate&&alreadyAdded)&&!tovexAddToCartBase(selected))return;
    syncCart();
+   if(!immediate)window.tovexCartAdded();
    if(immediate){window.mmCartOpen();document.getElementById('mmCheckoutJump').click()}
   };
   finish();
