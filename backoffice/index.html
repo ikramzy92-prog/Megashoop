@@ -256,10 +256,11 @@ $('savePublicShopName').onclick=async()=>{
  const storeId=shop.id;
  button.disabled=true;
  try{
-  const {data,error}=await db.from('stores').update({name}).eq('id',storeId).eq('owner_id',user.id).select('name').single();
+  const {data,error}=await db.rpc('tovex_rename_my_store',{p_store_id:String(storeId),p_name:name});
   if(error)throw error;
   if(shop?.id!==storeId)return;
-  shop.name=data.name;
+  if(typeof data!=='string' || data!==name)throw Error(shopNameHint());
+  shop.name=data;
   render();
   status.textContent={ru:'Название магазина сохранено.',ka:'მაღაზიის სახელი შენახულია.',az:'Mağaza adı yadda saxlanıldı.'}[lang];
  }catch(error){status.textContent=error.message||String(error)}
