@@ -1064,7 +1064,7 @@ let loadingPage=false;
 const seenProducts=new Set();
 async function readCatalogPage(source){
  const seller=source.table==='seller_products';
- const query=new URLSearchParams({select:seller?'*,stores!inner(status)':'*',
+ const query=new URLSearchParams({select:seller?'*,stores!inner(status,name)':'*',
   offset:String(source.offset),limit:String(catalogPageSize)});
  if(source.order)query.set('order',source.order+'.asc');
  if(seller){query.set('status','eq.approved');query.set('stores.status','eq.approved')}
@@ -1281,7 +1281,15 @@ function render(){
   if(Number.isFinite(old)&&old>current&&current>0){const before=document.createElement('del');before.textContent=money(old);prices.append(before)}
   const buy=document.createElement('button');buy.type='button';buy.className='gold mm-rec-buy';buy.textContent=(Number(stockOf(p))>0?({ka:'კალათაში დამატება',ru:'В корзину',en:'Add to cart'})[locale]:({ka:'არ არის მარაგში',ru:'Нет в наличии',en:'Out of stock'})[locale]);if(Number(stockOf(p))>0)addCartIcon(buy);buy.disabled=Number(stockOf(p))<=0;
   buy.onclick=()=>{remember('cart',nameOf(p));if(typeof addToCart==='function'){const added=addToCart(p);if(added&&typeof animateToCart==='function')animateToCart(img)}else{const input=document.getElementById('search');if(input){input.value=nameOf(p);input.dispatchEvent(new Event('input',{bubbles:true}))}document.getElementById('catalogTitle')?.scrollIntoView({behavior:'smooth'})}};
-  item.append(visual,prices,name,rating,stock,buy);list.append(item)
+  item.append(visual,prices,name);
+  const storeName=p.stores?.name?.trim() || p.store_name?.trim();
+  if(storeName){
+   const seller=document.createElement('div');
+   seller.className='mm-rec-seller';
+   seller.textContent=({ka:'მაღაზია',ru:'Магазин',en:'Store'})[locale]+': '+storeName;
+   item.append(seller);
+  }
+  item.append(rating,stock,buy);list.append(item)
  }
  section.append(list)
 }
@@ -2140,6 +2148,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 .tovex-heart[aria-pressed="true"] svg{fill:#fa557a;stroke:#fa557a}
 .tovex-heart:focus-visible,.tovex-review-summary:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .mm-rec-item .mm-rec-prices{margin-top:5px;margin-bottom:0}
+.mm-rec-item .mm-rec-seller{margin:0 9px 3px;color:#55e5e8;font-size:12px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+@media(max-width:680px){.mm-rec .mm-rec-seller{margin-inline:4px}}
 .mm-rec-item .mm-rec-name{margin-top:1px;margin-bottom:2px;min-height:0;font-weight:500}
 #products .info .price{margin-bottom:2px}
 .mm-rec-item .tovex-review-summary,#products .mm-product-rating .tovex-review-summary{display:inline-flex;align-items:center;gap:11px;width:fit-content;max-width:100%;padding:0;border:0;background:none;color:#f4f4f5;text-decoration:none;font:inherit;font-size:12px!important;line-height:1.2;min-height:20px;white-space:nowrap;cursor:pointer}
