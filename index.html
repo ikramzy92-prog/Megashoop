@@ -1313,7 +1313,19 @@ ru:['Оформление заказа','Имя и фамилия','Электр
 en:['Order details','Full name','Email','Phone','Delivery address','📍 Open Google Maps','Choose a location in Google Maps and paste its share link below.','Google Maps location link','I agree to the use of my details to prepare the order.','Prepare order','Your cart is empty.','Order prepared but not sent to the seller. Copy and send it.','Copy order','Copied','Enter a valid Google Maps link.']};
 const $=id=>document.getElementById(id);const form=$('mmOrderForm'),status=$('mmCheckoutStatus');
 function local(){return dict[document.documentElement.lang]||dict.ka}
-function translate(){const d=local();const put=(el,value)=>{if(el)el.textContent=value};put($('mmCheckoutTitle'),d[0]);['name','email','phone','address'].forEach((key,i)=>put(document.querySelector('[data-mm="'+key+'"]'),d[i+1]));put($('mmOpen2gis'),d[5]);put($('mmMapHelp'),d[6]);put(document.querySelector('[data-mm="map"]'),d[7]);put($('mmConsentText'),d[8]);put($('mmPrepareOrder'),d[9]);}
+function showDeliveryAmounts(){
+ const language=document.documentElement.lang;
+ const labels={
+  ru:['За товар при получении','Стоимость доставки согласовывается отдельно до выезда курьера.'],
+  ka:['საქონლის საფასური მიღებისას','მიწოდების საფასური ცალკე შეთანხმდება კურიერის გამგზავრებამდე.'],
+  en:['Goods payable on receipt','The delivery fee is agreed separately before the courier sets off.']
+ }[language]||['საქონლის საფასური მიღებისას','მიწოდების საფასური ცალკე შეთანხმდება კურიერის გამგზავრებამდე.'];
+ const items=window.mmGetCart?.()||[];
+ const cents=items.reduce((sum,item)=>sum+Math.round(Number(item.price)*100)*Number(item.quantity),0);
+ $('goodsOnReceipt').textContent=labels[0]+': '+(cents/100).toFixed(2)+' ₾';
+ $('deliveryQuoteNote').textContent=labels[1];
+}
+function translate(){showDeliveryAmounts();const d=local();const put=(el,value)=>{if(el)el.textContent=value};put($('mmCheckoutTitle'),d[0]);['name','email','phone','address'].forEach((key,i)=>put(document.querySelector('[data-mm="'+key+'"]'),d[i+1]));put($('mmOpen2gis'),d[5]);put($('mmMapHelp'),d[6]);put(document.querySelector('[data-mm="map"]'),d[7]);put($('mmConsentText'),d[8]);put($('mmPrepareOrder'),d[9]);}
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(translate,0)));translate();
 const jump=$('mmCheckoutJump');
 const dialog=$('mmCheckoutDialog'),shade=$('mmCheckoutShade');
@@ -1322,7 +1334,7 @@ $('mmCheckoutClose').onclick=closeCheckout;shade.onclick=closeCheckout;
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!dialog.hidden)closeCheckout()});
 jump.addEventListener('click',()=>{
  if(!window.mmBuyerUser?.phone_confirmed_at){window.mmRequireVerifiedPhone?.();return}
- dialog.hidden=false;shade.hidden=false;$('mmCheckoutPanel').hidden=false;
+ showDeliveryAmounts();dialog.hidden=false;shade.hidden=false;$('mmCheckoutPanel').hidden=false;
  form.elements.customer.focus();
 });
 let pendingCheckout=false;
@@ -1783,6 +1795,7 @@ body.mm-cart-open{overflow:hidden}
 </script>
 <div hidden="" id="mmCheckoutShade"></div><div aria-labelledby="mmCheckoutTitle" aria-modal="true" hidden="" id="mmCheckoutDialog" role="dialog"><button aria-label="Close" id="mmCheckoutClose" type="button">×</button><div class="mm-checkout" hidden="" id="mmCheckoutPanel"><h3 id="mmCheckoutTitle">შეკვეთის მონაცემები</h3>
 <form id="mmOrderForm">
+<div aria-live="polite"><strong id="goodsOnReceipt"></strong><p id="deliveryQuoteNote"></p></div>
 <label><span data-mm="name">სახელი და გვარი</span><input autocomplete="name" maxlength="100" name="customer" required=""/></label>
 <label><span data-mm="email">ელფოსტა</span><input autocomplete="email" maxlength="150" name="email" required="" type="email"/></label>
 <label><span data-mm="phone">ტელეფონი</span><input autocomplete="tel" name="phone" pattern="[+0-9 ()-]{7,25}" required="" title="7–25 digits / symbols" type="tel"/></label>
