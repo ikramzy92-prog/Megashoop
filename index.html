@@ -805,6 +805,19 @@ header .mm-search-box button[aria-pressed="true"] {color:#08664f!important}
   }
 }
 </style>
+<style>
+.product-cart-icon{display:inline-block;width:20px;height:20px;flex:none;vertical-align:middle;margin-inline-end:5px;stroke:currentColor;stroke-width:2}
+@media(max-width:767px){
+ #products .card .info .buy,.mm-rec .mm-rec-item .mm-rec-buy{
+   display:flex;align-items:center;justify-content:center;box-sizing:border-box;
+   min-width:0!important;max-width:100%;height:auto;min-height:44px;
+   padding:8px 5px!important;white-space:normal;overflow-wrap:anywhere;line-height:1.2;
+   color:#fff!important;background:#08755d!important;
+ }
+ #products .card .info .buy{width:100%!important;margin-inline:0!important}
+ .mm-rec .mm-rec-item .mm-rec-buy{width:calc(100% - 8px)!important;margin-inline:4px!important}
+}
+</style>
 </head>
 <body>
 <header><div class="wrap"><div class="tv-delivery-row"><a id="tvHeaderDelivery" aria-label="თბილისი — ქალაქის არჩევა" href="?view=delivery"><svg aria-hidden="true" width="16" height="18" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1a8 8 0 0 0-8 8c0 5.3 8 14 8 14s8-8.7 8-14a8 8 0 0 0-8-8Zm0 4.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Z"/></svg><span id="tvHeaderCity">თბილისი</span></a></div>
@@ -917,10 +930,16 @@ function removePurchasedItems(submitted){
  }
  cart=cart.filter(row=>row.quantity>0);updateCount();renderCart();
 }
+function addCartIcon(button){
+ const icon=document.querySelector('#cartToggle svg').cloneNode(true);
+ icon.setAttribute('aria-hidden','true');
+ icon.classList.add('product-cart-icon');
+ button.prepend(icon);
+}
 function updateCount(){refreshWholesaleCart();const count=cart.reduce((s,p)=>s+p.quantity,0);$('headerCartLabel').textContent=t().cart;$('headerCartCount').textContent=String(count);window.refreshCartSummary?.()}
 function renderProducts(){const box=$('products');box.lang=lang;box.replaceChildren();const query=$('search').value.toLocaleLowerCase().trim();const items=products.filter(p=>nameOf(p).toLocaleLowerCase().includes(query));if(!loading&&!loadError&&!items.length){const p=document.createElement('p');p.textContent=t().empty;box.append(p)}
  for(const product of items){const card=document.createElement('article');card.className='card';card.dataset.productId=idOf(product);const photo=document.createElement('div');photo.className='photo';const img=document.createElement('img');img.alt=nameOf(product);img.loading='lazy';img.src=product.image_url||tovexMissingImage;img.onerror=()=>{img.onerror=null;img.src=tovexMissingImage};photo.append(img);
- const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);name.dataset.pdOpen='';name.tabIndex=0;name.setAttribute('role','button');const price=document.createElement('div');price.className='price';price.textContent=money(wholesalePrice(product,wholesaleMinimum(product)));const oldPrice=product.wholesale?.mode==='bulk'?0:oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<wholesaleMinimum(product);buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price,name);if(product.wholesale)info.append(wholesaleInfo(product));info.append(stock,buy);card.append(photo,info);box.append(card)} }
+ const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);name.dataset.pdOpen='';name.tabIndex=0;name.setAttribute('role','button');const price=document.createElement('div');price.className='price';price.textContent=money(wholesalePrice(product,wholesaleMinimum(product)));const oldPrice=product.wholesale?.mode==='bulk'?0:oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<wholesaleMinimum(product);if(!buy.disabled)addCartIcon(buy);buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price,name);if(product.wholesale)info.append(wholesaleInfo(product));info.append(stock,buy);card.append(photo,info);box.append(card)} }
 function animateToCart(source){
  const mobile=window.matchMedia('(max-width: 720px)').matches;
  const mobileTarget=document.querySelector('#tovexMobileNav button[data-go="cart"]');
@@ -1267,7 +1286,7 @@ function render(){
   const stock=document.createElement('div');stock.className='mm-rec-stock';stock.textContent=(Number(stockOf(p))>0?'● '+({ka:'მარაგშია: ',ru:'В наличии: ',en:'In stock: '})[locale]+stockOf(p):({ka:'არ არის მარაგში',ru:'Нет в наличии',en:'Out of stock'})[locale]);
   const prices=document.createElement('div');prices.className='mm-rec-prices';const price=document.createElement('span');price.className='mm-rec-price';price.textContent=money(current);prices.append(price);
   if(Number.isFinite(old)&&old>current&&current>0){const before=document.createElement('del');before.textContent=money(old);prices.append(before)}
-  const buy=document.createElement('button');buy.type='button';buy.className='gold mm-rec-buy';buy.textContent='🛒 '+(Number(stockOf(p))>0?({ka:'კალათაში დამატება',ru:'В корзину',en:'Add to cart'})[locale]:({ka:'არ არის მარაგში',ru:'Нет в наличии',en:'Out of stock'})[locale]);buy.disabled=Number(stockOf(p))<=0;
+  const buy=document.createElement('button');buy.type='button';buy.className='gold mm-rec-buy';buy.textContent=(Number(stockOf(p))>0?({ka:'კალათაში დამატება',ru:'В корзину',en:'Add to cart'})[locale]:({ka:'არ არის მარაგში',ru:'Нет в наличии',en:'Out of stock'})[locale]);if(Number(stockOf(p))>0)addCartIcon(buy);buy.disabled=Number(stockOf(p))<=0;
   buy.onclick=()=>{remember('cart',nameOf(p));if(typeof addToCart==='function'){const added=addToCart(p);if(added&&typeof animateToCart==='function')animateToCart(img)}else{const input=document.getElementById('search');if(input){input.value=nameOf(p);input.dispatchEvent(new Event('input',{bubbles:true}))}document.getElementById('catalogTitle')?.scrollIntoView({behavior:'smooth'})}};
   item.append(visual,prices,name,rating,stock,buy);list.append(item)
  }
