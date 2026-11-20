@@ -770,6 +770,41 @@ header .mm-search-box button[aria-pressed="true"] {color:#08664f!important}
 #products .card .info .price,
 .mm-rec-item .mm-rec-prices .mm-rec-price { color: #FFD38A !important; }
 </style>
+<style>
+@media (max-width:767px){
+  #products.grid, .mm-rec .mm-rec-grid{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:18px 6px!important;
+  }
+  #products .card, .mm-rec .mm-rec-item, section.mm-rec{
+    padding:0!important;border:0!important;box-shadow:none!important;
+    background:transparent!important;border-radius:0!important;
+  }
+  #products .card .photo, .mm-rec .mm-rec-item .mm-rec-visual{
+    width:100%;height:auto!important;aspect-ratio:3/4!important;
+    padding:0!important;overflow:hidden;border-radius:12px!important;
+  }
+  #products .card .photo img, .mm-rec .mm-rec-visual img{
+    display:block;width:100%!important;height:100%!important;object-fit:cover!important;
+    padding:0;border:0;
+  }
+  #products .card .info{padding:8px 4px 0!important;min-height:0!important}
+  .mm-rec .mm-rec-item .mm-rec-prices{margin:8px 4px 0!important}
+  .mm-rec .mm-rec-name,.mm-rec .mm-rec-rating,.mm-rec .mm-rec-stock{margin-inline:4px!important}
+  #products .card .info .price,.mm-rec .mm-rec-prices{
+    display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 6px;
+  }
+  #products .card .info .price,.mm-rec-item .mm-rec-prices .mm-rec-price{
+    color:#ff537d!important;font-size:18px!important;font-weight:700!important;
+    line-height:1.2;letter-spacing:-.3px;
+  }
+  #products .card .info .price{margin:0!important}
+  #products .price del,.mm-rec .mm-rec-prices del{
+    order:1;color:#a7a9b5!important;font-weight:400;font-size:13px!important;
+    text-decoration:line-through;margin:0;white-space:nowrap;
+  }
+}
+</style>
 </head>
 <body>
 <header><div class="wrap"><div class="tv-delivery-row"><a id="tvHeaderDelivery" aria-label="თბილისი — ქალაქის არჩევა" href="?view=delivery"><svg aria-hidden="true" width="16" height="18" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1a8 8 0 0 0-8 8c0 5.3 8 14 8 14s8-8.7 8-14a8 8 0 0 0-8-8Zm0 4.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Z"/></svg><span id="tvHeaderCity">თბილისი</span></a></div>
