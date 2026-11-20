@@ -1262,7 +1262,7 @@ function render(){
  if(typeof products==='undefined'||!Array.isArray(products)||!products.length)return;
  const tokens=new Map();for(const h of history){const weight=h.type==='cart'?5:h.type==='view'?3:2;for(const w of words(h.value))tokens.set(w,(tokens.get(w)||0)+weight)}
  const ranked=products.map((p,i)=>{const name=typeof nameOf==='function'?nameOf(p):String(p.name||'');const n=normalize(name);let score=0;for(const [w,weight] of tokens)if(n.includes(w))score+=weight;return {p,i,score}}).filter(x=>!Number.isNaN(x.score));ranked.sort((a,b)=>b.score-a.score||a.i-b.i);
- const list=document.createElement('div');list.className='mm-rec-grid';const picked=(history.length?ranked:ranked.slice(0,4)).slice(0,4);
+ const list=document.createElement('div');list.className='mm-rec-grid';const picked=ranked.slice(0,5);
  for(const {p} of picked){
   const item=document.createElement('article');item.className='mm-rec-item';item.dataset.productId=idOf(p);
   const visual=document.createElement('div');visual.className='mm-rec-visual';
