@@ -938,7 +938,7 @@ function addCartIcon(button){
 }
 function updateCount(){refreshWholesaleCart();const count=cart.reduce((s,p)=>s+p.quantity,0);$('headerCartLabel').textContent=t().cart;$('headerCartCount').textContent=String(count);window.refreshCartSummary?.()}
 function appendSellerName(container,product,locale){
- const name=product.stores?.name?.trim() || product.store_name?.trim();
+ const name=[product.stores?.name,product.store_name].find(value=>typeof value==='string' && value.trim() && !/[^\s@]+@[^\s@]+/u.test(value))?.trim();
  if(!name)return;
  const label=document.createElement('div');
  label.className='mm-rec-seller';
