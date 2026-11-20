@@ -1590,6 +1590,13 @@ $('mmBuyerSaveProfilee').onclick=async()=>{
   window.mmBuyerUser=data.user;msg.textContent=t().saved;avatar(data.user);
  }catch(e){msg.textContent=t().error+e.message}
 };
+const reviewProfanity=/^(?:(?:(?:на|по|за|от|под|про|вы|до|при|раз|пере|у|с)?(?:хуй|ху[яюеиё]|пизд|пезд)[а-яё]*)|(?:[а-яё]*[ъь]еб[а-яё]*|(?:за|вы|про|на|по|до|от|пере|у|при|раз)?еб(?:а|у|ну|ли|ло|ла|уч|ет|ен|ись)[а-яё]*|ёб[а-яё]*|бля(?:д[а-яё]*|т[а-яё]*|ха)?|мудак[а-яё]*|мудил[а-яё]*)|(?:motherfuck|fuck|bullshit|asshole|bitch)(?:s|es|er|ers|ed|ing)?|shit(?:s|ty|ting|head)?|cunt(?:s)?|(?:ყლე|ყლეო|ყლეს|ყლის|ყლით|ყლეზე|მუტელი|მუტლის|მუტელო|ტყნავ|მოვტყან|მოვტყანი|გავტყანი|დედამოტყნული)|(?:sikdir[a-zəğıöşüç]*|sik(?:im|imə|imi|mək|miş|ir|di|in|i)?|göt(?:ünə|ünü|ü|dən)?|qəhbə[a-zəğıöşüç]*))$/iu;
+function filterReview(text){
+ return String(text??'').replace(/[\p{L}\p{M}\p{N}\u200B-\u200D\uFEFF]+/gu,word=>{
+  const normalized=word.normalize('NFKC').replace(/[\u200B-\u200D\uFEFF]/gu,'');
+  return reviewProfanity.test(normalized)?'•••':word;
+ });
+}
 function makeReviewForm(item,host){
  const form=el('form');let rating=5;
  const stars=el('div',undefined,'mm-buyer-stars');
@@ -1597,7 +1604,12 @@ function makeReviewForm(item,host){
  const body=el('textarea');body.placeholder=t().reviewPlaceholder;body.maxLength=2000;body.rows=3;body.required=true;
  const send=el('button',t().send,'gold');send.type='submit';const msg=el('p',undefined,'mm-buyer-status');
  form.append(el('p',t().rating),stars,body,send,msg);
- form.onsubmit=async e=>{e.preventDefault();if(!user())return;send.disabled=true;
+ form.onsubmit=async e=>{e.preventDefault();if(!user())return;
+  if(filterReview(body.value)!==body.value){
+   msg.textContent=({ru:'Уберите нецензурные слова и отправьте отзыв ещё раз.',ka:'გთხოვთ, წაშალოთ უცენზურო სიტყვები და ხელახლა გაგზავნოთ შეფასება.',en:'Please remove the profanity and submit your review again.'})[loc()];
+   body.focus();return;
+  }
+  send.disabled=true;
   const {error}=await db().from('mm_product_reviews').insert({buyer_id:user().id,order_item_id:item.id,product_id:item.product_id,rating,body:body.value.trim()});
   if(error){msg.textContent=t().error+error.message;send.disabled=false}else{msg.textContent=t().saved;fetchCardStats([String(item.product_id)]).catch(console.warn);await loadAccount();}
  };host.append(form)
@@ -1626,7 +1638,7 @@ async function loadAccount(){
   orders.append(box)
  }
  if(!c.data.length)reviews.append(el('p',t().none));
- for(const r of c.data){const div=el('div',undefined,'mm-buyer-review');div.append(el('strong','★'.repeat(r.rating)+'☆'.repeat(5-r.rating)),el('p',r.body||''));reviews.append(div)}
+ for(const r of c.data){const div=el('div',undefined,'mm-buyer-review');div.append(el('strong','★'.repeat(r.rating)+'☆'.repeat(5-r.rating)),el('p',filterReview(r.body)));reviews.append(div)}
 }
 window.tovexLoadOrders=loadAccount;
 $('mmBuyerProfileeBtn').onclick=async()=>{
@@ -1646,7 +1658,7 @@ async function openReviews(productId,name){
  host.replaceChildren();
  if(error){host.append(el('p',t().error+error.message));return}
  if(!data.length)host.append(el('p',t().none));
- for(const r of data){const row=el('div',undefined,'mm-buyer-review');row.append(el('strong','★'.repeat(r.rating)+'☆'.repeat(5-r.rating)),el('p',r.body||''));host.append(row)}
+ for(const r of data){const row=el('div',undefined,'mm-buyer-review');row.append(el('strong','★'.repeat(r.rating)+'☆'.repeat(5-r.rating)),el('p',filterReview(r.body)));host.append(row)}
 }
 window.mmOpenProductReviews=openReviews;
 function ratings(){
