@@ -937,9 +937,17 @@ function addCartIcon(button){
  button.prepend(icon);
 }
 function updateCount(){refreshWholesaleCart();const count=cart.reduce((s,p)=>s+p.quantity,0);$('headerCartLabel').textContent=t().cart;$('headerCartCount').textContent=String(count);window.refreshCartSummary?.()}
+function appendSellerName(container,product,locale){
+ const name=product.stores?.name?.trim() || product.store_name?.trim();
+ if(!name)return;
+ const label=document.createElement('div');
+ label.className='mm-rec-seller';
+ label.textContent=({ka:'მაღაზია',ru:'Магазин',en:'Store'})[locale]+': '+name;
+ container.append(label);
+}
 function renderProducts(){const box=$('products');box.lang=lang;box.replaceChildren();const query=$('search').value.toLocaleLowerCase().trim();const items=products.filter(p=>nameOf(p).toLocaleLowerCase().includes(query));if(!loading&&!loadError&&!items.length){const p=document.createElement('p');p.textContent=t().empty;box.append(p)}
  for(const product of items){const card=document.createElement('article');card.className='card';card.dataset.productId=idOf(product);const photo=document.createElement('div');photo.className='photo';const img=document.createElement('img');img.alt=nameOf(product);img.loading='lazy';img.src=product.image_url||tovexMissingImage;img.onerror=()=>{img.onerror=null;img.src=tovexMissingImage};photo.append(img);
- const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);name.dataset.pdOpen='';name.tabIndex=0;name.setAttribute('role','button');const price=document.createElement('div');price.className='price';price.textContent=money(wholesalePrice(product,wholesaleMinimum(product)));const oldPrice=product.wholesale?.mode==='bulk'?0:oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<wholesaleMinimum(product);if(!buy.disabled)addCartIcon(buy);buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price,name);if(product.wholesale)info.append(wholesaleInfo(product));info.append(stock,buy);card.append(photo,info);box.append(card)} }
+ const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);name.dataset.pdOpen='';name.tabIndex=0;name.setAttribute('role','button');const price=document.createElement('div');price.className='price';price.textContent=money(wholesalePrice(product,wholesaleMinimum(product)));const oldPrice=product.wholesale?.mode==='bulk'?0:oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<wholesaleMinimum(product);if(!buy.disabled)addCartIcon(buy);buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price,name);appendSellerName(info,product,lang);if(product.wholesale)info.append(wholesaleInfo(product));info.append(stock,buy);card.append(photo,info);box.append(card)} }
 function animateToCart(source){
  const mobile=window.matchMedia('(max-width: 720px)').matches;
  const mobileTarget=document.querySelector('#tovexMobileNav button[data-go="cart"]');
@@ -1282,13 +1290,7 @@ function render(){
   const buy=document.createElement('button');buy.type='button';buy.className='gold mm-rec-buy';buy.textContent=(Number(stockOf(p))>0?({ka:'კალათაში დამატება',ru:'В корзину',en:'Add to cart'})[locale]:({ka:'არ არის მარაგში',ru:'Нет в наличии',en:'Out of stock'})[locale]);if(Number(stockOf(p))>0)addCartIcon(buy);buy.disabled=Number(stockOf(p))<=0;
   buy.onclick=()=>{remember('cart',nameOf(p));if(typeof addToCart==='function'){const added=addToCart(p);if(added&&typeof animateToCart==='function')animateToCart(img)}else{const input=document.getElementById('search');if(input){input.value=nameOf(p);input.dispatchEvent(new Event('input',{bubbles:true}))}document.getElementById('catalogTitle')?.scrollIntoView({behavior:'smooth'})}};
   item.append(visual,prices,name);
-  const storeName=p.stores?.name?.trim() || p.store_name?.trim();
-  if(storeName){
-   const seller=document.createElement('div');
-   seller.className='mm-rec-seller';
-   seller.textContent=({ka:'მაღაზია',ru:'Магазин',en:'Store'})[locale]+': '+storeName;
-   item.append(seller);
-  }
+  appendSellerName(item,p,locale);
   item.append(rating,stock,buy);list.append(item)
  }
  section.append(list)
@@ -1659,7 +1661,7 @@ function ratings(){
   const box=el('div',undefined,'mm-product-rating');
   box.append(tovexReviewButton(document.documentElement.lang,v.avg,v.count,()=>openReviews(id,title.textContent)));
   if(v.sold)box.append(el('span',t().sales+': '+v.sold,'tovex-sold'));
-  title.after(box);
+  (card.querySelector('.mm-rec-seller')||title).after(box);
  }
 }
 window.addEventListener('tovex-card-stats',()=>{if(ratingsVisible)ratings()});
@@ -2148,6 +2150,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 .tovex-heart[aria-pressed="true"] svg{fill:#fa557a;stroke:#fa557a}
 .tovex-heart:focus-visible,.tovex-review-summary:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .mm-rec-item .mm-rec-prices{margin-top:5px;margin-bottom:0}
+#products .info:has(.mm-rec-seller) h3{min-height:0!important;margin-bottom:2px}
+#products .info .mm-rec-seller{margin:0 0 3px;color:#55e5e8;font-size:12px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
 .mm-rec-item .mm-rec-seller{margin:0 9px 3px;color:#55e5e8;font-size:12px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
 @media(max-width:680px){.mm-rec .mm-rec-seller{margin-inline:4px}}
 .mm-rec-item .mm-rec-name{margin-top:1px;margin-bottom:2px;min-height:0;font-weight:500}
