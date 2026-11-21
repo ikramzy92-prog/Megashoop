@@ -845,6 +845,24 @@ header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--pape
 @media(max-width:720px){.mm-showcase{width:calc(100% - 20px)!important;margin:10px auto!important}.mm-showcase-frame{border-radius:18px!important}.mm-showcase-title{font-size:clamp(27px,7vw,39px)!important}.mm-showcase-picture:before{background:linear-gradient(0deg,var(--slide-bg),transparent 24%)!important}}
 }
 </style>
+<style>
+@layer tovexClassic {
+#tovex-legal-links{box-sizing:border-box;display:flex!important;justify-content:center;align-items:center;flex-wrap:wrap;gap:4px 8px!important;border-top:1px solid #d5dfd4;background:#eef2e9;color:#254c37;padding:12px 16px;font:500 14px/1.4 Inter,Arial,sans-serif}
+#tovex-legal-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;max-width:100%;box-sizing:border-box;margin:0;padding:7px 16px;border-radius:24px;color:#254c37;text-align:center;text-decoration:underline;text-decoration-color:#98b19c;text-underline-offset:4px;overflow-wrap:anywhere}
+#tovex-legal-links a:hover,#tovex-legal-links a:focus-visible{color:#143c28;background:#dce8d9;text-decoration-color:currentColor}
+#tovex-legal-links a:focus-visible{outline:2px solid #286442;outline-offset:2px}
+@media(max-width:520px){#tovex-legal-links{flex-direction:column;padding:8px 12px;gap:0!important}}
+}
+</style>
+<style id="tovex-category-pills">
+@layer tovexClassic {
+.category-grid .category-tile{position:relative!important;isolation:isolate;padding:0!important;overflow:hidden!important;border-radius:20px!important}
+.category-grid .category-tile>.category-art{width:100%!important;height:auto!important;aspect-ratio:6/5;display:block}
+.category-grid .category-tile>span:last-child:not(.category-art){position:absolute;z-index:1;bottom:9px;left:50%;transform:translateX(-50%);width:max-content!important;max-width:calc(100% - 14px)!important;min-height:32px!important;height:auto!important;box-sizing:border-box;padding:7px 12px!important;border:1px solid rgba(220,255,231,.55)!important;border-radius:999px!important;background:rgba(13,65,44,.84)!important;color:white!important;font:650 13px/1.25 Inter,Arial,sans-serif!important;text-align:center;overflow-wrap:anywhere;text-shadow:none!important;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.category-grid .category-tile:is(:hover,:focus-visible,.selected)>span:last-child:not(.category-art){background:rgba(13,65,44,.95)!important}
+@media(max-width:620px){.category-grid .category-tile>span:last-child:not(.category-art){font-size:12px!important;padding:6px 9px!important;bottom:6px}}
+}
+</style>
 </head>
 <body>
 <header><div class="wrap"><div class="tv-delivery-row"><a id="tvHeaderDelivery" aria-label="თბილისი — ქალაქის არჩევა" href="?view=delivery"><svg aria-hidden="true" width="16" height="18" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1a8 8 0 0 0-8 8c0 5.3 8 14 8 14s8-8.7 8-14a8 8 0 0 0-8-8Zm0 4.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Z"/></svg><span id="tvHeaderCity">თბილისი</span></a></div>
@@ -870,7 +888,7 @@ header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--pape
 
 <section id="cartRecent" hidden><h3></h3><div></div></section></div><div class="cart-checkout-bar"><strong id="cartSummary"></strong><div id="checkoutThumbs"></div><button class="gold" id="mmCheckoutJump" type="button">შეკვეთის გაფორმება</button></div></section></main>
 <footer id="footer"></footer>
-<nav id="tovex-legal-links" aria-label="Legal information" style="background:#061126;border-top:1px solid #33435e;text-align:center;padding:18px 12px;font:14px Arial,sans-serif"><a href="/privacy.html" style="color:#f3c365;margin:0 12px">კონფიდენციალურობის პოლიტიკა</a><a href="/terms.html" style="color:#f3c365;margin:0 12px">გამოყენების პირობები</a></nav>
+<nav id="tovex-legal-links" aria-label="Legal information"><a href="/privacy.html">კონფიდენციალურობის პოლიტიკა</a><a href="/terms.html">გამოყენების პირობები</a></nav>
 <script>
 'use strict';
 const SUPABASE_URL='https://mrslybtwzfcovpsyuexf.supabase.co';
