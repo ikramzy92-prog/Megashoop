@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<meta content="#090b10" name="theme-color"/>
+<meta content="#f5f5ee" name="theme-color"/>
 <title>TOVEX — Online Marketplace</title>
 <meta name="description" content="TOVEX — ონლაინ მარკეტპლეისი საქართველოში. შეარჩიეთ ელექტრონიკა, ხელსაწყოები, სათამაშოები და სახლის ნივთები მიწოდებით.">
 <link rel="canonical" href="/">
@@ -816,6 +816,33 @@ header .mm-search-box button[aria-pressed="true"] {color:#08664f!important}
  }
  #products .card .info .buy{width:100%!important;margin-inline:0!important}
  .mm-rec .mm-rec-item .mm-rec-buy{width:calc(100% - 8px)!important;margin-inline:4px!important}
+}
+</style>
+<style id="tovex-classic">@layer tovexClassic {
+:root{--paper:#f5f5ee;--ink:#172e25;--leaf:#184d38;--sage:#e4efde;--edge:#d5dfd4;--quiet:#52675b;--bg:var(--paper)!important;--panel:#fff!important;--panel2:#eff4ec!important;--text:var(--ink)!important;--gold:#216344!important;--gold2:#387750!important;--line:var(--edge)!important;--muted:var(--quiet)!important}
+html,body{background:var(--paper)!important;color:var(--ink)!important;font-family:Inter,Arial,sans-serif!important}
+header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--paper)!important;color:var(--ink)!important;border-color:var(--edge)!important;box-shadow:none!important}
+.brand-name,.brand-name>span{color:var(--ink)!important;text-shadow:none!important;letter-spacing:-.055em!important}.brand:before{content:none!important}
+.tagline,.benefit small,.feature small,.mm-showcase-desc,footer a{color:var(--quiet)!important}
+.category-scroll{scrollbar-color:#afc4b0 transparent!important}.category-scroll button{color:var(--ink)!important}.category-scroll button:hover,.category-scroll button.selected{background:var(--sage)!important;color:var(--leaf)!important}
+.languages button,.mm-account button,.mm-account a,#tovexPartnersLink,.mm-cart-qty button{color:var(--leaf)!important;background:white!important;border:1px solid var(--edge)!important;border-radius:24px!important;box-shadow:none!important;text-shadow:none!important}
+.languages button.active,#tovexPartnersLink{background:var(--sage)!important;color:var(--leaf)!important;border-color:#b5cbb6!important}
+.gold,.category-main,.mm-showcase-link,#cartToggle,.mm-account .mm-primary,#mmAuthSubmit{background:var(--leaf)!important;color:white!important;border:1px solid var(--leaf)!important;border-radius:24px!important;box-shadow:none!important;text-shadow:none!important}
+#search,.mm-search-box,.mm-search-box input{border-color:var(--edge)!important;background:#fff!important;color:var(--ink)!important;box-shadow:none!important;border-radius:20px!important}#search::placeholder{color:#64766c!important}
+.mm-showcase{max-width:1456px!important;width:calc(100% - 40px)!important;margin:18px auto!important;background:transparent!important}
+.mm-showcase-frame{background:#e0ebdb!important;border-radius:26px!important}.mm-showcase-slide{--slide-bg:#e0ebdb;background:var(--slide-bg)!important}.mm-showcase-slide[data-category=tools]{--slide-bg:#e7e9dc}.mm-showcase-slide[data-category=kids]{--slide-bg:#f1e9df}.mm-showcase-slide[data-category=fashion]{--slide-bg:#e4ebe0}
+.mm-showcase-picture:before{background:linear-gradient(90deg,var(--slide-bg),transparent 34%)!important}
+.mm-showcase-title,.category-heading h2,.section-title,.mm-rec h2{font-family:Inter,Arial,sans-serif!important;color:var(--ink)!important;text-shadow:none!important;letter-spacing:-.045em!important}.mm-showcase-title{line-height:1.04!important;font-size:clamp(34px,4.4vw,67px)!important;font-weight:750!important}
+.mm-showcase-kicker,.benefit>span,.feature-icon,.section-label{color:#326c4f!important}.mm-showcase-controls button{background:#fff!important;color:var(--leaf)!important;border-color:#78977f!important}.mm-showcase-dot.active,.category-heading>span,.accent{background:var(--leaf)!important}
+.category-tile,#products .card,.grid>.card,.mm-rec,.mm-rec-item,.mm-checkout,#mmCheckoutDialog,#cart,.mm-auth-dialog,.mm-buyer-window,.mm-buyer-order,.mm-rating-help,.tovex-mobile-nav{background:#fff!important;border-color:var(--edge)!important;color:var(--ink)!important;box-shadow:0 3px 15px #16392309!important}
+.category-tile,#products .card,.mm-rec-item{border-radius:16px!important}.category-tile:hover,.category-tile.selected,.mm-rec-item:hover,#products .card:hover{border-color:#7a9d80!important;box-shadow:0 6px 18px #184d3812!important}
+.category-tile>span:last-child,.card h3,.mm-rec-item strong,.mm-rec h2,.benefit strong,.mm-auth-dialog h2,#cart h2,.mm-checkout label,.mm-auth-dialog label,.mm-buyer-window label,.tovex-mobile-nav button,.tovex-mobile-nav a{color:var(--ink)!important}
+.price,.mm-rec-item .mm-rec-price,.mm-cart-detail strong{color:var(--leaf)!important}.mm-rec p,.stock,#status,.mm-auth-dialog p,.mm-category-empty{color:var(--quiet)!important}
+.mm-rec-visual,.mm-rec-item .mm-rec-visual img,#products .photo,.grid>.card .photo,.mm-cart-thumb{background:#eff3eb!important}
+.mm-role-options label,.mm-buyer-order,.mm-rating-help{background:#eff4ed!important;border-color:var(--edge)!important;color:var(--ink)!important}.mm-role-options label span{color:var(--ink)!important}
+.mm-auth-dialog input,.mm-checkout input,.mm-checkout textarea,.mm-checkout select,.mm-buyer-window input,.mm-buyer-window textarea{background:#fafcf8!important;color:var(--ink)!important;border-color:#b9cab9!important}
+.mm-auth-close,.mm-cart-close,.mm-auth-feedback{color:var(--leaf)!important}
+@media(max-width:720px){.mm-showcase{width:calc(100% - 20px)!important;margin:10px auto!important}.mm-showcase-frame{border-radius:18px!important}.mm-showcase-title{font-size:clamp(27px,7vw,39px)!important}.mm-showcase-picture:before{background:linear-gradient(0deg,var(--slide-bg),transparent 24%)!important}}
 }
 </style>
 </head>
