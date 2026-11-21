@@ -1064,7 +1064,7 @@ header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--pape
  }
 }
 </style>
-</head>
+<style>.seller-gallery{margin:24px 0}.seller-gallery>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(138px,43%),1fr));gap:10px}.seller-gallery button{padding:0;overflow:hidden;border:0;border-radius:12px;cursor:zoom-in}.seller-gallery img{width:100%;height:clamp(140px,22vw,250px);object-fit:cover;display:block}#sellerZoom{border:0;padding:0;background:#15221e;border-radius:12px;max-width:94vw}#sellerZoom img{display:block;max-width:92vw;max-height:85dvh;object-fit:contain}#sellerZoom button{position:absolute;right:8px;top:8px;border-radius:50%;width:38px;height:38px;font-size:22px}#sellerZoom::backdrop{background:#000b}</style></head>
 <body>
 <header><div class="wrap"><div class="tv-delivery-row"><a id="tvHeaderDelivery" aria-label="თბილისი — ქალაქის არჩევა" href="?view=delivery"><svg aria-hidden="true" width="16" height="18" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1a8 8 0 0 0-8 8c0 5.3 8 14 8 14s8-8.7 8-14a8 8 0 0 0-8-8Zm0 4.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Z"/></svg><span id="tvHeaderCity">თბილისი</span></a></div>
 <div class="top"><div class="brand"><span class="brand-name">TOVEX</span><span aria-label="საქართველოს დროშა — флаг Грузии" class="georgia-flag" role="img"><svg aria-hidden="true" viewbox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect fill="#fff" height="40" width="60"></rect><path d="M0 16h60v8H0zM26 0h8v40h-8z" fill="#d82135"></path><g fill="#d82135"><path d="M12 5h2v4h4v2h-4v4h-2v-4H8V9h4zM46 5h2v4h4v2h-4v4h-2v-4h-4V9h4zM12 25h2v4h4v2h-4v4h-2v-4H8v-2h4zM46 25h2v4h4v2h-4v4h-2v-4h-4v-2h4z"></path></g></svg></span></div><div class="languages"><button data-lang="ka" type="button">🇬🇪 ქართული</button><button data-lang="ru" type="button">🇷🇺 Русский</button><button data-lang="en" type="button">🇬🇧 English</button></div><div class="mm-account" id="mmAccountBar"><button class="mm-primary" id="mmAccountOpen" type="button">შესვლა</button><button id="tovexBuyerSignupOpen" type="button">რეგისტრაცია</button><img alt="Avatar" hidden="" id="mmHeaderAvatar" style="width:39px;height:39px;object-fit:cover;border-radius:50%;border:2px solid #eabb61"/><span class="mm-account-email" hidden="" id="mmAccountEmail"></span><a id="tovexPartnersLink" href="/partners.html" style="display:inline-flex;align-items:center;padding:7px 12px;border:1px solid #409778;border-radius:18px;color:#beffda;text-decoration:none;font-weight:700">Стать продавцом ↗</a><button id="tovexSellerJoin" type="button" hidden="">🏪 Стать продавцом</button><a aria-label="Seller Back Office" hidden="" href="/backoffice/" id="mmSellerBackoffice" style="display:none">🏪 Back Office</a><button hidden="" id="mmBuyerProfileeBtn" type="button">👤 პროფილი</button><button hidden="" id="mmBuyerOrdersBtn" type="button">📦 ჩემი შეკვეთები <span id="mmOrdersBadge" hidden></span></button><button hidden="" id="mmAccountLogout" type="button">გასვლა</button></div></div>
@@ -1077,7 +1077,7 @@ header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--pape
 <section hidden tabindex="-1" id="productDetail" translate="no" aria-labelledby="pdTitle"><div class="pd-top"><strong translate="no">TOVEX</strong></div>
 <div class="pd-layout"><div><img class="pd-photo" alt=""><div class="pd-thumbs"></div></div>
 <div class="pd-copy"><h2 id="pdTitle"></h2><p class="pd-brand"></p><button type="button" class="pd-reviews"></button><p class="pd-sku"></p><div class="pd-options"></div>
-<div class="pd-order"><strong class="pd-price"></strong><del hidden></del><small></small><button type="button" class="pd-add"></button><div class="pd-in-cart" hidden><button type="button" data-step="-1">−</button><output></output><button type="button" data-step="1">+</button><button type="button" class="pd-view-cart"></button></div><button type="button" class="pd-now"></button></div><details class="pd-description"><summary></summary><p class="pd-desc"></p></details></div></div></section>
+<div class="pd-order"><strong class="pd-price"></strong><del hidden></del><small></small><button type="button" class="pd-add"></button><div class="pd-in-cart" hidden><button type="button" data-step="-1">−</button><output></output><button type="button" data-step="1">+</button><button type="button" class="pd-view-cart"></button></div><button type="button" class="pd-now"></button></div><details class="pd-description"><summary></summary><p class="pd-desc"></p></details></div></div><section class="seller-gallery" hidden><h3></h3><div></div></section></section><dialog id="sellerZoom"><button type="button" aria-label="Close">×</button><img alt=""></dialog>
 <div id="tovexCartInfo" class="tovex-cart-info" aria-label="Информация о заказе">
   <div class="tovex-cart-promo"><label for="tovexPromoInput" data-cart-ka="🏷️ პრომოკოდი" data-cart-ru="🏷️ Промокод" data-cart-az="🏷️ Promokod">🏷️ Промокод</label><div class="tovex-promo-row"><input id="tovexPromoInput" type="text" disabled placeholder="Введите промокод" aria-label="Промокод (пока недоступен)"><button id="tovexPromoApply" type="button" disabled data-cart-ka="გამოყენება" data-cart-ru="Применить" data-cart-az="Tətbiq et">Применить</button></div><small data-cart-ka="პრომოკოდები ფასდაკლებების სისტემის ჩართვის შემდეგ ამუშავდება." data-cart-ru="Промокоды заработают после подключения системы скидок." data-cart-az="Promokodlar endirim sistemi qoşulduqdan sonra işləyəcək.">Промокоды заработают после подключения системы скидок.</small></div>
 
@@ -1370,7 +1370,7 @@ async function loadProducts(){
     seenProducts.add(id);products.push(p);added.push(id);
    }
   }
-  window.mmProductSnapshot=products;
+  window.mmProductSnapshot=products;window.dispatchEvent(new Event('tovex-products-loaded'));
   loadError=partialFailure&&!products.length;
   for(const item of cart){
    const current=products.find(p=>idOf(p)===item.id);
@@ -1686,14 +1686,31 @@ slides.push(el);
 }
 if(!slides.length){root.closest('.mm-showcase').hidden=true;return;}
 function language(){const lang=document.documentElement.lang;return lang==='ru'?'ru':lang==='en'?'az':'ka'}
-function translate(){const l=language();for(const el of slides){const r=items.find(x=>x[0]===el.dataset.category);const title=el.querySelector('.mm-showcase-title'),desc=el.querySelector('.mm-showcase-desc'),link=el.querySelector('.mm-showcase-link');const i=l==='ru'?3:l==='az'?5:1;title.textContent=r[i];desc.textContent=r[i+1];link.textContent=l==='ru'?'Смотреть товары':l==='az'?'Browse products':'პროდუქციის ნახვა';}}
+function translate(){const l=language();for(const el of slides){if(el.dataset.sellerBanner){el.querySelector('button').textContent={ru:'Открыть товар',az:'View product',ka:'პროდუქტის ნახვა'}[l];continue}const r=items.find(x=>x[0]===el.dataset.category);const title=el.querySelector('.mm-showcase-title'),desc=el.querySelector('.mm-showcase-desc'),link=el.querySelector('.mm-showcase-link');const i=l==='ru'?3:l==='az'?5:1;title.textContent=r[i];desc.textContent=r[i+1];link.textContent=l==='ru'?'Смотреть товары':l==='az'?'Browse products':'პროდუქციის ნახვა';}}
 function show(n){active=(n+slides.length)%slides.length;slides.forEach((el,i)=>{el.classList.toggle('active',i===active);el.setAttribute('aria-hidden',String(i!==active));});[...dots.children].forEach((d,i)=>{d.classList.toggle('active',i===active);d.setAttribute('aria-current',String(i===active))})}
 function restart(){clearInterval(timer);if(slides.length>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)timer=setInterval(()=>show(active+1),5000)}
 document.getElementById('mmSlidePrev').addEventListener('click',()=>{show(active-1);restart()});document.getElementById('mmSlideNext').addEventListener('click',()=>{show(active+1);restart()});
 root.addEventListener('mouseenter',()=>clearInterval(timer));root.addEventListener('mouseleave',restart);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInterval(timer);else restart()});
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(translate,0)));
-translate();show(0);restart();
+const bannerIds=new Set();
+function addSellerBanners(){
+ let first=-1;
+ for(const p of window.mmProductSnapshot||[]){
+  if(!p.banner_url||bannerIds.has(p.id))continue;
+  bannerIds.add(p.id);
+  const el=document.createElement('article');el.className='mm-showcase-slide';el.dataset.sellerBanner=p.id;
+  const copy=document.createElement('div'),title=document.createElement('h2'),button=document.createElement('button'),pic=document.createElement('div'),img=document.createElement('img');
+  copy.className='mm-showcase-copy';title.className='mm-showcase-title';title.textContent=p.name;button.type='button';button.className='gold mm-showcase-link';
+  pic.className='mm-showcase-picture';img.src=p.banner_url;img.alt=p.name;pic.append(img);copy.append(title,button);el.append(copy,pic);
+  el.onclick=()=>window.tovexShowProduct(p);el.style.cursor='pointer';host.append(el);
+  const dot=document.createElement('button');dot.type='button';dot.className='mm-showcase-dot';dot.setAttribute('aria-label',p.name);dot.onclick=()=>{show(slides.indexOf(el));restart()};dots.append(dot);
+  if(first===-1)first=slides.length;slides.push(el)
+ }
+ if(first!==-1){translate();show(bannerIds.size===slides.length-first?first:active);restart()}
+}
+window.addEventListener('tovex-products-loaded',addSellerBanners);
+translate();show(0);restart();addSellerBanners();
 })();
 </script>
 <script>
@@ -2685,6 +2702,16 @@ document.addEventListener('DOMContentLoaded',()=>{
   setPurchaseEnabled(stockOf(product)>0);
   get('.pd-add').textContent=({ru:'Добавить в корзину',en:'Add to cart',ka:'კალათაში დამატება'})[lang];
   get('.pd-now').textContent=({ru:'Купить сейчас',en:'Buy now',ka:'ახლავე ყიდვა'})[lang];
+  const section=get('.seller-gallery'),grid=section.querySelector('div'),zoom=document.getElementById('sellerZoom');
+  const heading={ru:'Фото товара от продавца',ka:'გამყიდველის ფოტოები',en:'Seller photos'}[lang];
+  grid.replaceChildren();section.querySelector('h3').textContent=heading;
+  for(const [i,url] of (Array.isArray(product.seller_photos)?product.seller_photos:[]).entries()){
+   const button=document.createElement('button'),img=document.createElement('img');
+   button.type='button';img.loading='lazy';img.src=url;img.alt=name+' · '+words[3]+' '+(i+1);
+   button.append(img);grid.append(button);button.onclick=()=>{const full=zoom.querySelector('img');full.src=url;full.alt=img.alt;zoom.showModal()};
+  }
+  zoom.querySelector('button').onclick=()=>zoom.close();zoom.onclick=e=>{if(e.target===zoom)zoom.close()};
+  section.hidden=!grid.childElementCount;
   const photos=[product.image_url,...[product.images,product.image_urls,product.photos].filter(Array.isArray).flat()].map(value=>typeof value==='string'?value:value?.url).filter(Boolean);
   const gallery=[...new Set(photos)],photo=get('.pd-photo'),thumbs=get('.pd-thumbs');
   photo.alt=name;photo.onerror=()=>{photo.onerror=null;photo.src=tovexMissingImage};
