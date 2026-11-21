@@ -958,13 +958,34 @@ header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--pape
   #tovexMobileNav button[data-go="catalog"] .nav-icon svg { width:27px; height:27px; stroke:currentColor!important; stroke-width:2.6; }
   #tovexMobileNav button[data-go="catalog"]:is(.active,:active) { background:transparent!important; color:var(--leaf)!important; }
   #tovexMobileNav button[data-go="catalog"]:is(.active,:active) [data-mobile-label] { color:inherit!important; -webkit-text-fill-color:currentColor; }
-  .mm-showcase .mm-showcase-frame { height:clamp(180px,51vw,295px)!important; min-height:0!important; }
+  .mm-showcase .mm-showcase-frame { height:clamp(150px,42vw,215px)!important; min-height:0!important; }
   .mm-showcase .mm-showcase-slide { grid-template:1fr / minmax(0,48%) minmax(0,52%)!important; }
   .mm-showcase .mm-showcase-picture { grid-area:1/2!important; height:100%!important; }
   .mm-showcase .mm-showcase-copy { grid-area:1/1!important; align-self:center!important; padding:8px 6px 30px 12px!important; }
   .mm-showcase .mm-showcase-title { font-size:clamp(17px,4.7vw,25px)!important; margin:4px 0 7px!important; }
   .mm-showcase .mm-showcase-desc,.mm-showcase .mm-showcase-kicker { display:none!important; }
   .mm-showcase .mm-showcase-link { padding:5px 9px!important; }
+  #products .card .photo,.mm-rec .mm-rec-item .mm-rec-visual {
+    height:auto!important; aspect-ratio:1/1!important; background:#f3f6f4!important;
+  }
+  #products .card .photo img,.mm-rec .mm-rec-visual img { object-fit:contain!important; }
+  #products .card:not([hidden]),.mm-rec .mm-rec-item:not([hidden]) { display:flex!important; flex-direction:column; }
+  #products .card .info { display:flex; flex-direction:column; flex:1; }
+  #products .card .info h3,.mm-rec .mm-rec-item .mm-rec-name {
+    flex:1; min-width:0; font-size:13px!important; line-height:17px!important;
+    min-height:34px!important; max-height:34px!important; margin:0!important;
+    overflow:hidden!important; display:-webkit-box!important;
+    -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow-wrap:anywhere;
+  }
+  #products .card .info .price,.mm-rec .mm-rec-item .mm-rec-price { color:#153b2d!important; }
+  #products .card .info .buy,.mm-rec .mm-rec-item .mm-rec-buy {
+    min-height:44px!important; margin-block:auto 0!important;
+    background:#0d6d47!important; color:#fff!important;
+  }
+  #products .card .info .buy:is(:disabled,[aria-disabled="true"]),
+  .mm-rec .mm-rec-item .mm-rec-buy:is(:disabled,[aria-disabled="true"]) {
+    background:#e1e9e4!important; color:#3f5149!important;
+  }
  }
 }
 </style>
@@ -1356,6 +1377,7 @@ body:has(#productDetail[open]){overflow:hidden}
  #tovexMobileNav .nav-icon svg{display:block;width:23px;height:23px;padding:0;fill:none;stroke:#42564e;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
  #tovexMobileNav button[data-go="cart"] .nav-icon svg,#tovexMobileNav button.active .nav-icon svg{stroke:#0d6a45}
  #tovexMobileNav.tovex-mobile-nav button[data-go].active{color:white!important;background:#0d6d47!important;border-radius:12px!important}
+ #tovexMobileNav.tovex-mobile-nav button[data-go].active [data-mobile-label]{color:inherit!important;-webkit-text-fill-color:currentColor}
  #tovexMobileNav button.active .nav-icon svg{stroke:white!important}
  #tovexMobileNav button.active .nav-icon{background:transparent}
 }
@@ -1402,12 +1424,12 @@ body:has(#shopSections[open]){overflow:hidden}
 @media(min-width:768px){#storeRecommendations[data-initial]{display:none!important}}
 @layer tovexProductCards {
 @media(max-width:767px){
- #shopTools .shop-brand-menu #shopMenu{display:none!important}
+ #shopTools .shop-brand-menu #shopMenu, header #shopTools.search-row #cartToggle{display:none!important}
  #shopTools .mm-search-box input#search{font-size:16px!important;min-width:0;box-sizing:border-box}
- header #shopTools.search-row {grid-template-columns:minmax(105px,1.35fr) repeat(3,minmax(0,1fr))!important;grid-template-rows:46px minmax(56px,auto);align-items:center}
- header #shopTools.search-row .mm-search-box{grid-column:1/-1!important;grid-row:1!important}
- #shopTools :is(#shopLogin,#shopAddress,#cartToggle){min-width:0!important;max-width:100%!important;min-height:52px;box-sizing:border-box}
- #shopTools :is(#shopAddress,#shopLogin)>span,#shopTools #headerCartLabel{min-height:15px;line-height:15px;white-space:nowrap}
+ header #shopTools.search-row {grid-template-columns:minmax(0,1fr) minmax(0,max-content) minmax(0,max-content)!important;grid-template-rows:minmax(44px,auto) 46px;align-items:center}
+ header #shopTools.search-row .mm-search-box{grid-column:1/-1!important;grid-row:2!important}
+ #shopTools :is(#shopLogin,#shopAddress){min-width:44px!important;max-width:100%!important;min-height:44px;box-sizing:border-box}
+ #shopTools :is(#shopAddress,#shopLogin)>span{min-height:15px;line-height:15px;white-space:normal;overflow-wrap:anywhere;text-align:center}
  .category-section .mobile-catalog-title{min-height:1.15em}
  #storeRecommendations .mm-rec-item{min-width:0}
 }
@@ -1566,7 +1588,7 @@ function renderProducts(){const box=$('products');box.lang=lang;box.replaceChild
  for(const product of items){const card=document.createElement('article');card.className='card';card.dataset.productId=idOf(product);const photo=document.createElement('div');photo.className='photo';const img=document.createElement('img');img.alt=nameOf(product);img.loading='lazy';img.src=product.image_url||tovexMissingImage;img.onerror=()=>{img.onerror=null;img.src=tovexMissingImage};photo.append(img);
  const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);name.dataset.pdOpen='';name.tabIndex=0;name.setAttribute('role','button');const price=document.createElement('div');price.className='price';price.textContent=money(wholesalePrice(product,wholesaleMinimum(product)));const oldPrice=product.wholesale?.mode==='bulk'?0:oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<wholesaleMinimum(product);if(!buy.disabled)addCartIcon(buy);buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price);appendProductHeading(info,name,product,lang);if(product.wholesale)info.append(wholesaleInfo(product));info.append(stock,buy);card.append(photo,info);box.append(card)} }
 function animateToCart(source){
- const mobile=window.matchMedia('(max-width: 720px)').matches;
+ const mobile=window.matchMedia('(max-width: 767px)').matches;
  const mobileTarget=document.querySelector('#tovexMobileNav button[data-go="cart"]');
  const target=(mobile&&mobileTarget)?mobileTarget:document.getElementById('cartToggle');
  if(!source||!target)return;
