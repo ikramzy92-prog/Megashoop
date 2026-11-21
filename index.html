@@ -907,6 +907,13 @@ header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--pape
 }
 .category-grid .category-tile:is(:hover,:focus-visible,.selected)>span:last-child { background:#0c3525; }
 @media(max-width:767px) {
+  .category-section.wrap { box-sizing:border-box; padding-inline:8px!important; padding-left:8px!important; padding-right:8px!important; }
+  .category-section .category-grid {
+    display:grid; grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px 8px!important;
+  }
+  .category-section .category-tile { width:100%; min-width:0; }
+  .category-section .category-tile>.category-art { aspect-ratio:1 / 1!important; width:100%; }
   .category-grid .category-tile>span:last-child:not(.category-art) { padding:3px 8px!important; }
   #mmAuthOverlay { flex-direction:column; justify-content:flex-start; }
   #mmAuthOverlay .mm-auth-dialog { flex:none; margin-block:auto; width:min(100%,450px); box-sizing:border-box; }
