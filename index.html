@@ -954,7 +954,10 @@ header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--pape
   #products .card .buy,.mm-rec-item .mm-rec-buy { width:calc(100% - 16px)!important; min-height:34px!important; padding:6px!important; margin:auto 8px 0!important; }
   .tovex-heart { background:transparent!important; filter:drop-shadow(0 1px 2px #333); }
   #tovexMobileNav button[data-go] { background:transparent!important; color:#717c75!important; border:0!important; box-shadow:none!important; }
-  #tovexMobileNav button[data-go].active { color:var(--leaf)!important; }
+  #tovexMobileNav button[data-go].active { color:#fff!important; background:#104e39!important; border-radius:12px!important; }
+  #tovexMobileNav button[data-go="catalog"]:is(.active,:active) { background:#104e39!important; color:#fff!important; opacity:1!important; }
+  #tovexMobileNav button[data-go="catalog"]:is(.active,:active) [data-mobile-label] { color:#fff!important; -webkit-text-fill-color:#fff; }
+  #tovexMobileNav button[data-go="catalog"]:is(.active,:active) svg { stroke:#fff!important; }
   .mm-showcase .mm-showcase-frame { height:clamp(180px,51vw,295px)!important; min-height:0!important; }
   .mm-showcase .mm-showcase-slide { grid-template:1fr / minmax(0,48%) minmax(0,52%)!important; }
   .mm-showcase .mm-showcase-picture { grid-area:1/2!important; height:100%!important; }
