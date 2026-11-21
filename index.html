@@ -955,9 +955,9 @@ header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--pape
   .tovex-heart { background:transparent!important; filter:drop-shadow(0 1px 2px #333); }
   #tovexMobileNav button[data-go] { background:transparent!important; color:#717c78!important; border:0!important; box-shadow:none!important; }
   #tovexMobileNav button[data-go].active { color:#fff!important; background:#0d6d47!important; border-radius:12px!important; }
-  #tovexMobileNav button[data-go="catalog"]:is(.active,:active) { background:#0d6d47!important; color:#fff!important; opacity:1!important; }
-  #tovexMobileNav button[data-go="catalog"]:is(.active,:active) [data-mobile-label] { color:#fff!important; -webkit-text-fill-color:#fff; }
-  #tovexMobileNav button[data-go="catalog"]:is(.active,:active) svg { stroke:#fff!important; }
+  #tovexMobileNav button[data-go="catalog"] .nav-icon svg { width:27px; height:27px; stroke:currentColor!important; stroke-width:2.6; }
+  #tovexMobileNav button[data-go="catalog"]:is(.active,:active) { background:transparent!important; color:var(--leaf)!important; }
+  #tovexMobileNav button[data-go="catalog"]:is(.active,:active) [data-mobile-label] { color:inherit!important; -webkit-text-fill-color:currentColor; }
   .mm-showcase .mm-showcase-frame { height:clamp(180px,51vw,295px)!important; min-height:0!important; }
   .mm-showcase .mm-showcase-slide { grid-template:1fr / minmax(0,48%) minmax(0,52%)!important; }
   .mm-showcase .mm-showcase-picture { grid-area:1/2!important; height:100%!important; }
@@ -2565,7 +2565,7 @@ document.addEventListener('DOMContentLoaded',()=>{syncCartInfo();document.queryS
 
 <nav class="tovex-mobile-nav" aria-label="TOVEX mobile navigation" id="tovexMobileNav">
  <button type="button" data-go="home" class="active"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span><span data-mobile-label="home">Главная</span></button>
- <button type="button" data-go="catalog"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span><span data-mobile-label="catalog">Каталог</span></button>
+ <button type="button" data-go="catalog"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h6M2.5 12.5h8M2.5 19h16M18.6 10.6l3.4 3.4"/><circle cx="15.5" cy="7.5" r="4.4"/></svg></span><span data-mobile-label="catalog">Каталог</span></button>
  <button type="button" data-go="cart"><span class="nav-icon" aria-hidden="true"><img class="mobile-cart-glyph" width="25" height="25" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyOCIgaGVpZ2h0PSIyOCIgdmlld0JveD0iMCAwIDI4IDI4Ij48ZyBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMi41IDRoMy44bDMgMTMuNWgxM2wzLTEwSDcuMyIvPjxjaXJjbGUgY3g9IjExIiBjeT0iMjMiIHI9IjEuMzUiLz48Y2lyY2xlIGN4PSIyMSIgY3k9IjIzIiByPSIxLjM1Ii8+PC9nPjwvc3ZnPg=="></span><span class="tovex-nav-count" id="tovexMobileCount" hidden>0</span><span data-mobile-label="cart">Корзина</span></button>
  <button type="button" data-go="profile"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3-8 8-8s8 3 8 8"/></svg></span><span data-mobile-label="profile">Профиль</span></button>
 </nav>
