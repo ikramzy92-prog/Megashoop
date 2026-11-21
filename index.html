@@ -1688,11 +1688,12 @@ slides.push(el);
 if(!slides.length){root.closest('.mm-showcase').hidden=true;return;}
 function language(){const lang=document.documentElement.lang;return lang==='ru'?'ru':lang==='en'?'az':'ka'}
 function translate(){const l=language();for(const el of slides){if(el.dataset.sellerBanner){el.querySelector('button').textContent={ru:'Открыть товар',az:'View product',ka:'პროდუქტის ნახვა'}[l];continue}const r=items.find(x=>x[0]===el.dataset.category);const title=el.querySelector('.mm-showcase-title'),desc=el.querySelector('.mm-showcase-desc'),link=el.querySelector('.mm-showcase-link');const i=l==='ru'?3:l==='az'?5:1;title.textContent=r[i];desc.textContent=r[i+1];link.textContent=l==='ru'?'Смотреть товары':l==='az'?'Browse products':'პროდუქციის ნახვა';}}
-function show(n){active=(n+slides.length)%slides.length;slides.forEach((el,i)=>{el.classList.toggle('active',i===active);el.setAttribute('aria-hidden',String(i!==active));});[...dots.children].forEach((d,i)=>{d.classList.toggle('active',i===active);d.setAttribute('aria-current',String(i===active))})}
+function show(n){active=(n+slides.length)%slides.length;slides.forEach((el,i)=>{el.classList.toggle('active',i===active);el.setAttribute('aria-hidden',String(i!==active));
+ const clip=el.querySelector('video');if(clip){if(i===active&&!document.hidden)clip.play().catch(()=>{});else clip.pause()}});[...dots.children].forEach((d,i)=>{d.classList.toggle('active',i===active);d.setAttribute('aria-current',String(i===active))})}
 function restart(){clearInterval(timer);if(slides.length>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)timer=setInterval(()=>show(active+1),5000)}
 document.getElementById('mmSlidePrev').addEventListener('click',()=>{show(active-1);restart()});document.getElementById('mmSlideNext').addEventListener('click',()=>{show(active+1);restart()});
 root.addEventListener('mouseenter',()=>clearInterval(timer));root.addEventListener('mouseleave',restart);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInterval(timer);else restart()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(timer);slides[active]?.querySelector('video')?.pause()}else{show(active);restart()}});
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(translate,0)));
 const bannerIds=new Set();
 function addSellerBanners(){
@@ -1703,7 +1704,12 @@ function addSellerBanners(){
   const el=document.createElement('article');el.className='mm-showcase-slide';el.dataset.sellerBanner=p.id;
   const copy=document.createElement('div'),title=document.createElement('h2'),button=document.createElement('button'),pic=document.createElement('div'),img=document.createElement('img');
   copy.className='mm-showcase-copy';title.className='mm-showcase-title';title.textContent=p.name;button.type='button';button.className='gold mm-showcase-link';
-  pic.className='mm-showcase-picture';img.src=p.banner_url;img.alt=p.name;pic.append(img);copy.append(title,button);el.append(copy,pic);
+  pic.className='mm-showcase-picture';
+  if(/\.(mp4|m4v|mov|webm)(?:[?#]|$)/i.test(p.banner_url)){
+   const video=document.createElement('video');video.muted=true;video.defaultMuted=true;video.playsInline=true;video.loop=true;video.preload='metadata';video.src=p.banner_url;
+   if(p.image_url)video.poster=p.image_url;video.setAttribute('aria-label',p.name);pic.append(video);
+  }else{img.src=p.banner_url;img.alt=p.name;pic.append(img)}
+  copy.append(title,button);el.append(copy,pic);
   el.onclick=()=>window.tovexShowProduct(p);el.style.cursor='pointer';host.append(el);
   const dot=document.createElement('button');dot.type='button';dot.className='mm-showcase-dot';dot.setAttribute('aria-label',p.name);dot.onclick=()=>{show(slides.indexOf(el));restart()};dots.append(dot);
   if(first===-1)first=slides.length;slides.push(el)
@@ -2648,6 +2654,11 @@ document.addEventListener('DOMContentLoaded',()=>{
  let current,choice,opening=0;
  const specLabels={"ru": ["Характеристики", "Артикул", "Состав", "Материал верха", "Пол", "Размер на модели", "Срок возврата, дней", "Есть примерка", "Характеристики и описание", "О товаре", "Смотреть полностью", "Свернуть фотографии", "Возврат в течение", "дн.", "Смотреть все отзывы", "Скопировать артикул"], "en": ["Specifications", "SKU", "Composition", "Outer material", "Gender", "Size worn by model", "Return period in days", "Try-on available", "Specifications and description", "About this product", "View in full", "Collapse photos", "Return within", "days", "See all reviews", "Copy SKU"], "ka": ["მახასიათებლები", "არტიკული", "შემადგენლობა", "ზედაპირის მასალა", "სქესი", "ზომა მოდელზე", "დაბრუნების ვადა დღეებში", "მოსინჯვა შესაძლებელია", "მახასიათებლები და აღწერა", "პროდუქტის შესახებ", "სრულად ნახვა", "ფოტოების აკეცვა", "დაბრუნების ვადა", "დღე", "ყველა შეფასების ნახვა", "არტიკულის კოპირება"]};
 const specKeys=["sku","composition","outer_material","gender","model_size","return_days","try_on"];
+ const orderBox=get('.pd-order'),mobileBar=document.createElement('div');mobileBar.className='pd-mobile-actions';dialog.append(mobileBar);
+ const purchaseControls=['.pd-add','.pd-in-cart','.pd-now'].map(get);
+ const mobileWidth=matchMedia('(max-width:800px)');
+ function placeActions(){(mobileWidth.matches?mobileBar:orderBox).append(...purchaseControls)}
+ placeActions();mobileWidth.addEventListener('change',placeActions);
  const recentKey='tovex.recent.products';
  let recent=[];
  try{const stored=JSON.parse(localStorage.getItem(recentKey));if(Array.isArray(stored))recent=stored.filter(x=>typeof x==='string').slice(0,8)}catch{}
@@ -2894,5 +2905,21 @@ body:has(#productDetail[open]){overflow:hidden}
 .pd-spec{margin:0}.pd-spec>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);align-items:baseline;gap:8px;padding:6px 0;font-size:16px;line-height:1.45}
 .pd-spec dt{display:flex;align-items:baseline;gap:5px;color:#374b42;overflow-wrap:anywhere}.pd-spec dt:after{content:"";flex:1;border-bottom:1px dotted #86998d}.pd-spec dd{margin:0;color:#152b21;font-weight:650;overflow-wrap:anywhere}.pd-spec button{vertical-align:middle;min-width:36px;min-height:36px;margin-inline-start:5px;border:1px solid #bbcec2;border-radius:8px;background:#e8f2eb;color:#1a5437}.pd-spec button:focus-visible{outline:2px solid #146940;outline-offset:2px}
 .pd-jump{padding:7px 10px;border:0;border-radius:8px;background:#e9f2ec;color:#214832}.pd-terms p{margin:.55em 0}.pd-preview{display:flex;position:relative;width:100%;height:clamp(140px,18vw,238px);overflow:hidden;border:0;border-radius:16px;padding:0;background:#edf2ed}.pd-preview img{width:0;min-width:0;flex:1;height:100%;object-fit:cover}.pd-preview span{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);border-radius:16px;background:#fff;color:#233d30;padding:5px 14px;white-space:nowrap}.pd-full img{display:block;max-width:100%;max-height:90dvh;object-fit:contain;margin:14px auto}
+</style><style>
+.mm-showcase-picture video{width:100%;height:100%;display:block;object-fit:cover}
+.pd-mobile-actions{display:none}
+@media(max-width:800px){
+ #productDetail{padding-bottom:calc(100px + env(safe-area-inset-bottom,0px));scroll-padding-bottom:100px}
+ #productDetail .pd-mobile-actions{display:grid;position:fixed;bottom:0;left:0;right:0;z-index:4;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding:9px 12px calc(9px + env(safe-area-inset-bottom,0px));background:#fff;border-top:1px solid #d6e5db;box-shadow:0 -4px 16px #1d392010}
+ #productDetail .pd-mobile-actions .pd-now{grid-column:1;grid-row:1}
+ #productDetail .pd-mobile-actions :is(.pd-add,.pd-in-cart){grid-column:2;grid-row:1}
+ #productDetail .pd-mobile-actions .pd-in-cart{display:flex;align-items:stretch}
+ #productDetail .pd-mobile-actions .pd-in-cart:not([hidden]){display:grid;grid-template-columns:30px 1fr 30px;gap:2px;align-items:center}
+ #productDetail .pd-mobile-actions [data-step]{min-height:30px;padding:2px}
+ #productDetail .pd-mobile-actions output{text-align:center}
+ #productDetail .pd-mobile-actions .pd-view-cart{grid-column:1/-1;min-height:32px;padding:3px}
+ #productDetail .pd-mobile-actions .pd-view-cart{width:100%;background:#096543;color:#fff}
+ #productDetail .pd-mobile-actions [hidden]{display:none!important}
+}
 </style></body>
 </html>
