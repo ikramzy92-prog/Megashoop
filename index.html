@@ -2227,10 +2227,10 @@ document.addEventListener('DOMContentLoaded',()=>{syncCartInfo();document.queryS
 </script>
 
 <nav class="tovex-mobile-nav" aria-label="TOVEX mobile navigation" id="tovexMobileNav">
- <button type="button" data-go="home" class="active"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span data-mobile-label="home">Главная</span></button>
- <button type="button" data-go="catalog"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span data-mobile-label="catalog">Каталог</span></button>
- <button type="button" data-go="cart"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 3h2l3 13h12l3-10H5"/></svg><span class="tovex-nav-count" id="tovexMobileCount" hidden>0</span><span data-mobile-label="cart">Корзина</span></button>
- <button type="button" data-go="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3-8 8-8s8 3 8 8"/></svg><span data-mobile-label="profile">Профиль</span></button>
+ <button type="button" data-go="home" class="active"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span><span data-mobile-label="home">Главная</span></button>
+ <button type="button" data-go="catalog"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span><span data-mobile-label="catalog">Каталог</span></button>
+ <button type="button" data-go="cart"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 3h2l3 13h12l3-10H5"/></svg></span><span class="tovex-nav-count" id="tovexMobileCount" hidden>0</span><span data-mobile-label="cart">Корзина</span></button>
+ <button type="button" data-go="profile"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3-8 8-8s8 3 8 8"/></svg></span><span data-mobile-label="profile">Профиль</span></button>
 </nav>
 <script id="tovex-mobile-navigation-js">
 (()=>{
@@ -2952,9 +2952,11 @@ body:has(#productDetail[open]){overflow:hidden}
  .category-section.wrap .category-grid .category-tile:is(.selected,:focus-visible){outline:3px solid #197953;outline-offset:1px}
  #tovexMobileNav.tovex-mobile-nav{padding-inline:8px;border-top:1px solid #d6e4da!important;background:#fff!important;box-shadow:0 -4px 18px #1639230c!important}
  #tovexMobileNav button{background:transparent!important;color:#52655b!important;gap:3px;min-height:44px;font-size:11px}
- #tovexMobileNav button svg{box-sizing:content-box;width:20px;height:20px;padding:3px 13px;border-radius:18px}
+ #tovexMobileNav .nav-icon{display:grid;place-items:center;width:44px;height:26px;flex:none;border-radius:16px}
+ #tovexMobileNav .nav-icon svg{display:block;width:23px;height:23px;padding:0;fill:none;stroke:#42564b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+ #tovexMobileNav button[data-go="cart"] .nav-icon svg,#tovexMobileNav button.active .nav-icon svg{stroke:#114a32}
  #tovexMobileNav button.active{color:#114a32!important}
- #tovexMobileNav button.active svg{background:#ddf1e5}
+ #tovexMobileNav button.active .nav-icon{background:#ddf1e5}
 }
 }
 </style></body>
