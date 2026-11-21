@@ -923,6 +923,7 @@ header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--pape
 </style>
 <style id="tovex-mobile-product-feed">
 .product-heading { display:contents; }
+.tovex-verified-store { display:inline-block; margin-inline-end:3px; vertical-align:-2px; line-height:0; }
 @layer tovexProductCards {
  @media(max-width:767px) {
   #products.grid,.mm-rec .mm-rec-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; gap:18px 3px!important; }
@@ -951,6 +952,20 @@ header,footer,.category-nav,.benefit-bar,.benefit,.feature{background:var(--pape
   .mm-showcase .mm-showcase-desc,.mm-showcase .mm-showcase-kicker { display:none!important; }
   .mm-showcase .mm-showcase-link { padding:5px 9px!important; }
  }
+}
+</style>
+<style id="tovex-email-contrast">
+@layer tovexClassic {
+  #mmAccountBar #mmAccountEmail { color:#184d38!important; }
+  #mmAuthOverlay label[for="mmAuthEmail"] { color:#172e25!important; }
+  #mmAuthEmail, input[type="email"][name="email"] {
+    color:#172e25!important; -webkit-text-fill-color:#172e25!important;
+    background-color:#fafcf8!important; caret-color:#172e25;
+  }
+  #mmAuthEmail:-webkit-autofill, input[type="email"][name="email"]:-webkit-autofill {
+    -webkit-text-fill-color:#172e25!important;
+    box-shadow:0 0 0 1000px #fafcf8 inset!important;
+  }
 }
 </style>
 </head>
@@ -1084,7 +1099,17 @@ function appendProductHeading(container,title,product,locale){
  const prefix=document.createElement('span');
  prefix.className='seller-prefix';
  prefix.textContent=({ka:'მაღაზია',ru:'Магазин',en:'Store'})[locale]+': ';
- label.append(prefix,name);
+ label.append(prefix);
+ if(product.tovex_seller_product===true && product.stores?.status==='approved' && product.stores.name?.trim()===name){
+  const badge=document.createElement('span');
+  badge.className='tovex-verified-store';
+  badge.title=({ru:'Магазин проверен TOVEX',ka:'მაღაზია შემოწმებულია TOVEX-ის მიერ',en:'Store verified by TOVEX'})[locale];
+  badge.setAttribute('role','img');
+  badge.setAttribute('aria-label',badge.title);
+  badge.innerHTML='<svg aria-hidden="true" viewBox="0 0 20 20" width="15" height="15"><path fill="#13724f" d="M10 0.8l2.4 1.6 2.9.1 1.1 2.7 2.2 1.9-.7 2.9.7 2.9-2.2 1.9-1.1 2.7-2.9.1-2.4 1.6-2.4-1.6-2.9-.1-1.1-2.7L1.4 13l.7-2.9-.7-2.9 2.2-1.9 1.1-2.7 2.9-.1z"/><path d="m5.7 10.1 2.8 2.8 5.8-6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+  label.append(badge);
+ }
+ label.append(name);
  row.append(label);
 }
 function renderProducts(){const box=$('products');box.lang=lang;box.replaceChildren();const query=$('search').value.toLocaleLowerCase().trim();const items=products.filter(p=>nameOf(p).toLocaleLowerCase().includes(query));if(!loading&&!loadError&&!items.length){const p=document.createElement('p');p.textContent=t().empty;box.append(p)}
