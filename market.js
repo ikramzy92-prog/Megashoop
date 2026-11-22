@@ -128,7 +128,7 @@ const Market = (() => {
      const table=el('table'),head=table.createTHead().insertRow();for(const key of ['product','query','searches','views','carts','orders','units','amount'])head.append(el('th',t(key)));
      const body=table.createTBody();for(const r of rows){const tr=body.insertRow();for(const val of [r.product_name,r.query||t('direct'),r.searches,r.views,r.carts,r.orders,r.units,Number(r.amount).toFixed(2)])tr.insertCell().textContent=val}panel.append(table)
     }
-   }else if(tab==='promotions'){await adOffice(panel,shop,items,db,reload)}
+   }else if(tab==='settings'){await Shipping.settings(panel,shop,db)}else if(tab==='promotions'){await adOffice(panel,shop,items,db,reload)}
    if(current===version)host.replaceChildren(panel,button(t('refresh'),reload));
   }catch(e){if(current===version)host.replaceChildren(el('p',e.message),button(t('refresh'),reload))}
  }
@@ -173,4 +173,58 @@ const Market = (() => {
   }
  }
  return {office,questions,returns,cart,record,attribute,ads};
+})();
+
+const Shipping=(()=>{
+ const places={en:['Tbilisi','Batumi','Kutaisi','Rustavi','Gori','Zugdidi'],ru:['Тбилиси','Батуми','Кутаиси','Рустави','Гори','Зугдиди'],ka:['თბილისი','ბათუმი','ქუთაისი','რუსთავი','გორი','ზუგდიდი']};
+ const words={
+  ru:['Условия доставки','Город доставки','Доставка, ₾','Срок, дней','Сохранить','Сохранено','Укажите город и проверьте условия доставки','Доставка в этот город пока не настроена','Итого с доставкой','Товары','Останутся в корзине','дн.','Доставка','Заказать','Обновить расчёт'],
+  en:['Delivery terms','Delivery city','Delivery fee, ₾','Days to deliver','Save','Saved','Choose a city and review delivery','Delivery to this city is not configured','Total including delivery','Goods','Stay in the cart','days','Delivery','Place order','Refresh quote'],
+  ka:['მიწოდების პირობები','მიწოდების ქალაქი','მიწოდების საფასური, ₾','ვადა, დღე','შენახვა','შენახულია','აირჩიეთ ქალაქი და შეამოწმეთ პირობები','ამ ქალაქში მიწოდება ჯერ არ არის დაყენებული','სულ მიწოდებით','საქონელი','კალათაში დარჩება','დღე','მიწოდება','შეკვეთა','განახლება']
+ };
+ const lang=()=>Object.hasOwn(words,document.documentElement.lang)?document.documentElement.lang:'ka';
+ const t=i=>words[lang()][i];
+ const el=(tag,text)=>{const n=document.createElement(tag);if(text!=null)n.textContent=text;return n};
+ function cities(selected){const input=el('select');places.en.forEach((key,i)=>input.add(new Option(places[lang()][i],key)));input.value=places.en.includes(selected)?selected:places.en[0];return input}
+ function label(text,input){const n=el('label',text);n.append(input);return n}
+ async function settings(host,shop,db){
+  const key=String(shop.id),result=await db.rpc('tvx_get_rates',{store_key:key});if(result.error)throw result.error;
+  const rows=result.data||[],city=cities(),fee=el('input'),days=el('input'),save=el('button',t(4)),message=el('p');save.type='button';
+  for(const input of [fee,days]){input.type='number';input.min='0';input.required=true}
+  fee.step='0.01';days.max='365';days.step='1';message.setAttribute('role','status');
+  const show=()=>{const r=rows.find(r=>r.city===city.value);fee.value=r?.fee??'';days.value=r?.days??'';message.textContent=''};
+  city.onchange=show;show();
+  save.onclick=async()=>{if(!fee.reportValidity()||!days.reportValidity())return;
+   const args={store_key:key,city:city.value,fee:fee.value,days:Number(days.value)};save.disabled=city.disabled=fee.disabled=days.disabled=true;
+   try{const {error}=await db.rpc('tvx_set_rate',args);if(error)throw error;const old=rows.find(r=>r.city===args.city);if(old)Object.assign(old,args);else rows.push(args);message.textContent=t(5)}
+   catch(e){message.textContent=e.message}finally{save.disabled=city.disabled=fee.disabled=days.disabled=false}
+  };host.append(el('h3',t(0)),label(t(1),city),label(t(2),fee),label(t(3),days),save,message)
+ }
+ let quote=null,version=0,cityKey;
+ function signature(rows){return JSON.stringify(rows.map(r=>[r.id,r.price,r.quantity]))}
+ async function refresh(){
+  const form=document.getElementById('mmOrderForm'),host=document.getElementById('deliveryQuoteNote'),submit=document.getElementById('mmPrepareOrder');
+  if(!form||!host||document.getElementById('mmCheckoutDialog').hidden)return;
+  const seq=++version;quote=null;submit.disabled=true;
+  if(!cityKey){try{cityKey=sessionStorage.getItem('tovex-delivery-city')}catch{}}
+  const city=cities(cityKey),details=el('span',t(6)),retry=el('button',t(14));retry.type='button';retry.onclick=refresh;
+  host.replaceChildren(label(t(1),city),details,retry);cityKey=city.value;city.onchange=()=>{cityKey=city.value;refresh()};
+  const all=window.mmGetCart(),rows=eligibleCart(all),goods=rows.reduce((sum,r)=>sum+Math.round(r.price*100)*r.quantity,0);
+  document.getElementById('goodsOnReceipt').textContent=t(9)+' · '+(goods/100).toFixed(2)+' ₾';
+  if(!rows.length)return;
+  try{
+   const res=await window.mmBuyerDb.rpc('tvx_shipping',{pids:[...new Set(rows.map(orderProductId))],city:cityKey});
+   if(seq!==version)return;if(res.error)throw res.error;
+   const entries=res.data||[],lines=entries.map(r=>r.store_name+' · '+(r.fee==null?t(7):Number(r.fee).toFixed(2)+' ₾ · '+r.days+' '+t(11)));
+   if(all.length>rows.length)lines.push(t(10)+': '+all.filter(r=>!orderProductId(r)).map(r=>r.name).join(', '));
+   if(entries.length&&entries.every(r=>r.fee!=null&&r.days!=null)){
+    const cents=entries.reduce((sum,r)=>sum+Math.round(r.fee*100),goods);
+    lines.push(t(8)+' · '+(cents/100).toFixed(2)+' ₾');quote={city:cityKey,entries,signature:signature(rows)};submit.disabled=false
+   }
+   details.textContent=lines.join('\n')||t(7);details.style.whiteSpace='pre-line';details.style.display='block'
+  }catch(e){if(seq===version)details.textContent=e.message}
+ }
+ function confirmed(rows){if(!quote||quote.signature!==signature(rows))throw Error(t(6));return {p_city:quote.city,p_quote:quote.entries}}
+ function summary(order){if(order.shipping_fee_gel==null)return '';const i=places.en.indexOf(order.shipping_city);return t(12)+' · '+(places[lang()][i]||order.shipping_city)+' · '+Number(order.shipping_fee_gel).toFixed(2)+' ₾ · '+order.shipping_days+' '+t(11)}
+ return {settings,refresh,confirmed,summary,t};
 })();
