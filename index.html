@@ -1433,7 +1433,7 @@ body:has(#shopSections[open]){overflow:hidden}
  header #shopTools.search-row .mm-search-box{grid-column:1/3!important;grid-row:2!important}
  header #shopTools .mm-search-box :is(#mmSearchButton,#tovexVoiceSearch){display:none!important}
  header #shopTools #tovexPhotoSearch .tovex-lens{width:24px;height:24px;stroke-width:1.7}
- header #shopTools .mm-search-box #tovexPhotoSearch{background:transparent!important;border:0!important;box-shadow:none!important;width:44px!important;height:44px!important}
+ header #shopTools .mm-search-box #tovexPhotoSearch{color:#284C88!important;background:transparent!important;border:0!important;box-shadow:none!important;width:44px!important;height:44px!important}
  header #shopTools .mm-search-box .tovex-search-tools{right:3px!important}
  header #shopTools .mm-search-box input#search{padding-inline-end:54px!important}
  header #shopTools.search-row .shop-brand-menu a{font-size:clamp(23px,6vw,28px)!important}
@@ -1487,11 +1487,11 @@ body:has(#shopSections[open]){overflow:hidden}
   #tovexCategoryScreen:not([hidden]) {
     position:fixed; inset:0 0 calc(62px + env(safe-area-inset-bottom,0px));
     z-index:98990; display:flex; flex-direction:column; overflow:auto;
-    overscroll-behavior:contain; background:#f4f8f5; color:#153b2d;
+    overscroll-behavior:contain; background:#f4f7fb; color:#203452;
   }
   #tovexCategoryScreen .category-screen-header {
     position:sticky; top:0; z-index:1; padding:calc(10px + env(safe-area-inset-top,0px)) 16px 14px;
-    background:#0d6d47; color:#fff;
+    background:linear-gradient(90deg,#118657,#284C88); color:#fff;
   }
   .category-screen-titlebar,.category-screen-search {
     display:flex; align-items:center; gap:10px; max-width:600px; margin:0 auto;
@@ -1504,31 +1504,41 @@ body:has(#shopSections[open]){overflow:hidden}
   .category-screen-search { margin-top:10px; gap:6px; padding:4px; background:white; border-radius:12px; }
   #tovexCategoryQuery {
     width:100%; min-width:0; min-height:44px; padding:0 9px; border:0; border-radius:8px;
-    background:white; color:#153b2d; font:400 16px/1.2 system-ui,sans-serif;
+    background:white; color:#203452; font:400 16px/1.2 system-ui,sans-serif;
   }
   #tovexCategorySubmit {
     flex:none; min-height:44px; padding:0 12px; border:0; border-radius:9px;
-    background:#e4f1e9; color:#0d573a; font:700 14px/1.2 system-ui,sans-serif;
+    background:#e7eef9; color:#234477; font:700 14px/1.2 system-ui,sans-serif;
   }
   #tovexCategoryRows { width:100%; max-width:632px; box-sizing:border-box; margin:0 auto; padding:12px 16px 18px; }
   #tovexCategoryRows button {
     display:grid; grid-template-columns:42px minmax(0,1fr) 10px; align-items:center; gap:12px;
     width:100%; min-height:60px; margin-bottom:6px; padding:8px 14px 8px 9px;
-    border:1px solid #dae6dd; border-radius:13px; background:white; color:#163d2e; text-align:start;
+    border:1px solid #d8e2ef; border-radius:13px; background:white; color:#203452; text-align:start;
     font:650 15px/1.3 system-ui,sans-serif; overflow-wrap:anywhere;
   }
-  #tovexCategoryRows button[aria-current="true"] { background:#e3f2e9; border-color:#9bc6ad; }
+  #tovexCategoryRows button[aria-current="true"] { background:#e6eefc; border-color:#a2badf; }
   #tovexCategoryRows button::after {
-    content:""; width:7px; height:7px; border:solid #287552; border-width:2px 2px 0 0; transform:rotate(45deg);
+    content:""; width:7px; height:7px; border:solid #365d95; border-width:2px 2px 0 0; transform:rotate(45deg);
   }
   .category-screen-thumbnail {
     width:42px; height:42px; display:grid; place-items:center; border-radius:9px;
-    background:#e4f1e9; color:#0d6d47; object-fit:cover; font-size:24px;
+    background:#e7eef9; color:#284C88; object-fit:cover; font-size:24px;
   }
   #tovexCategoryScreen :is(button,input):focus-visible { outline:2px solid #b87611; outline-offset:2px; }
 }
 </style>
-</head>
+<style>@media(max-width:767px){
+ body{--leaf:#284C88;--sage:#e7eef9}
+ @layer tovexProductCards {
+  #tovexMobileNav.tovex-mobile-nav button[data-go].active{background:linear-gradient(90deg,#118657,#284C88)!important;color:#fff!important}
+ }
+ @layer tovexClassic {
+  #tovexMobileNav.tovex-mobile-nav button[data-go].active,#tovexMobileNav.tovex-mobile-nav button[data-go="cart"] .nav-icon,.category-section.wrap .catalog-mobile-head button[data-catalog-action="cart"]{background:linear-gradient(90deg,#118657,#284C88)!important}
+  #tovexMobileNav.tovex-mobile-nav button[data-go="cart"]:not(.active) [data-mobile-label]{color:#284C88!important}
+ }
+ header #shopTools #tovexPhotoSearch .tovex-lens circle:first-of-type{fill:#d7e6ff}
+}</style></head>
 <body>
 <header><div class="wrap"><div class="tv-delivery-row"><a id="tvHeaderDelivery" aria-label="თბილისი — ქალაქის არჩევა" href="?view=delivery"><svg aria-hidden="true" width="16" height="18" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1a8 8 0 0 0-8 8c0 5.3 8 14 8 14s8-8.7 8-14a8 8 0 0 0-8-8Zm0 4.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Z"/></svg><span id="tvHeaderCity">თბილისი</span></a></div>
 <div class="top"><div class="brand"><span class="brand-name">TOVEX</span><span aria-label="საქართველოს დროშა — флаг Грузии" class="georgia-flag" role="img"><svg aria-hidden="true" viewbox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect fill="#fff" height="40" width="60"></rect><path d="M0 16h60v8H0zM26 0h8v40h-8z" fill="#d82135"></path><g fill="#d82135"><path d="M12 5h2v4h4v2h-4v4h-2v-4H8V9h4zM46 5h2v4h4v2h-4v4h-2v-4h-4V9h4zM12 25h2v4h4v2h-4v4h-2v-4H8v-2h4zM46 25h2v4h4v2h-4v4h-2v-4h-4v-2h4z"></path></g></svg></span></div><div class="languages"><button data-lang="ka" type="button" aria-label="ქართული"><span class="language-full">🇬🇪 ქართული</span><span class="language-short" aria-hidden="true">GE</span></button><button data-lang="ru" type="button" aria-label="Русский"><span class="language-full">🇷🇺 Русский</span><span class="language-short" aria-hidden="true">RU</span></button><button data-lang="en" type="button" aria-label="English"><span class="language-full">🇬🇧 English</span><span class="language-short" aria-hidden="true">EN</span></button></div><div class="mm-account" id="mmAccountBar"><button class="mm-primary" id="mmAccountOpen" type="button">შესვლა</button><button id="tovexBuyerSignupOpen" type="button">რეგისტრაცია</button><img alt="Avatar" hidden="" id="mmHeaderAvatar" style="width:39px;height:39px;object-fit:cover;border-radius:50%;border:2px solid #eabb61"/><span class="mm-account-email" hidden="" id="mmAccountEmail"></span><a id="tovexPartnersLink" href="/partners.html" style="display:inline-flex;align-items:center;padding:7px 12px;border:1px solid #18bf7c;border-radius:18px;color:#beffe5;text-decoration:none;font-weight:700">Стать продавцом ↗</a><button id="tovexSellerJoin" type="button" hidden="">🏪 Стать продавцом</button><a aria-label="Seller Back Office" hidden="" href="/backoffice/" id="mmSellerBackoffice" style="display:none">🏪 Back Office</a><button hidden="" id="mmBuyerProfileeBtn" type="button">👤 პროფილი</button><button hidden="" id="mmBuyerOrdersBtn" type="button">📦 ჩემი შეკვეთები <span id="mmOrdersBadge" hidden></span></button><button hidden="" id="mmAccountLogout" type="button">გასვლა</button></div></div>
