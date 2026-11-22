@@ -1623,6 +1623,32 @@ body:has(#shopSections[open]){overflow:hidden}
  html body #cart .mm-cart-qty:has(.cart-stock-limit){display:grid;grid-template-columns:44px auto 44px;justify-items:center;background:transparent!important}
  html body #cart .mm-cart-qty .cart-stock-limit{grid-column:1/-1;justify-self:start;color:#53645d;font:500 12px/1.35 system-ui,sans-serif}
  html body #cart .mm-cart-qty button:disabled{opacity:.4!important;cursor:default}
+}</style><style id="cart-availability-and-questions">@layer tovexProductCards{
+html body #cart.full-cart .mm-cart-detail{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;grid-template-areas:"name price" "state state" "quantity remove";align-content:center;align-items:center;gap:6px 10px!important}
+html body #cart.full-cart .mm-cart-detail>strong{grid-area:name}
+html body #cart.full-cart .mm-cart-detail>span{grid-area:price}
+html body #cart .cart-stock-limit{grid-area:state;justify-self:start;background:#ecf1ee;color:#40594d;border-radius:20px;padding:3px 9px;font:600 12px/1.4 system-ui,sans-serif}
+html body #cart .cart-stock-limit[data-state=last]{background:#fff0ce;color:#755002}
+html body #cart .cart-stock-limit[data-state=empty]{background:#f4e7e7;color:#823f42}
+html body #cart.full-cart .mm-cart-qty{grid-area:quantity;display:flex!important;gap:0!important;border:1px solid #d6e1da;border-radius:10px;background:#f5f8f5!important}
+html body #cart.full-cart .mm-cart-qty>span{min-width:1.5em;text-align:center}
+html body #cart.full-cart .mm-cart-detail .remove{grid-area:remove;display:inline-flex!important;align-items:center;justify-content:center;justify-self:end;gap:8px;min-height:44px;padding:6px 11px!important;background:#fff8f7!important;border:1px solid #e4cac7!important;color:#773e38!important;border-radius:10px!important;font:600 13px/1.25 system-ui,sans-serif!important}
+html body #cart.full-cart .mm-cart-detail .remove:hover{background:#fae8e5!important}
+.cart-bin{position:relative;width:10px;height:11px;border:1.5px solid currentColor;border-top:none;border-radius:0 0 2px 2px;display:inline-block;margin-top:3px}
+.cart-bin::before,.cart-bin::after{content:"";position:absolute;background:currentColor;border-radius:2px}.cart-bin::before{height:1.5px;left:-3px;right:-3px;top:-3px}.cart-bin::after{height:2px;width:5px;left:1px;top:-5px}
+html body #productDetail .product-questions:not(:empty){display:flex;align-items:center;flex-wrap:wrap;gap:14px 20px;background:#f3f7f3!important;border:1px solid #d8e5da;border-radius:16px;padding:clamp(16px,3vw,26px);margin:20px 0 0;color:#203c30}
+html body #productDetail .product-questions:empty{display:none}
+html body #productDetail .product-questions h3{margin:0 auto 0 0;color:#203c30!important;font:700 20px/1.25 system-ui,sans-serif}
+html body #productDetail .product-questions button{background:#176249!important;color:#fff!important;border:0!important;border-radius:10px!important;min-height:44px;margin:0;padding:10px 16px;font:600 14px/1.35 system-ui,sans-serif;cursor:pointer}
+html body #productDetail .product-questions button:hover{background:#104b38!important}
+html body #productDetail .product-questions :is(p,strong,label){flex-basis:100%;margin:0;overflow-wrap:anywhere}
+html body #productDetail .product-questions textarea{margin-top:6px;min-height:78px;padding:10px;border:1px solid #9eb6a7;border-radius:8px;background:white;color:#172d24}
+@media(max-width:520px){
+ html body #cart.full-cart .mm-cart-detail{grid-template-areas:"name name" "price price" "state state" "quantity remove";column-gap:4px!important}
+ html body #cart.full-cart .mm-cart-detail>span{justify-self:start}
+ html body #productDetail .product-questions button{width:100%}
+}
+@media(max-width:350px){html body #cart.full-cart .mm-cart-detail{grid-template-columns:1fr!important;grid-template-areas:"name" "price" "state" "quantity" "remove"}html body #cart.full-cart .mm-cart-detail .remove{justify-self:start}}
 }</style></head>
 <body>
 <header><div class="wrap"><div class="tv-delivery-row"><a id="tvHeaderDelivery" aria-label="თბილისი — ქალაქის არჩევა" href="?view=delivery"><svg aria-hidden="true" width="16" height="18" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1a8 8 0 0 0-8 8c0 5.3 8 14 8 14s8-8.7 8-14a8 8 0 0 0-8-8Zm0 4.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Z"/></svg><span id="tvHeaderCity">თბილისი</span></a></div>
@@ -1729,7 +1755,7 @@ function orderProductId(row){
  return match?match[1]:null;
 }
 const legacyNote=()=>({ru:'Только просмотр · онлайн-заказ недоступен',ka:'მხოლოდ ნახვა · ონლაინ შეკვეთა მიუწვდომელია',en:'View only · online ordering unavailable'}[lang]);
-const eligibleCart=rows=>rows.filter(row=>orderProductId(row));
+const eligibleCart=rows=>rows.filter(row=>orderProductId(row)&&(row.stock==null||row.quantity<=cartQuantityLimit(row.stock)));
 const money=n=>Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₾';
 function wholesaleMinimum(p){return p?.wholesale?.mode==='bulk'?p.wholesale.tiers[0].qty:1}
 function wholesalePrice(p,qty){
@@ -1935,6 +1961,8 @@ function cartQuantityLimit(stock){
 }
 function cartLimitMessage(stock){
  const n=cartQuantityLimit(stock);
+ if(n===0)return ({ru:'Нет в наличии',ka:'მარაგში არ არის',en:'Out of stock'})[lang];
+ if(n===1)return ({ru:'Осталась 1 шт.',ka:'დარჩა 1 ცალი',en:'Only 1 left'})[lang];
  if(Number(stock)>100)return ({ru:'До 100 шт. в одной позиции заказа',ka:'შეკვეთის ერთ პოზიციაში მაქსიმუმ 100 ცალი',en:'Maximum 100 per order line'})[lang];
  return ({ru:'Доступно: '+n+' шт.',ka:'ხელმისაწვდომია: '+n+' ც.',en:'Available: '+n})[lang];
 }
@@ -1943,7 +1971,14 @@ function renderCart(){refreshWholesaleCart();const box=$('cartItems');box.replac
  plus.disabled=item.quantity>=limit;
  plus.onclick=()=>{if(item.quantity>=cartQuantityLimit(item.stock))return;item.quantity++;updateCount();renderCart()};
  qty.append(minus,count,plus);
- if(plus.disabled){const hint=document.createElement('small');hint.className='cart-stock-limit';hint.textContent=cartLimitMessage(item.stock);qty.append(hint)}const remove=document.createElement('button');remove.className='remove';remove.textContent=t().remove;remove.onclick=()=>{cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};detail.append(label,amount,qty,remove);row.append(pic,detail);box.append(row)}$('total').textContent=t().total+' '+money(eligibleCart(cart).reduce((s,p)=>s+p.price*p.quantity,0))}
+ let hint;
+ if(plus.disabled&&orderProductId(item)){
+  hint=document.createElement('small');hint.className='cart-stock-limit';
+  hint.dataset.state=limit===0?'empty':limit===1?'last':'limit';
+  hint.textContent=cartLimitMessage(item.stock);
+  if(limit>0&&item.quantity>limit)hint.textContent+=' · '+({ru:'уменьшите количество',ka:'შეამცირეთ რაოდენობა',en:'reduce quantity'})[lang];
+ }
+ const remove=document.createElement('button');remove.className='remove';remove.type='button';remove.textContent=t().remove;remove.setAttribute('aria-label',t().remove+' · '+item.name);const icon=document.createElement('i');icon.className='cart-bin';icon.setAttribute('aria-hidden','true');remove.prepend(icon);remove.onclick=()=>{cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};detail.append(label,amount);if(hint)detail.append(hint);detail.append(qty,remove);row.append(pic,detail);box.append(row)}$('total').textContent=t().total+' '+money(eligibleCart(cart).reduce((s,p)=>s+p.price*p.quantity,0))}
 const deliveryCities={"ru": ["Тбилиси", "Батуми", "Кутаиси", "Рустави", "Гори", "Зугдиди"], "ka": ["თბილისი", "ბათუმი", "ქუთაისი", "რუსთავი", "გორი", "ზუგდიდი"], "en": ["Tbilisi", "Batumi", "Kutaisi", "Rustavi", "Gori", "Zugdidi"]};
 const cityStorageKey='tovex-delivery-city';
 const cityUrl=new URL(location.href);
@@ -3483,7 +3518,7 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
   const unavailable={ru:'Отзывы временно недоступны',ka:'შეფასებები დროებით მიუწვდომელია',en:'Reviews are temporarily unavailable'}[lang];
   if(window.tovexRenderReviews)window.tovexRenderReviews(idOf(product),reviewHost,true).catch(()=>{reviewHost.textContent=unavailable});
   else reviewHost.textContent=unavailable;
-  const qHost=document.createElement('section');qHost.className='tvx-panel';reviewHost.after(qHost);
+  const qHost=document.createElement('section');qHost.className='tvx-panel product-questions';reviewHost.after(qHost);
   if(product.seller_product_id)Market.record('view',[product.seller_product_id]);
   Market.questions(qHost,product);
   const related=get('.pd-related'),row=related.querySelector('div');
@@ -3562,52 +3597,4 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
 })();
 </script>
 
-<dialog id="deliveryPicker" style="border:0;padding:0;margin:0;width:100%;height:100%;max-width:none;max-height:none"><iframe title="TOVEX · Delivery" style="display:block;border:0;width:100%;height:100%"></iframe></dialog>
-<script>
-(() => {
- const dialog = document.getElementById('deliveryPicker');
- function syncDelivery() {
-   if (new URLSearchParams(location.search).get('view') !== 'delivery') {
-     if (dialog.open) dialog.close();
-     return;
-   }
-   if(!dialog.firstElementChild.hasAttribute('src'))dialog.firstElementChild.src='delivery.html';
-   if (!dialog.open) dialog.showModal();
- }
- syncDelivery();
- window.addEventListener('pageshow', syncDelivery);
-})();
-</script>
-
-
-
-<script>
-(()=>{
- const section=document.querySelector('.category-section'),head=section.querySelector('.catalog-mobile-head'),title=document.getElementById('categoriesTitle');
- const update=()=>{const words={ru:['Каталог','Поиск','Корзина'],ka:['კატალოგი','ძიება','კალათა'],en:['Catalog','Search','Cart']}[document.documentElement.lang]||['Catalog','Search','Cart'];
- section.querySelector(".mobile-catalog-title").textContent=words[0];head.querySelector('[data-catalog-action=search]').ariaLabel=words[1];head.querySelector('[data-catalog-action=cart]').ariaLabel=words[2];};
- new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});update();
- head.onclick=e=>{const action=e.target.closest('button')?.dataset.catalogAction;if(action==='cart')document.getElementById('cartToggle').click();if(action==='search'){const input=document.getElementById('search');input.scrollIntoView({block:'center'});input.focus({preventScroll:true})}};
-})();
-</script><dialog id="shopSections" aria-labelledby="shopSectionsTitle"><div class="section-panel"><div class="section-bar"><h2 id="shopSectionsTitle"></h2><button type="button" id="sectionsClose">×</button></div><div id="sectionLinks"></div></div></dialog>
-
-<script>
-(()=>{
- const by=id=>document.getElementById(id),dialog=by('shopSections'),menu=by('shopMenu'),links=by('sectionLinks');
- const text={ru:['Каталог','Адреса','Войти','Профиль','Все товары','Закрыть'],ka:['კატალოგი','მისამართები','შესვლა','პროფილი','ყველა პროდუქტი','დახურვა'],en:['Catalog','Addresses','Sign in','Profile','All products','Close']};
- const words=()=>text[document.documentElement.lang]||text.ka;
- function update(){const w=words();menu.setAttribute('aria-label',w[0]);by('shopSectionsTitle').textContent=w[0];by('sectionsClose').setAttribute('aria-label',w[5]);by('shopAddress').lastElementChild.textContent=w[1];by('shopLogin').lastElementChild.textContent=w[window.mmBuyerUser?3:2]}
- function render(){links.replaceChildren();const tiles=[...document.querySelectorAll('.category-grid .category-tile')];
- for(const tile of [null,...tiles]){
- const b=document.createElement('button');b.type='button';const key=tile?.dataset.category||'';
- if(tile){const img=document.createElement('img');img.alt='';img.loading='lazy';img.src=tile.querySelector('picture source')?.srcset||tile.querySelector('img').src;b.append(img)}
- else{const symbol=document.createElement('span');symbol.className='section-all';symbol.textContent='☷';b.append(symbol)}
- b.append(document.createTextNode(tile?tile.lastElementChild.textContent:words()[4]));b.setAttribute('aria-current',String(selectedCategory===key));
- b.onclick=()=>{dialog.close();applyCategory(key)};links.append(b)}}
- menu.onclick=()=>{update();render();dialog.showModal();links.scrollTop=0;menu.setAttribute('aria-expanded','true')};menu.setAttribute('aria-expanded','false');
- dialog.addEventListener('close',()=>menu.setAttribute('aria-expanded','false'));by('sectionsClose').onclick=()=>dialog.close();dialog.onclick=e=>{if(e.target===dialog)dialog.close()};
- by('shopAddress').onclick=()=>by('tvHeaderDelivery').click();by('shopLogin').onclick=()=>by(window.mmBuyerUser?'mmBuyerProfileeBtn':'mmAccountOpen').click();
- const count=by('headerCartCount');function badge(){count.hidden=!Number(count.textContent)}new MutationObserver(badge).observe(count,{subtree:true,childList:true,characterData:true});badge();
- new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});window.addEventListener('mm-auth-changed',update);update()
-})();
-</script></body></html>
+<dialog id="deliveryPicker" style="border:0;padding:0;margin:0;width:100%;heig
