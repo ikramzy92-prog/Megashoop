@@ -1426,7 +1426,7 @@ body:has(#shopSections[open]){overflow:hidden}
 @media(max-width:767px){
  #shopTools .shop-brand-menu #shopMenu, header #shopTools.search-row #cartToggle{display:none!important}
  #shopTools .mm-search-box input#search{font-size:16px!important;min-width:0;box-sizing:border-box}
- header #shopTools.search-row {grid-template-columns:minmax(0,1fr) minmax(0,max-content) minmax(0,max-content)!important;grid-template-rows:minmax(44px,auto) auto 46px;align-items:center}
+ header #shopTools.search-row {grid-template-columns:minmax(0,1fr) minmax(0,max-content) minmax(0,max-content)!important;grid-template-rows:minmax(44px,auto) 44px 46px;row-gap:0!important;align-items:center}
  header #shopTools.search-row .mm-search-box{grid-column:1/-1!important;grid-row:3!important}
  #shopTools :is(#shopLogin,#shopAddress){min-width:44px!important;max-width:100%!important;min-height:44px;box-sizing:border-box}
  #shopTools :is(#shopAddress,#shopLogin)>span{min-height:15px;line-height:15px;white-space:normal;overflow-wrap:anywhere;text-align:center}
@@ -1442,17 +1442,16 @@ body:has(#shopSections[open]){overflow:hidden}
 }</style><style id="tovex-category-screen-css">
 #tovexCategoryScreen,.tovex-quick-links { display:none; }
 @media(max-width:767px) {
-  #shopTools .tovex-quick-links,.category-screen-header .tovex-quick-links {
+  #shopTools .tovex-quick-links {
     display:flex; align-items:center; gap:16px; min-width:0; overflow-x:auto;
     scrollbar-width:none; overscroll-behavior-inline:contain;
   }
   #shopTools .tovex-quick-links { grid-column:1/-1; grid-row:2; }
-  .category-screen-header .tovex-quick-links { max-width:600px; margin:2px auto 0; }
-  #shopTools .tovex-quick-links button,.category-screen-header .tovex-quick-links button {
+  #shopTools .tovex-quick-links button {
     flex:none; min-height:44px; padding:0 3px; border:0; border-radius:6px;
     background:transparent; color:#fff; font:650 13px/1.2 system-ui,sans-serif; white-space:nowrap;
   }
-  #shopTools .tovex-quick-links button:focus-visible,.category-screen-header .tovex-quick-links button:focus-visible {
+  #shopTools .tovex-quick-links button:focus-visible {
     outline:2px solid #fff; outline-offset:-2px;
   }
 }
@@ -2660,11 +2659,6 @@ document.addEventListener('DOMContentLoaded',()=>{syncCartInfo();document.queryS
    <button id="tovexCategoryBack" type="button"><span aria-hidden="true">←</span></button>
    <h1 id="tovexCategoryTitle" tabindex="-1"></h1>
   </div>
-  <nav class="tovex-quick-links">
- <button type="button" data-quick-link="all"></button>
- <button type="button" data-quick-link="delivery"></button>
- <button type="button" data-quick-link="seller"></button>
-</nav>
   <form class="category-screen-search" role="search">
    <input id="tovexCategoryQuery" type="search" autocomplete="off" enterkeyhint="search">
    <button id="tovexCategorySubmit" type="submit"></button>
@@ -2757,14 +2751,13 @@ document.addEventListener('DOMContentLoaded',()=>{syncCartInfo();document.queryS
   heading.focus({preventScroll:true});
  }
  const quickText={
-  ru:['Разделы TOVEX','Каталог','Все товары','Доставка','Продавцам'],
-  ka:['TOVEX-ის სექციები','კატალოგი','ყველა პროდუქტი','მიწოდება','გამყიდველებისთვის'],
-  en:['TOVEX sections','Catalog','All products','Delivery','For sellers']
+  ru:['Разделы TOVEX','Каталог','Доставка','Продавцам'],
+  ka:['TOVEX-ის სექციები','კატალოგი','მიწოდება','გამყიდველებისთვის'],
+  en:['TOVEX sections','Catalog','Delivery','For sellers']
  };
  const quickBars=document.querySelectorAll('.tovex-quick-links');
  const quickActions={
   catalog:openCategories,
-  all:()=>{closeCategories();applyCategory('');focusResults()},
   delivery:()=>document.getElementById('tvHeaderDelivery').click(),
   seller:()=>{
    const office=document.getElementById('mmSellerBackoffice');
@@ -2772,8 +2765,8 @@ document.addEventListener('DOMContentLoaded',()=>{syncCartInfo();document.queryS
   }
  };
  function updateQuickLinks(){
-  const [label,catalogLabel,all,delivery,seller]=quickText[currentLang()]||quickText.ka;
-  const names={catalog:catalogLabel,all,delivery,seller};
+  const [label,catalogLabel,delivery,seller]=quickText[currentLang()]||quickText.ka;
+  const names={catalog:catalogLabel,delivery,seller};
   quickBars.forEach(bar=>{
    bar.setAttribute('aria-label',label);
    bar.querySelectorAll('[data-quick-link]').forEach(button=>button.textContent=names[button.dataset.quickLink]);
