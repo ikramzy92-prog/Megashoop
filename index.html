@@ -1619,7 +1619,11 @@ body:has(#shopSections[open]){overflow:hidden}
  @media(max-width:380px){html body #cart.full-cart .mm-cart-detail{grid-template-columns:minmax(0,1fr)}html body #cart.full-cart .mm-cart-detail>span,html body #cart.full-cart .remove{justify-self:start}}
 }
 </style>
-</head>
+<style>@layer tovexProductCards {
+ html body #cart .mm-cart-qty:has(.cart-stock-limit){display:grid;grid-template-columns:44px auto 44px;justify-items:center;background:transparent!important}
+ html body #cart .mm-cart-qty .cart-stock-limit{grid-column:1/-1;justify-self:start;color:#53645d;font:500 12px/1.35 system-ui,sans-serif}
+ html body #cart .mm-cart-qty button:disabled{opacity:.4!important;cursor:default}
+}</style></head>
 <body>
 <header><div class="wrap"><div class="tv-delivery-row"><a id="tvHeaderDelivery" aria-label="თბილისი — ქალაქის არჩევა" href="?view=delivery"><svg aria-hidden="true" width="16" height="18" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1a8 8 0 0 0-8 8c0 5.3 8 14 8 14s8-8.7 8-14a8 8 0 0 0-8-8Zm0 4.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Z"/></svg><span id="tvHeaderCity">თბილისი</span></a></div>
 <div class="top"><div class="brand"><span class="brand-name">TOVEX</span><span aria-label="საქართველოს დროშა — флаг Грузии" class="georgia-flag" role="img"><svg aria-hidden="true" viewbox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect fill="#fff" height="40" width="60"></rect><path d="M0 16h60v8H0zM26 0h8v40h-8z" fill="#d82135"></path><g fill="#d82135"><path d="M12 5h2v4h4v2h-4v4h-2v-4H8V9h4zM46 5h2v4h4v2h-4v4h-2v-4h-4V9h4zM12 25h2v4h4v2h-4v4h-2v-4H8v-2h4zM46 25h2v4h4v2h-4v4h-2v-4h-4v-2h4z"></path></g></svg></span></div><div class="languages"><button data-lang="ka" type="button" aria-label="ქართული"><span class="language-full">🇬🇪 ქართული</span><span class="language-short" aria-hidden="true">GE</span></button><button data-lang="ru" type="button" aria-label="Русский"><span class="language-full">🇷🇺 Русский</span><span class="language-short" aria-hidden="true">RU</span></button><button data-lang="en" type="button" aria-label="English"><span class="language-full">🇬🇧 English</span><span class="language-short" aria-hidden="true">EN</span></button></div><div class="mm-account" id="mmAccountBar"><button class="mm-primary" id="mmAccountOpen" type="button">შესვლა</button><button id="tovexBuyerSignupOpen" type="button">რეგისტრაცია</button><img alt="Avatar" hidden="" id="mmHeaderAvatar" style="width:39px;height:39px;object-fit:cover;border-radius:50%;border:2px solid #eabb61"/><span class="mm-account-email" hidden="" id="mmAccountEmail"></span><a id="tovexPartnersLink" href="/partners.html" style="display:inline-flex;align-items:center;padding:7px 12px;border:1px solid #18bf7c;border-radius:18px;color:#beffe5;text-decoration:none;font-weight:700">Стать продавцом ↗</a><button id="tovexSellerJoin" type="button" hidden="">🏪 Стать продавцом</button><a aria-label="Seller Back Office" hidden="" href="/backoffice/" id="mmSellerBackoffice" style="display:none">🏪 Back Office</a><button hidden="" id="mmBuyerProfileeBtn" type="button">👤 პროფილი</button><button hidden="" id="mmBuyerOrdersBtn" type="button">📦 ჩემი შეკვეთები <span id="mmOrdersBadge" hidden></span></button><button hidden="" id="mmAccountLogout" type="button">გასვლა</button></div></div>
@@ -1925,8 +1929,21 @@ async function loadDetailVariants(product){
  if(!Array.isArray(rows))throw new Error('Invalid variants');
  tovexVariantCache.set(id,rows);return rows;
 }
-function tovexAddToCartBase(product){if(window.mmRoleGuard && !window.mmRoleGuard.canBuy()){window.mmRoleGuard.warn();return false;}const id=idOf(product);if(!orderProductId({id}))return false;const existing=cart.find(p=>p.id===id);const minimum=wholesaleMinimum(product);const next=existing?existing.quantity+1:minimum;if(next>stockOf(product)||(product.wholesale&&next>100)){alert(t().shortage);return false}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),minimum,variantPricing:product.id?.toString().includes('::')?{price:priceOf(product),wholesale:product.wholesale||null}:null,price:wholesalePrice(product,next),quantity:next,image:product.image_url||'',stock:stockOf(product)});updateCount();renderCart();Market.cart(product);navigator.vibrate?.(25);return true}
-function renderCart(){refreshWholesaleCart();const box=$('cartItems');box.replaceChildren();if(!cart.length){const message=document.createElement('p');message.className='cart-empty';message.textContent=({ru:'Корзина пока пуста',en:'Your cart is empty',ka:'კალათა ცარიელია'})[lang];box.append(message)}for(const item of cart){const row=document.createElement('div');row.className='cart-row mm-cart-item';const pic=document.createElement('img');pic.className='mm-cart-thumb';pic.alt=item.name;pic.src=item.image||tovexMissingImage;pic.onerror=()=>{pic.onerror=null;pic.src=tovexMissingImage};const detail=document.createElement('div');detail.className='mm-cart-detail';const label=document.createElement('strong');label.textContent=item.name+(orderProductId(item)?'':' · '+legacyNote());const amount=document.createElement('span');amount.textContent=money(item.price*item.quantity);const qty=document.createElement('div');qty.className='mm-cart-qty';const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label','Decrease quantity');minus.onclick=()=>{item.quantity--;if(item.quantity<(item.minimum||1))cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};const count=document.createElement('span');count.textContent=String(item.quantity);const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label','Increase quantity');plus.onclick=()=>{if(item.quantity>=item.stock||(item.wholesaleActive&&item.quantity>=100)){alert(t().shortage);return}item.quantity++;updateCount();renderCart()};qty.append(minus,count,plus);const remove=document.createElement('button');remove.className='remove';remove.textContent=t().remove;remove.onclick=()=>{cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};detail.append(label,amount,qty,remove);row.append(pic,detail);box.append(row)}$('total').textContent=t().total+' '+money(eligibleCart(cart).reduce((s,p)=>s+p.price*p.quantity,0))}
+function cartQuantityLimit(stock){
+ const available=Number(stock);
+ return Math.min(100,Number.isFinite(available)?Math.max(0,Math.floor(available)):0);
+}
+function cartLimitMessage(stock){
+ const n=cartQuantityLimit(stock);
+ if(Number(stock)>100)return ({ru:'До 100 шт. в одной позиции заказа',ka:'შეკვეთის ერთ პოზიციაში მაქსიმუმ 100 ცალი',en:'Maximum 100 per order line'})[lang];
+ return ({ru:'Доступно: '+n+' шт.',ka:'ხელმისაწვდომია: '+n+' ც.',en:'Available: '+n})[lang];
+}
+function tovexAddToCartBase(product){if(window.mmRoleGuard && !window.mmRoleGuard.canBuy()){window.mmRoleGuard.warn();return false;}const id=idOf(product);if(!orderProductId({id}))return false;const existing=cart.find(p=>p.id===id);const minimum=wholesaleMinimum(product);const next=existing?existing.quantity+1:minimum;if(next>cartQuantityLimit(stockOf(product))){if(existing){existing.stock=stockOf(product);renderCart();window.refreshCartSummary?.()}return false}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),minimum,variantPricing:product.id?.toString().includes('::')?{price:priceOf(product),wholesale:product.wholesale||null}:null,price:wholesalePrice(product,next),quantity:next,image:product.image_url||'',stock:stockOf(product)});updateCount();renderCart();Market.cart(product);navigator.vibrate?.(25);return true}
+function renderCart(){refreshWholesaleCart();const box=$('cartItems');box.replaceChildren();if(!cart.length){const message=document.createElement('p');message.className='cart-empty';message.textContent=({ru:'Корзина пока пуста',en:'Your cart is empty',ka:'კალათა ცარიელია'})[lang];box.append(message)}for(const item of cart){const row=document.createElement('div');row.className='cart-row mm-cart-item';const pic=document.createElement('img');pic.className='mm-cart-thumb';pic.alt=item.name;pic.src=item.image||tovexMissingImage;pic.onerror=()=>{pic.onerror=null;pic.src=tovexMissingImage};const detail=document.createElement('div');detail.className='mm-cart-detail';const label=document.createElement('strong');label.textContent=item.name+(orderProductId(item)?'':' · '+legacyNote());const amount=document.createElement('span');amount.textContent=money(item.price*item.quantity);const qty=document.createElement('div');qty.className='mm-cart-qty';const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label','Decrease quantity');minus.onclick=()=>{item.quantity--;if(item.quantity<(item.minimum||1))cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};const count=document.createElement('span');count.textContent=String(item.quantity);const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label','Increase quantity');const limit=cartQuantityLimit(item.stock);
+ plus.disabled=item.quantity>=limit;
+ plus.onclick=()=>{if(item.quantity>=cartQuantityLimit(item.stock))return;item.quantity++;updateCount();renderCart()};
+ qty.append(minus,count,plus);
+ if(plus.disabled){const hint=document.createElement('small');hint.className='cart-stock-limit';hint.textContent=cartLimitMessage(item.stock);qty.append(hint)}const remove=document.createElement('button');remove.className='remove';remove.textContent=t().remove;remove.onclick=()=>{cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};detail.append(label,amount,qty,remove);row.append(pic,detail);box.append(row)}$('total').textContent=t().total+' '+money(eligibleCart(cart).reduce((s,p)=>s+p.price*p.quantity,0))}
 const deliveryCities={"ru": ["Тбилиси", "Батуми", "Кутаиси", "Рустави", "Гори", "Зугдиди"], "ka": ["თბილისი", "ბათუმი", "ქუთაისი", "რუსთავი", "გორი", "ზუგდიდი"], "en": ["Tbilisi", "Batumi", "Kutaisi", "Rustavi", "Gori", "Zugdidi"]};
 const cityStorageKey='tovex-delivery-city';
 const cityUrl=new URL(location.href);
@@ -3369,7 +3386,7 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
   const selected=choice||current, row=cart.find(item=>item.id===idOf(selected));
   const controls=get('.pd-in-cart'),show=!!row&&!get('.pd-add').disabled;
   controls.hidden=!show;get('.pd-add').hidden=show;
-  if(show){if(selected.wholesale)get('.pd-price').textContent=money(row.price);controls.querySelector('output').textContent=row.quantity;controls.querySelector('[data-step="1"]').disabled=row.quantity>=stockOf(selected);get('.pd-view-cart').textContent=cartWords[lang][0]+' ›'}
+  if(show){if(selected.wholesale)get('.pd-price').textContent=money(row.price);controls.querySelector('output').textContent=row.quantity;const increase=controls.querySelector('[data-step="1"]');increase.disabled=row.quantity>=cartQuantityLimit(stockOf(selected));increase.title=increase.disabled?cartLimitMessage(stockOf(selected)):'';get('.pd-view-cart').textContent=cartWords[lang][0]+' ›'}
  }
  window.refreshCartSummary=syncCart;
  syncCart();
@@ -3377,7 +3394,7 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
  for(const b of dialog.querySelectorAll('[data-step]'))b.onclick=()=>{
   const selected=choice||current,item=cart.find(row=>row.id===idOf(selected));
   if(!item)return;
-  const value=item.quantity+Number(b.dataset.step);if(value>stockOf(selected)||(selected.wholesale&&value>100))return;
+  const value=item.quantity+Number(b.dataset.step);if(value>item.quantity&&value>cartQuantityLimit(stockOf(selected)))return;
   if(value<wholesaleMinimum(selected))cart=cart.filter(row=>row!==item);else item.quantity=value;
   renderCart();updateCount();
  };
@@ -3494,12 +3511,13 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
      const variant={...product,price:base,'цена':base};
      const price=priceOf(variant),oldPrice=oldPriceOf(variant);
      const title=nameOf(product)+' — '+label;
-     choice={...product,id:'seller-'+product.seller_product_id+'::'+v.id,name:title,'имя':title,['name_'+lang]:title,price,'цена':price,stock:Number(v.stock),'запас':Number(v.stock),discount_percent:0,tovex_seller_product:false};
+     choice={...product,id:'seller-'+product.seller_product_id+'::'+v.id,name:title,'имя':title,['name_'+lang]:title,price,'цена':price,stock:Math.min(Number(v.stock),stockOf(product)),'запас':Math.min(Number(v.stock),stockOf(product)),discount_percent:0,tovex_seller_product:false};
      for(const other of host.querySelectorAll('button'))other.setAttribute('aria-pressed',String(other===button));
      get('.pd-price').textContent=money(price);
      get('del').hidden=oldPrice<=price;
      get('del').textContent=oldPrice>price?money(oldPrice):'';
      get('small').textContent=t().stock+' '+v.stock+' '+unitOf(product);
+     const savedRow=cart.find(row=>row.id===idOf(choice));if(savedRow)savedRow.stock=stockOf(choice);
      drawSpecs(v.sku||attrs.sku||product.sku);
      setPurchaseEnabled(true);
     };
