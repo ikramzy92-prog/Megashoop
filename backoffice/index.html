@@ -571,15 +571,38 @@ const $=id=>document.getElementById(id);const safe=x=>String(x??'').replace(/[&<
 const ordersPanel=document.querySelector('#orders .card');ordersPanel.innerHTML='<h2>Заказы покупателей TOVEX</h2><button id="tovexSellerRefresh" type="button">↻ Обновить заказы</button><div id="tovexSellerOrderRows" style="margin-top:14px"></div>';
 $('tovexDeliveryMap').disabled=true;
 let orders=[];
-async function load(){const {data:{user}}=await db.auth.getUser();if(!user){$('tovexSellerOrderRows').textContent='Войдите в Back Office';return;}
- $('tovexSellerOrderRows').textContent='Загрузка…';const {data,error}=await db.rpc('tovex_seller_orders');if(error){$('tovexSellerOrderRows').textContent='Ошибка: '+error.message;return;}
- orders=Array.isArray(data)?data:[];const select=$('tovexDeliveryOrder');select.innerHTML='';for(const o of orders){const opt=document.createElement('option');opt.value=o.delivery_id;opt.textContent='#'+o.order_id.slice(0,8)+' · '+o.customer_name;select.append(opt)}select.disabled=!orders.length;
+let loadVersion=0;
+function clearOrders(){
+ orders=[];
+ $('tovexDeliveryOrder').replaceChildren();
+ $('tovexDeliveryOrder').disabled=true;
+ $('tovexDeliverySave').disabled=true;
+ $('tovexDeliveryPreview').textContent='';
+}
+async function load(){
+ const version=++loadVersion;
+ const select=$('tovexDeliveryOrder');
+ $('tovexDeliverySave').disabled=true;
+ try{
+ const {data:{user}}=await db.auth.getUser();
+ if(version!==loadVersion)return;
+ if(!user){clearOrders();$('tovexSellerOrderRows').textContent='Войдите в Back Office';return;}
+ $('tovexSellerOrderRows').textContent='Загрузка…';const {data,error}=await db.rpc('tovex_seller_orders');if(version!==loadVersion)return;
+ if(error)throw error;
+ orders=Array.isArray(data)?data:[];const previousId=select.value;select.replaceChildren();for(const o of orders){const opt=document.createElement('option');opt.value=o.delivery_id;opt.textContent='#'+o.order_id.slice(0,8)+' · '+o.customer_name;select.append(opt)}if(orders.some(o=>String(o.delivery_id)===previousId))select.value=previousId;
+ select.disabled=!orders.length;
  $('tovexDeliverySave').disabled=!orders.length;
  $('tovexSellerOrderRows').innerHTML=orders.length?orders.map(o=>('<article><div><b>#'+safe(o.order_id.slice(0,8))+'</b><div>'+safe(o.created_at?.slice(0,16)?.replace('T',' '))+'</div></div><div>'+safe(o.customer_name)+' · '+safe(o.customer_phone)+'<div>'+safe(o.delivery_address)+'</div><div>'+o.items.map(p=>safe(p.product_name)+' × '+Number(p.quantity)).join(', ')+'</div></div><div><b>'+Number(o.total_gel).toFixed(2)+' ₾</b> · '+safe(o.status)+'<div><button class="ghost" type="button" data-delivery="'+safe(o.delivery_id)+'">🚚 Управлять доставкой</button></div></div></article>')).join(''):'Пока нет заказов';
- $('tovexSellerOrderRows').querySelectorAll('[data-delivery]').forEach(b=>b.onclick=()=>{select.value=b.dataset.delivery;document.querySelector('[data-tab="delivery"]')?.click();sync()});sync();}
-function sync(){const o=orders.find(x=>x.delivery_id===$('tovexDeliveryOrder').value);if(!o)return;$('tovexDeliveryMethod').value=o.method||'seller';$('tovexDeliveryStatus').value=o.status||'new';$('tovexDeliveryPreview').textContent='#'+o.order_id.slice(0,8)+' · '+o.customer_name+' · '+o.status;}
+ $('tovexSellerOrderRows').querySelectorAll('[data-delivery]').forEach(b=>b.onclick=()=>{select.value=b.dataset.delivery;document.querySelector('[data-tab="delivery"]')?.click();sync()});sync();
+ }catch(error){
+  if(version!==loadVersion)return;
+  clearOrders();
+  $('tovexSellerOrderRows').textContent='Ошибка: '+error.message;
+ }
+}
+function sync(){const o=orders.find(x=>String(x.delivery_id)===$('tovexDeliveryOrder').value);if(!o){$('tovexDeliveryPreview').textContent='';return}$('tovexDeliveryMethod').value=o.method||'seller';$('tovexDeliveryStatus').value=o.status||'new';$('tovexDeliveryPreview').textContent='#'+o.order_id.slice(0,8)+' · '+o.customer_name+' · '+o.status;}
 $('tovexDeliveryOrder').addEventListener('change',sync);
-$('tovexDeliverySave').onclick=async()=>{const id=$('tovexDeliveryOrder').value;if(!id)return;const b=$('tovexDeliverySave');b.disabled=true;try{const {error}=await db.rpc('tovex_seller_update_delivery',{p_delivery_id:id,p_method:$('tovexDeliveryMethod').value,p_status:$('tovexDeliveryStatus').value});if(error)throw error;await load();$('tovexDeliveryPreview').textContent='Сохранено в Supabase';}catch(e){$('tovexDeliveryPreview').textContent='Ошибка: '+e.message}finally{b.disabled=false}};
+$('tovexDeliverySave').onclick=async()=>{const id=$('tovexDeliveryOrder').value;if(!id)return;const b=$('tovexDeliverySave');b.disabled=true;try{const {error}=await db.rpc('tovex_seller_update_delivery',{p_delivery_id:id,p_method:$('tovexDeliveryMethod').value,p_status:$('tovexDeliveryStatus').value});if(error)throw error;await load();$('tovexDeliveryPreview').textContent='Сохранено в Supabase';}catch(e){$('tovexDeliveryPreview').textContent='Ошибка: '+e.message}finally{b.disabled=!$('tovexDeliveryOrder').value}};
 $('tovexSellerRefresh').onclick=load;
 ['orders','delivery'].forEach(id=>document.querySelector('[data-tab="'+id+'"]')?.addEventListener('click',load));
 window.addEventListener('focus',()=>{if(['orders','delivery'].includes(document.querySelector('.section.active')?.id))load()});
