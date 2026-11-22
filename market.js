@@ -77,6 +77,15 @@ const Market = (() => {
    const metrics=[...document.querySelectorAll('#dashboard .dash-metric')].slice(0,3);
    const chart=document.querySelector('.dash-chart');
    for(const m of metrics){m.querySelector('strong').textContent='…';m.querySelector('.good').textContent=''}
+   let message=chart.parentElement.querySelector('[data-chart-message]');
+   if(!message){
+    message=el('p');message.dataset.chartMessage='';message.setAttribute('role','status');
+    message.style.cssText='padding:28px 12px;text-align:center;font:inherit;color:inherit';
+    chart.before(message);
+   }
+   chart.style.display='none';
+   chart.querySelectorAll('text').forEach(label=>label.style.display='none');
+   message.hidden=false;message.textContent=t('loading');
    chart.querySelector('[data-daily]')?.remove();
    try{
     const daily=await rpc(db,'daily',{store_key:String(shop.id)});if(current!==version)return;
@@ -84,7 +93,8 @@ const Market = (() => {
     const money=n=>n.toFixed(2)+' ₾';
     [money(total),count,count?money(total/count):'—'].forEach((value,i)=>{metrics[i].querySelector('strong').textContent=value;metrics[i].querySelector('.good').textContent=t('report')});
     metrics[0].querySelector('small').textContent=t('amount');document.getElementById('salesChartTitle').textContent=t('amount');
-    document.getElementById('salesChartNote').textContent=t('report');document.getElementById('chartEmpty').textContent=count?'':t('empty');
+    document.getElementById('salesChartNote').textContent=t('report');message.textContent=count?'':({ru:'За последние 30 дней заказов не было.',ka:'ბოლო 30 დღეში შეკვეთები არ ყოფილა.',en:'No orders in the last 30 days.'}[document.documentElement.lang]||t('empty'));
+    message.hidden=Boolean(count);chart.style.display=count?'block':'none';
     const svg='http://www.w3.org/2000/svg',group=document.createElementNS(svg,'g');group.dataset.daily='';
     const peak=Math.max(1,...daily.map(r=>Number(r.amount)));
     const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Tbilisi'});
@@ -92,7 +102,7 @@ const Market = (() => {
      const bar=document.createElementNS(svg,'rect');bar.setAttribute('x',45+(29-age)*16.6);bar.setAttribute('width',12);bar.setAttribute('height',height);bar.setAttribute('y',200-height);bar.setAttribute('fill','#187354');
      const title=document.createElementNS(svg,'title');title.textContent=r.day+' · '+money(Number(r.amount));bar.append(title);group.append(bar)}
     chart.append(group);
-   }catch(e){if(current===version){metrics.forEach(m=>m.querySelector('strong').textContent='—');document.getElementById('salesChartNote').textContent=e.message}}
+   }catch(e){if(current===version){metrics.forEach(m=>m.querySelector('strong').textContent='—');message.textContent=e.message;message.hidden=false;chart.style.display='none'}}
    return;
   }
   const host=document.getElementById('tvx-'+tab);if(!host||!shop)return;
