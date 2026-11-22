@@ -1598,11 +1598,11 @@ body:has(#shopSections[open]){overflow:hidden}
 
 
 <div id="tovexCartInfo" class="tovex-cart-info" aria-label="Информация о заказе">
-  <div class="tovex-cart-promo"><label for="tovexPromoInput" data-cart-ka="🏷️ პრომოკოდი" data-cart-ru="🏷️ Промокод" data-cart-az="🏷️ Promokod">🏷️ Промокод</label><div class="tovex-promo-row"><input id="tovexPromoInput" type="text" disabled placeholder="Введите промокод" aria-label="Промокод (пока недоступен)"><button id="tovexPromoApply" type="button" disabled data-cart-ka="გამოყენება" data-cart-ru="Применить" data-cart-az="Tətbiq et">Применить</button></div><small data-cart-ka="პრომოკოდები ფასდაკლებების სისტემის ჩართვის შემდეგ ამუშავდება." data-cart-ru="Промокоды заработают после подключения системы скидок." data-cart-az="Promokodlar endirim sistemi qoşulduqdan sonra işləyəcək.">Промокоды заработают после подключения системы скидок.</small></div>
+  <div class="tovex-cart-promo"><label for="tovexPromoInput" data-cart-ka="🏷️ პრომოკოდი" data-cart-ru="🏷️ Промокод" data-cart-az="🏷️ Promokod" data-cart-en="🏷️ Promo code">🏷️ Промокод</label><div class="tovex-promo-row"><input id="tovexPromoInput" type="text" disabled placeholder="Введите промокод" aria-label="Промокод (пока недоступен)"><button id="tovexPromoApply" type="button" disabled data-cart-ka="გამოყენება" data-cart-ru="Применить" data-cart-az="Tətbiq et" data-cart-en="Apply">Применить</button></div><small data-cart-ka="პრომოკოდები ფასდაკლებების სისტემის ჩართვის შემდეგ ამუშავდება." data-cart-ru="Промокоды заработают после подключения системы скидок." data-cart-az="Promokodlar endirim sistemi qoşulduqdan sonra işləyəcək." data-cart-en="Promo codes are currently unavailable.">Промокоды заработают после подключения системы скидок.</small></div>
 
-  <div class="tovex-cart-benefit"><span aria-hidden="true">🚚</span><div><strong data-cart-ka="მიწოდება საქართველოში" data-cart-ru="Доставка по Грузии" data-cart-az="Gürcüstan üzrə çatdırılma">Доставка по Грузии</strong><small data-cart-ka="მიწოდების პირობები შეკვეთის გაფორმებისას" data-cart-ru="Условия доставки при оформлении" data-cart-az="Çatdırılma şərtləri sifariş zamanı">Условия доставки при оформлении</small></div></div>
-  <div class="tovex-cart-benefit"><span aria-hidden="true">🛡️</span><div><strong data-cart-ka="შეკვეთის უსაფრთხოება" data-cart-ru="Безопасность заказа" data-cart-az="Sifarişin təhlükəsizliyi">Безопасность заказа</strong><small data-cart-ka="შეკვეთის მონაცემები ხელმისაწვდომია პროფილში" data-cart-ru="Данные заказа доступны в профиле" data-cart-az="Order details profildə mövcuddur">Данные заказа доступны в профиле</small></div></div>
-  <div class="tovex-cart-benefit"><span aria-hidden="true">🎧</span><div><strong data-cart-ka="დახმარება მყიდველს" data-cart-ru="Помощь покупателю" data-cart-az="Alıcıya dəstək">Помощь покупателю</strong><small data-cart-ka="ინფორმაცია და მხარდაჭერა" data-cart-ru="Информация и поддержка" data-cart-az="Məlumat və dəstək">Информация и поддержка</small></div></div>
+  <div class="tovex-cart-benefit"><span aria-hidden="true">🚚</span><div><strong data-cart-ka="მიწოდება საქართველოში" data-cart-ru="Доставка по Грузии" data-cart-az="Gürcüstan üzrə çatdırılma" data-cart-en="Delivery in Georgia">Доставка по Грузии</strong><small data-cart-ka="მიწოდების პირობები შეკვეთის გაფორმებისას" data-cart-ru="Условия доставки при оформлении" data-cart-az="Çatdırılma şərtləri sifariş zamanı" data-cart-en="Delivery details at checkout">Условия доставки при оформлении</small></div></div>
+  <div class="tovex-cart-benefit"><span aria-hidden="true">🛡️</span><div><strong data-cart-ka="შეკვეთის უსაფრთხოება" data-cart-ru="Безопасность заказа" data-cart-az="Sifarişin təhlükəsizliyi" data-cart-en="Order privacy">Безопасность заказа</strong><small data-cart-ka="შეკვეთის მონაცემები ხელმისაწვდომია პროფილში" data-cart-ru="Данные заказа доступны в профиле" data-cart-az="Order details profildə mövcuddur" data-cart-en="Order details are available in your profile">Данные заказа доступны в профиле</small></div></div>
+  <div class="tovex-cart-benefit"><span aria-hidden="true">🎧</span><div><strong data-cart-ka="დახმარება მყიდველს" data-cart-ru="Помощь покупателю" data-cart-az="Alıcıya dəstək" data-cart-en="Customer support">Помощь покупателю</strong><small data-cart-ka="ინფორმაცია და მხარდაჭერა" data-cart-ru="Информация и поддержка" data-cart-az="Məlumat və dəstək" data-cart-en="Information and support">Информация и поддержка</small></div></div>
 <div class="tovex-cart-gift-art" aria-hidden="true"><img alt="" loading="lazy" src="assets/tovex/5137c511072d341a.webp" /></div>
 </div>
 
@@ -1640,7 +1640,7 @@ function readCart(){
  try{
   const rows=JSON.parse(sessionStorage.getItem(cartStorageKey));
   hadSavedCart=Array.isArray(rows);
-  return hadSavedCart?rows.filter(row=>row&&typeof row.id==='string'&&typeof row.name==='string'&&Number.isSafeInteger(row.quantity)&&row.quantity>0&&Number.isFinite(row.price)):[];
+  return hadSavedCart?rows.map(row=>row&&/^\d+::[\w-]+$/.test(row.id)?{...row,id:'seller-'+row.id}:row).filter(row=>row&&typeof row.id==='string'&&typeof row.name==='string'&&Number.isSafeInteger(row.quantity)&&row.quantity>0&&Number.isFinite(row.price)):[];
  }catch{return []}
 }
 let products=[],cart=readCart(),loading=true,loadError=false;window.mmGetCart=()=>cart.map(x=>({...x}));
@@ -1676,6 +1676,13 @@ function unitOf(p) {
  return unit;
 }
 const idOf=p=>String(p.id??p['идентифи']??originalProductName(p));
+function orderProductId(row){
+ const id=String(row.id);
+ const match=/^seller-(\d+)$/.exec(id)||/^(?:seller-)?(\d+)::[\w-]+$/.exec(id);
+ return match?match[1]:null;
+}
+const legacyNote=()=>({ru:'Только просмотр · онлайн-заказ недоступен',ka:'მხოლოდ ნახვა · ონლაინ შეკვეთა მიუწვდომელია',en:'View only · online ordering unavailable'}[lang]);
+const eligibleCart=rows=>rows.filter(row=>orderProductId(row));
 const money=n=>Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₾';
 function wholesaleMinimum(p){return p?.wholesale?.mode==='bulk'?p.wholesale.tiers[0].qty:1}
 function wholesalePrice(p,qty){
@@ -1694,7 +1701,7 @@ function wholesaleInfo(p){
  return box
 }
 function refreshWholesaleCart(){for(const row of cart){
- const p=products.find(p=>idOf(p)===row.id);if(p){row.wholesaleActive=!!p.wholesale;row.price=wholesalePrice(p,row.quantity);row.minimum=wholesaleMinimum(p)}
+ const p=row.variantPricing||products.find(p=>idOf(p)===row.id);if(p){row.wholesaleActive=!!p.wholesale;row.price=wholesalePrice(p,row.quantity);row.minimum=wholesaleMinimum(p)}
 }}
 
 function removePurchasedItems(submitted){
@@ -1753,7 +1760,7 @@ function renderProducts(){const box=$('products');box.lang=lang;box.replaceChild
  }
  if(!loading&&!loadError&&!items.length){const p=document.createElement('p');p.textContent=t().empty;box.append(p)}
  for(const product of items){const card=document.createElement('article');card.className='card';card.dataset.productId=idOf(product);const photo=document.createElement('div');photo.className='photo';const img=document.createElement('img');img.alt=nameOf(product);img.loading='lazy';img.src=product.image_url||tovexMissingImage;img.onerror=()=>{img.onerror=null;img.src=tovexMissingImage};photo.append(img);
- const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);name.dataset.pdOpen='';name.tabIndex=0;name.setAttribute('role','button');const price=document.createElement('div');price.className='price';price.textContent=money(wholesalePrice(product,wholesaleMinimum(product)));const oldPrice=product.wholesale?.mode==='bulk'?0:oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<wholesaleMinimum(product);if(!buy.disabled)addCartIcon(buy);buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price);appendProductHeading(info,name,product,lang);if(product.wholesale)info.append(wholesaleInfo(product));info.append(stock,buy);card.append(photo,info);box.append(card)} }
+ const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);name.dataset.pdOpen='';name.tabIndex=0;name.setAttribute('role','button');const price=document.createElement('div');price.className='price';price.textContent=money(wholesalePrice(product,wholesaleMinimum(product)));const oldPrice=product.wholesale?.mode==='bulk'?0:oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=!product.tovex_seller_product||stockOf(product)<wholesaleMinimum(product);if(!product.tovex_seller_product)buy.textContent=legacyNote();if(!buy.disabled)addCartIcon(buy);buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price);appendProductHeading(info,name,product,lang);if(product.wholesale)info.append(wholesaleInfo(product));info.append(stock,buy);card.append(photo,info);box.append(card)} }
 function animateToCart(source){
  const mobile=window.matchMedia('(max-width: 767px)').matches;
  const mobileTarget=document.querySelector('#tovexMobileNav button[data-go="cart"]');
@@ -1812,8 +1819,8 @@ async function loadDetailVariants(product){
  if(!Array.isArray(rows))throw new Error('Invalid variants');
  tovexVariantCache.set(id,rows);return rows;
 }
-function tovexAddToCartBase(product){if(window.mmRoleGuard && !window.mmRoleGuard.canBuy()){window.mmRoleGuard.warn();return false;}const id=idOf(product);const existing=cart.find(p=>p.id===id);const minimum=wholesaleMinimum(product);const next=existing?existing.quantity+1:minimum;if(next>stockOf(product)||(product.wholesale&&next>100)){alert(t().shortage);return false}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),minimum,price:wholesalePrice(product,next),quantity:next,image:product.image_url||'',stock:stockOf(product)});updateCount();renderCart();Market.cart(product);navigator.vibrate?.(25);return true}
-function renderCart(){refreshWholesaleCart();const box=$('cartItems');box.replaceChildren();for(const item of cart){const row=document.createElement('div');row.className='cart-row mm-cart-item';const pic=document.createElement('img');pic.className='mm-cart-thumb';pic.alt=item.name;pic.src=item.image||tovexMissingImage;pic.onerror=()=>{pic.onerror=null;pic.src=tovexMissingImage};const detail=document.createElement('div');detail.className='mm-cart-detail';const label=document.createElement('strong');label.textContent=item.name;const amount=document.createElement('span');amount.textContent=money(item.price*item.quantity);const qty=document.createElement('div');qty.className='mm-cart-qty';const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label','Decrease quantity');minus.onclick=()=>{item.quantity--;if(item.quantity<(item.minimum||1))cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};const count=document.createElement('span');count.textContent=String(item.quantity);const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label','Increase quantity');plus.onclick=()=>{if(item.quantity>=item.stock||(item.wholesaleActive&&item.quantity>=100)){alert(t().shortage);return}item.quantity++;updateCount();renderCart()};qty.append(minus,count,plus);const remove=document.createElement('button');remove.className='remove';remove.textContent=t().remove;remove.onclick=()=>{cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};detail.append(label,amount,qty,remove);row.append(pic,detail);box.append(row)}$('total').textContent=t().total+' '+money(cart.reduce((s,p)=>s+p.price*p.quantity,0))}
+function tovexAddToCartBase(product){if(window.mmRoleGuard && !window.mmRoleGuard.canBuy()){window.mmRoleGuard.warn();return false;}const id=idOf(product);if(!orderProductId({id}))return false;const existing=cart.find(p=>p.id===id);const minimum=wholesaleMinimum(product);const next=existing?existing.quantity+1:minimum;if(next>stockOf(product)||(product.wholesale&&next>100)){alert(t().shortage);return false}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),minimum,variantPricing:product.id?.toString().includes('::')?{price:priceOf(product),wholesale:product.wholesale||null}:null,price:wholesalePrice(product,next),quantity:next,image:product.image_url||'',stock:stockOf(product)});updateCount();renderCart();Market.cart(product);navigator.vibrate?.(25);return true}
+function renderCart(){refreshWholesaleCart();const box=$('cartItems');box.replaceChildren();for(const item of cart){const row=document.createElement('div');row.className='cart-row mm-cart-item';const pic=document.createElement('img');pic.className='mm-cart-thumb';pic.alt=item.name;pic.src=item.image||tovexMissingImage;pic.onerror=()=>{pic.onerror=null;pic.src=tovexMissingImage};const detail=document.createElement('div');detail.className='mm-cart-detail';const label=document.createElement('strong');label.textContent=item.name+(orderProductId(item)?'':' · '+legacyNote());const amount=document.createElement('span');amount.textContent=money(item.price*item.quantity);const qty=document.createElement('div');qty.className='mm-cart-qty';const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label','Decrease quantity');minus.onclick=()=>{item.quantity--;if(item.quantity<(item.minimum||1))cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};const count=document.createElement('span');count.textContent=String(item.quantity);const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label','Increase quantity');plus.onclick=()=>{if(item.quantity>=item.stock||(item.wholesaleActive&&item.quantity>=100)){alert(t().shortage);return}item.quantity++;updateCount();renderCart()};qty.append(minus,count,plus);const remove=document.createElement('button');remove.className='remove';remove.textContent=t().remove;remove.onclick=()=>{cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};detail.append(label,amount,qty,remove);row.append(pic,detail);box.append(row)}$('total').textContent=t().total+' '+money(eligibleCart(cart).reduce((s,p)=>s+p.price*p.quantity,0))}
 const deliveryCities={"ru": ["Тбилиси", "Батуми", "Кутаиси", "Рустави", "Гори", "Зугдиди"], "ka": ["თბილისი", "ბათუმი", "ქუთაისი", "რუსთავი", "გორი", "ზუგდიდი"], "en": ["Tbilisi", "Batumi", "Kutaisi", "Rustavi", "Gori", "Zugdidi"]};
 const cityStorageKey='tovex-delivery-city';
 const cityUrl=new URL(location.href);
@@ -2116,7 +2123,7 @@ function render(){
   const stock=document.createElement('div');stock.className='mm-rec-stock';stock.textContent=(Number(stockOf(p))>0?'● '+({ka:'მარაგშია: ',ru:'В наличии: ',en:'In stock: '})[locale]+stockOf(p):({ka:'არ არის მარაგში',ru:'Нет в наличии',en:'Out of stock'})[locale]);
   const prices=document.createElement('div');prices.className='mm-rec-prices';const price=document.createElement('span');price.className='mm-rec-price';price.textContent=money(current);prices.append(price);
   if(Number.isFinite(old)&&old>current&&current>0){const before=document.createElement('del');before.textContent=money(old);prices.append(before)}
-  const buy=document.createElement('button');buy.type='button';buy.className='gold mm-rec-buy';buy.textContent=(Number(stockOf(p))>0?({ka:'კალათაში დამატება',ru:'В корзину',en:'Add to cart'})[locale]:({ka:'არ არის მარაგში',ru:'Нет в наличии',en:'Out of stock'})[locale]);if(Number(stockOf(p))>0)addCartIcon(buy);buy.disabled=Number(stockOf(p))<=0;
+  const buy=document.createElement('button');buy.type='button';buy.className='gold mm-rec-buy';buy.textContent=(Number(stockOf(p))>0?({ka:'კალათაში დამატება',ru:'В корзину',en:'Add to cart'})[locale]:({ka:'არ არის მარაგში',ru:'Нет в наличии',en:'Out of stock'})[locale]);if(Number(stockOf(p))>0)addCartIcon(buy);buy.disabled=!p.tovex_seller_product||Number(stockOf(p))<=0;if(!p.tovex_seller_product)buy.textContent=legacyNote();
   buy.onclick=()=>{remember('cart',nameOf(p));if(typeof addToCart==='function'){const added=addToCart(p);if(added&&typeof animateToCart==='function')animateToCart(img)}else{const input=document.getElementById('search');if(input){input.value=nameOf(p);input.dispatchEvent(new Event('input',{bubbles:true}))}document.getElementById('catalogTitle')?.scrollIntoView({behavior:'smooth'})}};
   item.append(visual,prices);
   appendProductHeading(item,name,p,locale);
@@ -2142,19 +2149,9 @@ ru:['Оформление заказа','Имя и фамилия','Электр
 en:['Order details','Full name','Email','Phone','Delivery address','📍 Open Google Maps','Choose a location in Google Maps and paste its share link below.','Google Maps location link','I agree to the use of my details to prepare the order.','Prepare order','Your cart is empty.','Order prepared but not sent to the seller. Copy and send it.','Copy order','Copied','Enter a valid Google Maps link.']};
 const $=id=>document.getElementById(id);const form=$('mmOrderForm'),status=$('mmCheckoutStatus');
 function local(){return dict[document.documentElement.lang]||dict.ka}
-function showDeliveryAmounts(){
- const language=document.documentElement.lang;
- const labels={
-  ru:['За товар при получении','Стоимость доставки согласовывается отдельно до выезда курьера.'],
-  ka:['საქონლის საფასური მიღებისას','მიწოდების საფასური ცალკე შეთანხმდება კურიერის გამგზავრებამდე.'],
-  en:['Goods payable on receipt','The delivery fee is agreed separately before the courier sets off.']
- }[language]||['საქონლის საფასური მიღებისას','მიწოდების საფასური ცალკე შეთანხმდება კურიერის გამგზავრებამდე.'];
- const items=window.mmGetCart?.()||[];
- const cents=items.reduce((sum,item)=>sum+Math.round(Number(item.price)*100)*Number(item.quantity),0);
- $('goodsOnReceipt').textContent=labels[0]+': '+(cents/100).toFixed(2)+' ₾';
- $('deliveryQuoteNote').textContent=labels[1];
-}
-function translate(){showDeliveryAmounts();const d=local();const put=(el,value)=>{if(el)el.textContent=value};put($('mmCheckoutTitle'),d[0]);['name','email','phone','address'].forEach((key,i)=>put(document.querySelector('[data-mm="'+key+'"]'),d[i+1]));put($('mmOpen2gis'),d[5]);put($('mmMapHelp'),d[6]);put(document.querySelector('[data-mm="map"]'),d[7]);put($('mmConsentText'),d[8]);put($('mmPrepareOrder'),d[9]);}
+function showDeliveryAmounts(){Shipping.refresh()}
+new MutationObserver(showDeliveryAmounts).observe($('mmCheckoutDialog'),{attributes:true,attributeFilter:['hidden']});
+function translate(){showDeliveryAmounts();const d=local();const put=(el,value)=>{if(el)el.textContent=value};put($('mmCheckoutTitle'),d[0]);['name','email','phone','address'].forEach((key,i)=>put(document.querySelector('[data-mm="'+key+'"]'),d[i+1]));put($('mmOpen2gis'),d[5]);put($('mmMapHelp'),d[6]);put(document.querySelector('[data-mm="map"]'),d[7]);put($('mmConsentText'),d[8]);put($('mmPrepareOrder'),Shipping.t(13));}
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(translate,0)));translate();
 const jump=$('mmCheckoutJump');
 const dialog=$('mmCheckoutDialog'),shade=$('mmCheckoutShade');
@@ -2183,36 +2180,37 @@ async function requestKey(userId,payload){
 }
 if(form&&status)form.addEventListener('submit',async e=>{
  e.preventDefault();if(pendingCheckout)return;status.replaceChildren();
- const txt={ru:['Войдите в аккаунт покупателя, чтобы оформить заказ.','В корзине пока нет товаров.','Этот товар из старого каталога пока нельзя оформить онлайн. Заказ не отправлен.','Отправляем заказ…','Заказ успешно создан! Номер: ','Ошибка оформления: '],ka:['შეკვეთის გასაფორმებლად შედით ანგარიშში.','კალათა ცარიელია.','ძველი კატალოგის პროდუქტის ონლაინ შეკვეთა ჯერ მიუწვდომელია.','შეკვეთა იგზავნება…','შეკვეთა შეიქმნა! ნომერი: ','შეკვეთის შეცდომა: '],en:['Sign in to place an order.','Your cart is empty.','Köhnə kataloq məhsulunun onlayn sifarişi hələ mümkün deyil.','Sifariş göndərilir…','Sifariş yaradıldı! Nömrə: ','Sifariş xətası: ']}[document.documentElement.lang]||null;
+ const txt={ru:['Войдите в аккаунт покупателя, чтобы оформить заказ.','В корзине пока нет товаров.','Этот товар из старого каталога пока нельзя оформить онлайн. Заказ не отправлен.','Отправляем заказ…','Заказ успешно создан! Номер: ','Ошибка оформления: '],ka:['შეკვეთის გასაფორმებლად შედით ანგარიშში.','კალათა ცარიელია.','ძველი კატალოგის პროდუქტის ონლაინ შეკვეთა ჯერ მიუწვდომელია.','შეკვეთა იგზავნება…','შეკვეთა შეიქმნა! ნომერი: ','შეკვეთის შეცდომა: '],en:['Sign in to place an order.','Your cart is empty.','Online ordering is unavailable for this item.','Placing order…','Order placed. Number: ','Checkout error: ']}[document.documentElement.lang]||null;
  const d=txt||['Войдите в аккаунт.','Корзина пуста.','Товар пока недоступен для заказа.','Отправляем…','Заказ создан: ','Ошибка: '];
  const button=$('mmPrepareOrder');pendingCheckout=true;button.disabled=true;
  try{
  const db=window.mmBuyerDb;
  const {data:{user},error:authError}=db?await db.auth.getUser():{data:{user:null},error:null};
  if(authError||!user){status.textContent=d[0];document.getElementById('mmAccountOpen')?.click();return;}
- const cart=typeof window.mmGetCart==='function'?window.mmGetCart():[];
+ const cart=eligibleCart(window.mmGetCart?.()||[]);
  if(!cart.length){status.textContent=d[1];return;}
  if(!user.phone_confirmed_at){window.mmRequireVerifiedPhone?.();return}
- if(cart.some(x=>!x.id?.toString().startsWith('seller-'))){status.textContent=d[2];return;}
+ 
  const f=new FormData(form),map=String(f.get('maplink')||'').trim();
  if(map){let url;try{url=new URL(map)}catch{}if(!url||url.protocol!=='https:'||!((url.hostname==='maps.app.goo.gl')||(url.hostname==='goo.gl')||(url.hostname==='google.com')||url.hostname.endsWith('.google.com')||(url.hostname==='google.ge')||(url.hostname==='www.google.ge'))){status.textContent=local()[14];return;}}
  status.textContent=d[3];
-  const items=cart.map(x=>({seller_product_id:Number(String(x.id).replace(/^seller-/,'')),quantity:Number(x.quantity),expected_unit_price:Number(x.price)}));
-  items.sort((a,b)=>a.seller_product_id-b.seller_product_id);
+  const items=cart.map(x=>({seller_product_id:orderProductId(x),variant_id:x.id.includes('::')?x.id.split('::')[1]:null,quantity:Number(x.quantity),expected_unit_price:Number(x.price)}));
+  items.sort((a,b)=>a.seller_product_id-b.seller_product_id||String(a.variant_id).localeCompare(String(b.variant_id)));
   const payload={p_customer_name:String(f.get('customer')||''),p_customer_phone:String(f.get('phone')||''),p_delivery_address:String(f.get('address')||''),p_map_link:map,p_items:items};
+  Object.assign(payload,Shipping.confirmed(cart));
   const id=await requestKey(user.id,payload);
-  const {data,error}=await db.rpc('tovex_checkout_once',{...payload,p_request_id:id});
+  const {data,error}=await db.rpc('tvx_place',{...payload,p_request_id:id});
   if(error)throw error;
   const ids=(data?.orders||[]).map(o=>String(o.order_id).slice(0,8)).join(', ');
   if(!ids)throw new Error('Missing order confirmation');
   void Market.attribute(db,data.orders,items);
-  removePurchasedItems(cart);
+  tovexVariantCache.clear();removePurchasedItems(cart);
   clearCheckoutDraft();memoryAttempt=null;
   try{sessionStorage.removeItem('tovex.checkout.attempt.'+user.id)}catch{}
   status.textContent=d[4]+ids+' · '+(document.documentElement.lang==='ru'?'Посмотрите раздел «Мои заказы».':'');
   window.dispatchEvent(new Event('mm-auth-changed'));
  }catch(err){status.textContent=d[5]+(err?.message||String(err));}
- finally{pendingCheckout=false;button.disabled=false;}
+ finally{pendingCheckout=false;Shipping.refresh();}
 });
 });
 </script>
@@ -2667,7 +2665,7 @@ window.addEventListener('mm-auth-changed',()=>{
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.hidden)close()});
  document.addEventListener('DOMContentLoaded',()=>{
  const locBtn=document.getElementById('mmUseLocation'),geoStatus=document.getElementById('mmGeoStatus');
- const locText={ru:['Определить моё местоположение','Получаем координаты…','Точка определена. Проверьте адрес доставки.','Не удалось получить координаты. Разрешите доступ к геолокации или вставьте ссылку Google Maps.'],ka:['ჩემი მდებარეობის განსაზღვრა','მდებარეობის განსაზღვრა…','მდებარეობა ნაპოვნია. გადაამოწმეთ მისამართი.','მდებარეობა ვერ განისაზღვრა. დაუშვით წვდომა ან ჩასვით Google Maps-ის ბმული.'],en:['Find my location','Finding location…','Location found. Check your delivery address.','Məkan tapılmadı. İcazə verin və ya Google Maps linkini daxil edin.']};
+ const locText={ru:['Определить моё местоположение','Получаем координаты…','Точка определена. Проверьте адрес доставки.','Не удалось получить координаты. Разрешите доступ к геолокации или вставьте ссылку Google Maps.'],ka:['ჩემი მდებარეობის განსაზღვრა','მდებარეობის განსაზღვრა…','მდებარეობა ნაპოვნია. გადაამოწმეთ მისამართი.','მდებარეობა ვერ განისაზღვრა. დაუშვით წვდომა ან ჩასვით Google Maps-ის ბმული.'],en:['Find my location','Finding location…','Location found. Check your delivery address.','Location unavailable. Allow location access or enter a Google Maps link.']};
  const labels=()=>locText[document.documentElement.lang]||locText.ka;
  const refresh=()=>{if(locBtn)locBtn.textContent='📍 '+labels()[0]};
  document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(refresh,0)));refresh();
@@ -3063,7 +3061,7 @@ translate();
  const dict={
  ru:{title:'Мои заказы TOVEX',loading:'Загрузка…',empty:'Пока нет заказов TOVEX',status:'Статус',delivery:'Доставка',refresh:'Обновить',error:'Ошибка: ',track:'📍 Отследить доставку',hide:'Скрыть карту',noDelivery:'Курьер ещё не назначен. Отслеживание появится после назначения доставки.',noGps:'Курьер ещё не передал GPS-координаты.',last:'Последнее обновление GPS',approx:'Показана последняя переданная точка, а не гарантированное положение в реальном времени.',denied:'Нет доступа к координатам этой доставки. Проверьте права доступа в Supabase.',mapError:'Не удалось загрузить карту.',seller:'Курьер магазина'},
  ka:{title:'ჩემი TOVEX შეკვეთები',loading:'იტვირთება…',empty:'TOVEX შეკვეთები ჯერ არ არის',status:'სტატუსი',delivery:'მიწოდება',refresh:'განახლება',error:'შეცდომა: ',track:'📍 მიწოდების თვალყურის დევნება',hide:'რუკის დამალვა',noDelivery:'კურიერი ჯერ არ არის დანიშნული.',noGps:'კურიერს GPS მდებარეობა ჯერ არ გამოუგზავნია.',last:'GPS-ის ბოლო განახლება',approx:'ნაჩვენებია ბოლო მიღებული მდებარეობა.',denied:'ამ მიწოდების მდებარეობაზე წვდომა არ არის.',mapError:'რუკის ჩატვირთვა ვერ მოხერხდა.',seller:'მაღაზიის კურიერი'},
- en:{title:'My TOVEX orders',loading:'Loading…',empty:'No TOVEX orders',status:'Status',delivery:'Çatdırılma',refresh:'Yenilə',error:'Error: ',track:'📍 Çatdırılmanı izlə',hide:'Xəritəni gizlət',noDelivery:'Kuryer hələ təyin edilməyib.',noGps:'Kuryer hələ GPS koordinatlarını göndərməyib.',last:'Son GPS yenilənməsi',approx:'Son göndərilmiş mövqe göstərilir.',denied:'Bu çatdırılmanın koordinatlarına giriş yoxdur.',mapError:'Xəritə yüklənmədi.',seller:'Mağaza kuryeri'}
+ en:{title:'My TOVEX orders',loading:'Loading…',empty:'No TOVEX orders',status:'Status',delivery:'Delivery',refresh:'Refresh',error:'Error: ',track:'📍 Track delivery',hide:'Hide map',noDelivery:'A courier has not yet been assigned.',noGps:'The courier has not shared a position yet.',last:'Last GPS update',approx:'The map shows the last reported location.',denied:'Delivery location is unavailable for this account.',mapError:'Could not load the map.',seller:'Store courier'}
  };
  const t=()=>dict[document.documentElement.lang]||dict.ka;
  const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -3117,7 +3115,7 @@ translate();
   const {data:{user}}=await db.auth.getUser();if(seq!==loadSequence)return;
   if(!user){rows.textContent='';return}rows.textContent=t().loading;
   try{
-   const a=await db.from('tovex_orders').select('id,created_at,status,delivery_address').eq('buyer_id',user.id).order('created_at',{ascending:false}).limit(50);
+   const a=await db.from('tovex_orders').select('id,created_at,status,delivery_address,shipping_city,shipping_fee_gel,shipping_days').eq('buyer_id',user.id).order('created_at',{ascending:false}).limit(50);
    if(a.error)throw a.error;if(seq!==loadSequence)return;
    const orders=a.data||[];if(!orders.length){rows.textContent=t().empty;return}
    const ids=orders.map(o=>o.id);
@@ -3126,7 +3124,7 @@ translate();
    rows.innerHTML=orders.map(o=>{
     const products=(b.data||[]).filter(x=>x.order_id===o.id),delivery=(c.data||[]).find(x=>x.order_id===o.id);
     const total=products.reduce((s,x)=>s+Number(x.unit_price_gel)*Number(x.quantity),0);
-    return '<article style="padding:12px 0;border-top:1px solid #64748b55"><b>#'+safe(o.id.slice(0,8))+'</b> · '+safe(new Date(o.created_at).toLocaleString())+'<div>'+products.map(x=>safe(x.product_name)+' × '+Number(x.quantity)).join(', ')+'</div><strong>'+total.toFixed(2)+' ₾</strong><div>'+t().status+': '+safe(delivery?.status||o.status)+' · '+t().delivery+': '+safe(delivery?.method==='seller'?t().seller:delivery?.method==='tovex'?'TOVEX':'—')+'</div>'+(delivery?'<button type="button" class="tovex-track-btn" data-order-id="'+safe(o.id)+'" data-delivery-id="'+safe(delivery.id)+'">'+t().track+'</button><div class="tovex-track-panel" hidden><div class="tovex-track-msg" role="status"></div><div class="tovex-track-map"></div></div>':'<p class="tovex-track-msg">'+t().noDelivery+'</p>')+'<div class="tvx-panel" data-return-order="'+safe(o.id)+'"></div></article>'
+    return '<article style="padding:12px 0;border-top:1px solid #64748b55"><b>#'+safe(o.id.slice(0,8))+'</b> · '+safe(new Date(o.created_at).toLocaleString())+'<div>'+products.map(x=>safe(x.product_name)+' × '+Number(x.quantity)).join(', ')+'</div><strong>'+Number(total+Number(o.shipping_fee_gel||0)).toFixed(2)+' ₾</strong><div>'+safe(Shipping.summary(o))+'</div><div>'+t().status+': '+safe(delivery?.status||o.status)+' · '+t().delivery+': '+safe(delivery?.method==='seller'?t().seller:delivery?.method==='tovex'?'TOVEX':'—')+'</div>'+(delivery?'<button type="button" class="tovex-track-btn" data-order-id="'+safe(o.id)+'" data-delivery-id="'+safe(delivery.id)+'">'+t().track+'</button><div class="tovex-track-panel" hidden><div class="tovex-track-msg" role="status"></div><div class="tovex-track-map"></div></div>':'<p class="tovex-track-msg">'+t().noDelivery+'</p>')+'<div class="tvx-panel" data-return-order="'+safe(o.id)+'"></div></article>'
    }).join('');
    const orderPanels=document.createElement('div');
    orderPanels.append(...rows.childNodes);rows.append(orderPanels);
@@ -3252,13 +3250,13 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
   section.hidden=!list.childElementCount;
  }
  function syncCart(){
-  const qty=cart.reduce((sum,row)=>sum+row.quantity,0);
+  const qty=eligibleCart(cart).reduce((sum,row)=>sum+row.quantity,0);
   document.getElementById('cartSummary').textContent=cartWords[lang][1]+': '+qty;
   const jump=document.getElementById('mmCheckoutJump');
   const words={ru:['Войти и оформить','Оформить'],ka:['შესვლა და შეკვეთა','შეკვეთის გაფორმება'],en:['Sign in and checkout','Checkout']}[lang];
   const amount=document.createElement('span');
-  amount.textContent=money(cart.reduce((sum,row)=>sum+row.price*row.quantity,0));
-  jump.replaceChildren(document.createTextNode(words[window.mmBuyerUser?1:0]),amount);jump.disabled=!qty;
+  amount.textContent=money(eligibleCart(cart).reduce((sum,row)=>sum+row.price*row.quantity,0));
+  jump.replaceChildren(document.createTextNode(words[window.mmBuyerUser?1:0]),amount);jump.disabled=!eligibleCart(cart).length;
   const thumbs=document.getElementById('checkoutThumbs');thumbs.replaceChildren();
   for(const row of cart){const img=document.createElement('img');img.alt=row.name;img.src=row.image||tovexMissingImage;thumbs.append(img)}
   if(!current)return;
@@ -3318,9 +3316,10 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
   const old=oldPriceOf(product);
   get('del').hidden=!(old>priceOf(product));get('del').textContent=old?money(old):'';
   get('small').textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);
-  setPurchaseEnabled(stockOf(product)>0);
+  setPurchaseEnabled(Boolean(product.tovex_seller_product)&&stockOf(product)>0);
   get('.pd-add').textContent=({ru:'Добавить в корзину',en:'Add to cart',ka:'კალათაში დამატება'})[lang];
   get('.pd-now').textContent=({ru:'Купить сейчас',en:'Buy now',ka:'ახლავე ყიდვა'})[lang];
+  if(!product.tovex_seller_product){get('.pd-add').textContent=legacyNote();get('.pd-now').disabled=true}
   const section=get('.seller-gallery'),grid=section.querySelector('div'),zoom=document.getElementById('sellerZoom');
   const heading={ru:'Фото товара от продавца',ka:'გამყიდველის ფოტოები',en:'Seller photos'}[lang];
   grid.replaceChildren();section.querySelector('h3').textContent=heading;
@@ -3382,14 +3381,14 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
    if(!rows.length){setPurchaseEnabled(Number(stockOf(product))>=wholesaleMinimum(product));return}
    const heading=document.createElement('b');heading.textContent=wordsByLang[0];host.append(heading);
    for(const v of rows){
-    const button=document.createElement('button'),label=[v.size,v.color].filter(Boolean).join(' / ')||v.sku||String(v.id);
+    const button=document.createElement('button'),label=[v.size,v.color].filter(Boolean).join(' / ')||v.label||v.sku||String(v.id);
     button.type='button';button.textContent=label;button.disabled=Number(v.stock)<=0;button.setAttribute('aria-pressed','false');
     button.onclick=()=>{
      const base=Number(v.price_gel??v.price??originalPriceOf(product));
      const variant={...product,price:base,'цена':base};
      const price=priceOf(variant),oldPrice=oldPriceOf(variant);
      const title=nameOf(product)+' — '+label;
-     choice={...product,id:String(product.id).replace(/^seller-/,'')+'::'+v.id,name:title,'имя':title,['name_'+lang]:title,price,'цена':price,stock:Number(v.stock),'запас':Number(v.stock),discount_percent:0,tovex_seller_product:false};
+     choice={...product,id:'seller-'+product.seller_product_id+'::'+v.id,name:title,'имя':title,['name_'+lang]:title,price,'цена':price,stock:Number(v.stock),'запас':Number(v.stock),discount_percent:0,tovex_seller_product:false};
      for(const other of host.querySelectorAll('button'))other.setAttribute('aria-pressed',String(other===button));
      get('.pd-price').textContent=money(price);
      get('del').hidden=oldPrice<=price;
