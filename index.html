@@ -1687,7 +1687,7 @@ html body #productDetail .product-questions textarea{margin-top:6px;min-height:7
 #catalogFilterNote{grid-column:1/-1;margin-top:8px}
 @media(max-width:600px){#catalogFilterForm{grid-template-columns:repeat(2,minmax(0,1fr))}#catalogFilterForm label:first-child,#catalogFilterForm label:has(input[type=checkbox]){grid-column:1/-1}#catalogTools .sort-control{max-width:none}}
 </style>
-</head>
+<style>#profileOrderChats,#tovexBuyerRows .tvx-order-chat summary{display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border-radius:12px;background:#e7f4ec;color:#165b41;border:1px solid #b4d4c1;font:650 15px/1.35 system-ui;cursor:pointer}#profileOrderChats{margin:10px 0}</style></head>
 <body>
 <header><div class="wrap"><div class="tv-delivery-row"><a id="tvHeaderDelivery" aria-label="თბილისი — ქალაქის არჩევა" href="?view=delivery"><svg aria-hidden="true" width="16" height="18" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1a8 8 0 0 0-8 8c0 5.3 8 14 8 14s8-8.7 8-14a8 8 0 0 0-8-8Zm0 4.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Z"/></svg><span id="tvHeaderCity">თბილისი</span></a></div>
 <div class="top"><div class="brand"><span class="brand-name">TOVEX</span><span aria-label="საქართველოს დროშა — флаг Грузии" class="georgia-flag" role="img"><svg aria-hidden="true" viewbox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect fill="#fff" height="40" width="60"></rect><path d="M0 16h60v8H0zM26 0h8v40h-8z" fill="#d82135"></path><g fill="#d82135"><path d="M12 5h2v4h4v2h-4v4h-2v-4H8V9h4zM46 5h2v4h4v2h-4v4h-2v-4h-4V9h4zM12 25h2v4h4v2h-4v4h-2v-4H8v-2h4zM46 25h2v4h4v2h-4v4h-2v-4h-4v-2h4z"></path></g></svg></span></div><div class="languages"><button data-lang="ka" type="button" aria-label="ქართული"><span class="language-full">🇬🇪 ქართული</span><span class="language-short" aria-hidden="true">GE</span></button><button data-lang="ru" type="button" aria-label="Русский"><span class="language-full">🇷🇺 Русский</span><span class="language-short" aria-hidden="true">RU</span></button><button data-lang="en" type="button" aria-label="English"><span class="language-full">🇬🇧 English</span><span class="language-short" aria-hidden="true">EN</span></button></div><div class="mm-account" id="mmAccountBar"><button class="mm-primary" id="mmAccountOpen" type="button">შესვლა</button><button id="tovexBuyerSignupOpen" type="button">რეგისტრაცია</button><img alt="Avatar" hidden="" id="mmHeaderAvatar" style="width:39px;height:39px;object-fit:cover;border-radius:50%;border:2px solid #eabb61"/><span class="mm-account-email" hidden="" id="mmAccountEmail"></span><a id="tovexPartnersLink" href="/partners.html" style="display:inline-flex;align-items:center;padding:7px 12px;border:1px solid #18bf7c;border-radius:18px;color:#beffe5;text-decoration:none;font-weight:700">Стать продавцом ↗</a><button id="tovexSellerJoin" type="button" hidden="">🏪 Стать продавцом</button><a aria-label="Seller Back Office" hidden="" href="/backoffice/" id="mmSellerBackoffice" style="display:none">🏪 Back Office</a><button hidden="" id="mmBuyerProfileeBtn" type="button">👤 პროფილი</button><button hidden="" id="mmBuyerOrdersBtn" type="button">📦 ჩემი შეკვეთები <span id="mmOrdersBadge" hidden></span></button><button hidden="" id="mmAccountLogout" type="button">გასვლა</button></div></div>
@@ -3238,7 +3238,13 @@ translate();
  $('tovexOrdersClose').onclick=close;
  modal.addEventListener('click',e=>{if(e.target===modal)close()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)close()});
- function sync(){button.hidden=profile.hidden;profile.textContent=words()[0];button.firstChild.textContent=words()[1]+' ';$('tovexOrdersTitle').textContent=words()[2]}
+ const chatOrders=document.createElement('button');
+ chatOrders.id='profileOrderChats';chatOrders.type='button';
+ $('mmBuyerOrdersHeading').before(chatOrders);
+ chatOrders.onclick=()=>button.click();
+ function sync(){
+  chatOrders.textContent=({ru:'Мои заказы и чаты',ka:'ჩემი შეკვეთები და ჩატები',en:'My orders and chats'}[document.documentElement.lang]||'ჩემი შეკვეთები და ჩატები');
+  button.hidden=profile.hidden;profile.textContent=words()[0];button.firstChild.textContent=words()[1]+' ';$('tovexOrdersTitle').textContent=words()[2]}
  button.addEventListener('click',async()=>{
   if(button.hidden||!window.mmBuyerUser)return;
   $('mmBuyerModal').hidden=true;modal.hidden=false;document.body.style.overflow='hidden';
@@ -3268,9 +3274,9 @@ translate();
 
 <script id="tovex-live-buyer-orders">(()=>{
  const dict={
- ru:{title:'Мои заказы TOVEX',loading:'Загрузка…',empty:'Пока нет заказов TOVEX',status:'Статус',delivery:'Доставка',refresh:'Обновить',error:'Ошибка: ',track:'📍 Отследить доставку',hide:'Скрыть карту',noDelivery:'Курьер ещё не назначен. Отслеживание появится после назначения доставки.',noGps:'Курьер ещё не передал GPS-координаты.',last:'Последнее обновление GPS',approx:'Показана последняя переданная точка, а не гарантированное положение в реальном времени.',denied:'Нет доступа к координатам этой доставки. Проверьте права доступа в Supabase.',mapError:'Не удалось загрузить карту.',seller:'Курьер магазина'},
- ka:{title:'ჩემი TOVEX შეკვეთები',loading:'იტვირთება…',empty:'TOVEX შეკვეთები ჯერ არ არის',status:'სტატუსი',delivery:'მიწოდება',refresh:'განახლება',error:'შეცდომა: ',track:'📍 მიწოდების თვალყურის დევნება',hide:'რუკის დამალვა',noDelivery:'კურიერი ჯერ არ არის დანიშნული.',noGps:'კურიერს GPS მდებარეობა ჯერ არ გამოუგზავნია.',last:'GPS-ის ბოლო განახლება',approx:'ნაჩვენებია ბოლო მიღებული მდებარეობა.',denied:'ამ მიწოდების მდებარეობაზე წვდომა არ არის.',mapError:'რუკის ჩატვირთვა ვერ მოხერხდა.',seller:'მაღაზიის კურიერი'},
- en:{title:'My TOVEX orders',loading:'Loading…',empty:'No TOVEX orders',status:'Status',delivery:'Delivery',refresh:'Refresh',error:'Error: ',track:'📍 Track delivery',hide:'Hide map',noDelivery:'A courier has not yet been assigned.',noGps:'The courier has not shared a position yet.',last:'Last GPS update',approx:'The map shows the last reported location.',denied:'Delivery location is unavailable for this account.',mapError:'Could not load the map.',seller:'Store courier'}
+ ru:{title:'Мои заказы TOVEX',loading:'Загрузка…',empty:'После первого заказа здесь появится чат с продавцом.',status:'Статус',delivery:'Доставка',refresh:'Обновить',error:'Ошибка: ',track:'📍 Отследить доставку',hide:'Скрыть карту',noDelivery:'Курьер ещё не назначен. Отслеживание появится после назначения доставки.',noGps:'Курьер ещё не передал GPS-координаты.',last:'Последнее обновление GPS',approx:'Показана последняя переданная точка, а не гарантированное положение в реальном времени.',denied:'Нет доступа к координатам этой доставки. Проверьте права доступа в Supabase.',mapError:'Не удалось загрузить карту.',seller:'Курьер магазина'},
+ ka:{title:'ჩემი TOVEX შეკვეთები',loading:'იტვირთება…',empty:'პირველი შეკვეთის შემდეგ აქ გამოჩნდება ჩატი გამყიდველთან.',status:'სტატუსი',delivery:'მიწოდება',refresh:'განახლება',error:'შეცდომა: ',track:'📍 მიწოდების თვალყურის დევნება',hide:'რუკის დამალვა',noDelivery:'კურიერი ჯერ არ არის დანიშნული.',noGps:'კურიერს GPS მდებარეობა ჯერ არ გამოუგზავნია.',last:'GPS-ის ბოლო განახლება',approx:'ნაჩვენებია ბოლო მიღებული მდებარეობა.',denied:'ამ მიწოდების მდებარეობაზე წვდომა არ არის.',mapError:'რუკის ჩატვირთვა ვერ მოხერხდა.',seller:'მაღაზიის კურიერი'},
+ en:{title:'My TOVEX orders',loading:'Loading…',empty:'Your seller chat will appear here after your first order.',status:'Status',delivery:'Delivery',refresh:'Refresh',error:'Error: ',track:'📍 Track delivery',hide:'Hide map',noDelivery:'A courier has not yet been assigned.',noGps:'The courier has not shared a position yet.',last:'Last GPS update',approx:'The map shows the last reported location.',denied:'Delivery location is unavailable for this account.',mapError:'Could not load the map.',seller:'Store courier'}
  };
  const t=()=>dict[document.documentElement.lang]||dict.ka;
  const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -3337,11 +3343,14 @@ translate();
    }).join('');
    const orderPanels=document.createElement('div');
    orderPanels.append(...rows.childNodes);rows.append(orderPanels);
-   orderPanels.querySelectorAll("[data-return-order]").forEach(panel=>addOrderChat(panel.parentElement,panel.dataset.returnOrder,db,false));
+   orderPanels.querySelectorAll("[data-return-order]").forEach(panel=>{
+    const host=document.createElement('div');panel.before(host);addOrderChat(host,panel.dataset.returnOrder,db,false);
+   });
    Market.returns(orderPanels,orders,b.data||[],c.data||[],db).catch(e=>{if(seq===loadSequence){const note=document.createElement('p');note.textContent=e.message;orderPanels.append(note)}});
   }catch(e){if(seq===loadSequence)rows.textContent=t().error+e.message}
  }
  rows.addEventListener('click',e=>{const btn=e.target.closest('.tovex-track-btn');if(btn)openTracking(btn)});
+ document.getElementById('mmBuyerOrdersBtn').addEventListener('click',load);
  document.getElementById('tovexBuyerRefresh').onclick=load;
  window.addEventListener('mm-auth-changed',load);
  document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setTimeout(load,0)));
