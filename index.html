@@ -1649,7 +1649,22 @@ html body #productDetail .product-questions textarea{margin-top:6px;min-height:7
  html body #productDetail .product-questions button{width:100%}
 }
 @media(max-width:350px){html body #cart.full-cart .mm-cart-detail{grid-template-columns:1fr!important;grid-template-areas:"name" "price" "state" "quantity" "remove"}html body #cart.full-cart .mm-cart-detail .remove{justify-self:start}}
-}</style><style>.tvx-order-chat{grid-column:1/-1;margin-block:10px;min-width:0}.tvx-order-chat summary{cursor:pointer;color:#12664e;font-weight:650;padding:8px 0}.tvx-order-chat>div{max-height:18rem;overflow:auto}.tvx-order-chat span,.tvx-order-chat textarea{display:block;white-space:pre-wrap;overflow-wrap:anywhere}.tvx-order-chat textarea{width:100%;box-sizing:border-box;margin-block:5px}.tvx-order-chat button{margin-block:5px;min-height:40px}.tvx-order-chat form{display:block}</style></head>
+}</style><style>.tvx-order-chat{grid-column:1/-1;margin-block:10px;min-width:0}.tvx-order-chat summary{cursor:pointer;color:#12664e;font-weight:650;padding:8px 0}.tvx-order-chat>div{max-height:18rem;overflow:auto}.tvx-order-chat span,.tvx-order-chat textarea{display:block;white-space:pre-wrap;overflow-wrap:anywhere}.tvx-order-chat textarea{width:100%;box-sizing:border-box;margin-block:5px}.tvx-order-chat button{margin-block:5px;min-height:40px}.tvx-order-chat form{display:block}</style><style id="mobile-catalog-list">
+@media(max-width:767px){
+ #tovexCategoryScreen:not([hidden]){background:#fff;color:#172820}
+ #tovexCategoryScreen .category-screen-header{display:flex;flex-direction:column-reverse;gap:6px;background:white;color:#19332a;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 4px;border-bottom:1px solid #e8eeeb}
+ #tovexCategoryScreen .category-screen-header>*{width:100%;box-sizing:border-box;margin:0 auto}
+ #tovexCategoryScreen .category-screen-search,#tovexCategoryQuery,#tovexCategorySubmit{background:#f2f5f3;color:#254b3e}
+ #tovexCategoryBack{color:#185d47;background:transparent}
+ #tovexCategoryTitle{font-size:18px}
+ #tovexCategoryRows{padding:0 14px 20px}
+ #tovexCategoryRows button{grid-template-columns:26px minmax(0,1fr) 10px;min-height:49px;gap:14px;border:0;border-bottom:1px solid #edf0ee;border-radius:0;margin:0;padding:8px 6px;background:white!important;color:#162e24!important;font:500 15px/1.35 system-ui,sans-serif;box-shadow:none}
+ #tovexCategoryRows.catalog-children button{grid-template-columns:minmax(0,1fr) 10px}
+ #tovexCategoryRows button::after{border-color:#929e98;border-width:1.5px 1.5px 0 0}
+ #tovexCategoryRows .category-screen-thumbnail{width:26px;height:26px;border-radius:6px;font-size:19px}
+}
+</style>
+</head>
 <body>
 <header><div class="wrap"><div class="tv-delivery-row"><a id="tvHeaderDelivery" aria-label="თბილისი — ქალაქის არჩევა" href="?view=delivery"><svg aria-hidden="true" width="16" height="18" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1a8 8 0 0 0-8 8c0 5.3 8 14 8 14s8-8.7 8-14a8 8 0 0 0-8-8Zm0 4.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4Z"/></svg><span id="tvHeaderCity">თბილისი</span></a></div>
 <div class="top"><div class="brand"><span class="brand-name">TOVEX</span><span aria-label="საქართველოს დროშა — флаг Грузии" class="georgia-flag" role="img"><svg aria-hidden="true" viewbox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect fill="#fff" height="40" width="60"></rect><path d="M0 16h60v8H0zM26 0h8v40h-8z" fill="#d82135"></path><g fill="#d82135"><path d="M12 5h2v4h4v2h-4v4h-2v-4H8V9h4zM46 5h2v4h4v2h-4v4h-2v-4h-4V9h4zM12 25h2v4h4v2h-4v4h-2v-4H8v-2h4zM46 25h2v4h4v2h-4v4h-2v-4h-4v-2h4z"></path></g></svg></span></div><div class="languages"><button data-lang="ka" type="button" aria-label="ქართული"><span class="language-full">🇬🇪 ქართული</span><span class="language-short" aria-hidden="true">GE</span></button><button data-lang="ru" type="button" aria-label="Русский"><span class="language-full">🇷🇺 Русский</span><span class="language-short" aria-hidden="true">RU</span></button><button data-lang="en" type="button" aria-label="English"><span class="language-full">🇬🇧 English</span><span class="language-short" aria-hidden="true">EN</span></button></div><div class="mm-account" id="mmAccountBar"><button class="mm-primary" id="mmAccountOpen" type="button">შესვლა</button><button id="tovexBuyerSignupOpen" type="button">რეგისტრაცია</button><img alt="Avatar" hidden="" id="mmHeaderAvatar" style="width:39px;height:39px;object-fit:cover;border-radius:50%;border:2px solid #eabb61"/><span class="mm-account-email" hidden="" id="mmAccountEmail"></span><a id="tovexPartnersLink" href="/partners.html" style="display:inline-flex;align-items:center;padding:7px 12px;border:1px solid #18bf7c;border-radius:18px;color:#beffe5;text-decoration:none;font-weight:700">Стать продавцом ↗</a><button id="tovexSellerJoin" type="button" hidden="">🏪 Стать продавцом</button><a aria-label="Seller Back Office" hidden="" href="/backoffice/" id="mmSellerBackoffice" style="display:none">🏪 Back Office</a><button hidden="" id="mmBuyerProfileeBtn" type="button">👤 პროფილი</button><button hidden="" id="mmBuyerOrdersBtn" type="button">📦 ჩემი შეკვეთები <span id="mmOrdersBadge" hidden></span></button><button hidden="" id="mmAccountLogout" type="button">გასვლა</button></div></div>
@@ -2973,40 +2988,47 @@ document.addEventListener('DOMContentLoaded',()=>{syncCartInfo();document.queryS
    else button.removeAttribute('aria-current');
   });
  }
+ const departments = [
+  [['Одежда и аксессуары','ტანსაცმელი და აქსესუარები','Clothing & accessories'],['fashion','shoes','accessories','jewelry']],
+  [['Дом и интерьер','სახლი და ინტერიერი','Home & interiors'],['home','kitchen','furniture','textiles']],
+  [['Для ремонта','რემონტისთვის','Home improvement'],['build','tools','hand','electric','lighting','generator','security']],
+  [['Техника','ტექნიკა','Technology'],['electronics','appliances']],
+  [['Для детей','ბავშვებისთვის','For kids'],['kids','toys']],
+  [['Для автомобиля','ავტომობილისთვის','Car supplies'],['auto','autoparts']]
+ ];
+ let department=null, rootScroll=0;
  function renderCategories(){
-  const locale=currentLang();
+  const locale=currentLang(), languageIndex={ru:0,ka:1,en:2}[locale]??1;
   const [backLabel,searchLabel,submitLabel,allLabel]=screenText[locale]||screenText.ka;
-  title.textContent=(labels[locale]||labels.ka)[1];
+  title.textContent=department===null?(labels[locale]||labels.ka)[1]:departments[department][0][languageIndex];
   back.setAttribute('aria-label',backLabel);
-  query.placeholder=searchLabel;
-  query.setAttribute('aria-label',searchLabel);
+  query.placeholder=searchLabel; query.setAttribute('aria-label',searchLabel);
   document.getElementById('tovexCategorySubmit').textContent=submitLabel;
-  const tiles=document.querySelectorAll('.category-grid .category-tile');
   rows.replaceChildren();
-  for(const tile of [null,...tiles]){
-   const button=document.createElement('button');
-   button.type='button';
-   button.dataset.categoryKey=tile?.dataset.category||'';
-   button.setAttribute('aria-current',String(button.dataset.categoryKey===(selectedCategory||'')));
-   const source=tile?.querySelector('img');
-   const thumbnail=document.createElement(source?'img':'span');
-   thumbnail.className='category-screen-thumbnail';
-   if(source){
-    thumbnail.alt='';
-    thumbnail.loading='lazy';
-    thumbnail.src=tile.querySelector('source')?.srcset||source.src;
-   }else{
-    thumbnail.setAttribute('aria-hidden','true');
-    thumbnail.textContent='☷';
+  const tiles=new Map(categoryTiles.map(tile=>[tile.dataset.category,tile]));
+  function row(label,key,group=null){
+   const button=document.createElement('button');button.type='button';
+   if(group===null)button.dataset.categoryKey=key;else button.dataset.department=group;
+   const tile=tiles.get(key);
+   if(department===null){
+    const thumb=document.createElement(tile?'img':'span');thumb.className='category-screen-thumbnail';
+    if(tile){thumb.alt='';thumb.src=tile.querySelector('source')?.srcset||tile.querySelector('img').src}
+    else {thumb.setAttribute('aria-hidden','true');thumb.textContent='☷'}
+    button.append(thumb);
    }
-   const name=document.createElement('span');
-   name.textContent=tile?tile.lastElementChild.textContent.trim():allLabel;
-   button.append(thumbnail,name);
-   rows.append(button);
+   const name=document.createElement('span');name.textContent=label;button.append(name);rows.append(button);
   }
+  rows.classList.toggle('catalog-children',department!==null);
+  function leaf(key){const tile=tiles.get(key);if(tile)row(tile.lastElementChild.textContent.trim(),key)}
+  if(department!==null){departments[department][1].forEach(leaf);return}
+  row(allLabel,'');
+  const grouped=new Set(departments.flatMap(group=>group[1]));
+  departments.forEach(([names,keys],i)=>{const first=keys.find(key=>tiles.has(key));if(first)row(names[languageIndex],first,i)});
+  for(const key of tiles.keys())if(!grouped.has(key))leaf(key);
  }
  function openCategories(){
   if(!viewport.matches||!screen.hidden)return;
+  department=null;rootScroll=0;
   previousPage=nav.querySelector('[aria-current="page"]')?.dataset.go||'home';
   renderCategories();
   screen.hidden=false;
@@ -3066,7 +3088,11 @@ document.addEventListener('DOMContentLoaded',()=>{syncCartInfo();document.queryS
  catalog.setAttribute('aria-controls',screen.id);
  catalog.setAttribute('aria-expanded','false');
  activate('home');
- back.addEventListener('click',returnToPreviousPage);
+ back.addEventListener('click',()=>{
+  if(department===null){returnToPreviousPage();return}
+  const prior=department;department=null;renderCategories();screen.scrollTop=rootScroll;
+  rows.querySelector('[data-department="'+prior+'"]')?.focus({preventScroll:true});
+ });
  screen.addEventListener('keydown',event=>{
   if(event.key==='Escape'){
    event.preventDefault();
@@ -3080,6 +3106,8 @@ document.addEventListener('DOMContentLoaded',()=>{syncCartInfo();document.queryS
   }
  });
  rows.addEventListener('click',event=>{
+  const group=event.target.closest('button[data-department]');
+  if(group){rootScroll=screen.scrollTop;department=Number(group.dataset.department);renderCategories();screen.scrollTop=0;title.focus({preventScroll:true});return}
   const row=event.target.closest('button[data-category-key]');
   if(row)showCategory(row.dataset.categoryKey);
  });
@@ -3640,5 +3668,10 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
  else{const symbol=document.createElement('span');symbol.className='section-all';symbol.textContent='☷';b.append(symbol)}
  b.append(document.createTextNode(tile?tile.lastElementChild.textContent:words()[4]));b.setAttribute('aria-current',String(selectedCategory===key));
  b.onclick=()=>{dialog.close();applyCategory(key)};links.append(b)}}
- menu.onclick=()=>{update();render();dialog.showModal();links.scrollTop=0;menu.setAttribute('aria-expanded','true')};menu.setAttribute('aria-expanded','false');
- dialog.addEventListener('close',()=>menu.setAttribute('aria-expanded','false'));by('sectionsClose').onclic
+ menu.onclick=()=>{if(matchMedia("(max-width:767px)").matches){document.querySelector("#tovexMobileNav [data-go=catalog]").click();return}update();render();dialog.showModal();links.scrollTop=0;menu.setAttribute('aria-expanded','true')};menu.setAttribute('aria-expanded','false');
+ dialog.addEventListener('close',()=>menu.setAttribute('aria-expanded','false'));by('sectionsClose').onclick=()=>dialog.close();dialog.onclick=e=>{if(e.target===dialog)dialog.close()};
+ by('shopAddress').onclick=()=>by('tvHeaderDelivery').click();by('shopLogin').onclick=()=>by(window.mmBuyerUser?'mmBuyerProfileeBtn':'mmAccountOpen').click();
+ const count=by('headerCartCount');function badge(){count.hidden=!Number(count.textContent)}new MutationObserver(badge).observe(count,{subtree:true,childList:true,characterData:true});badge();
+ new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});window.addEventListener('mm-auth-changed',update);update()
+})();
+</script></body></html>
