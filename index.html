@@ -1727,7 +1727,20 @@ function appendProductHeading(container,title,product,locale){
  row.insertBefore(label,title);
  row.insertBefore(separator,title);
 }
-function renderProducts(){const box=$('products');box.lang=lang;box.replaceChildren();const query=$('search').value.toLocaleLowerCase().trim();const items=products.filter(p=>nameOf(p).toLocaleLowerCase().includes(query));if(!loading&&!loadError&&!items.length){const p=document.createElement('p');p.textContent=t().empty;box.append(p)}
+let photoResultOrder = null;
+let photoSearchVersion = 0;
+function clearPhotoSearch(){
+ photoResultOrder = null;
+ photoSearchVersion++;
+ const feedback = document.querySelector('.tovex-search-feedback');
+ if(feedback) feedback.textContent = '';
+}
+function renderProducts(){const box=$('products');box.lang=lang;box.replaceChildren();const query=$('search').value.toLocaleLowerCase().trim();let items=products.filter(p=>nameOf(p).toLocaleLowerCase().includes(query));
+ if(photoResultOrder){
+  items=items.filter(p=>photoResultOrder.has(idOf(p)));
+  items.sort((a,b)=>photoResultOrder.get(idOf(a))-photoResultOrder.get(idOf(b)));
+ }
+ if(!loading&&!loadError&&!items.length){const p=document.createElement('p');p.textContent=t().empty;box.append(p)}
  for(const product of items){const card=document.createElement('article');card.className='card';card.dataset.productId=idOf(product);const photo=document.createElement('div');photo.className='photo';const img=document.createElement('img');img.alt=nameOf(product);img.loading='lazy';img.src=product.image_url||tovexMissingImage;img.onerror=()=>{img.onerror=null;img.src=tovexMissingImage};photo.append(img);
  const info=document.createElement('div');info.className='info';const name=document.createElement('h3');name.textContent=nameOf(product);name.dataset.pdOpen='';name.tabIndex=0;name.setAttribute('role','button');const price=document.createElement('div');price.className='price';price.textContent=money(wholesalePrice(product,wholesaleMinimum(product)));const oldPrice=product.wholesale?.mode==='bulk'?0:oldPriceOf(product);if(oldPrice){const before=document.createElement('del');before.className='tovex-old-price';before.textContent=money(oldPrice);price.prepend(before);const badge=document.createElement('span');badge.className='tovex-discount-badge';badge.textContent='−'+Math.round((1-priceOf(product)/oldPrice)*100)+'%';photo.append(badge)}const stock=document.createElement('p');stock.className='stock';stock.textContent=t().stock+' '+stockOf(product)+' '+unitOf(product);const buy=document.createElement('button');buy.className='gold buy';buy.textContent=stockOf(product)>0?t().buy:t().sold;buy.disabled=stockOf(product)<wholesaleMinimum(product);if(!buy.disabled)addCartIcon(buy);buy.onclick=()=>{const accepted=addToCart(product);if(accepted)animateToCart(img)};info.append(price);appendProductHeading(info,name,product,lang);if(product.wholesale)info.append(wholesaleInfo(product));info.append(stock,buy);card.append(photo,info);box.append(card)} }
 function animateToCart(source){
@@ -1930,7 +1943,7 @@ function updateCategoryHeading(){
  const labels=storefrontLabels[lang]||storefrontLabels.ka;
  heading.textContent=selectedCategory?(labels[selectedCategory]||'კატეგორია'):(labels.all||'კატალოგი');
 }
-function applyCategory(key){selectedCategory=key||'';completeFilteredCatalog();document.documentElement.dataset.tovexCategory=selectedCategory;document.querySelectorAll('[data-category]').forEach(b=>b.classList.toggle('selected',b.dataset.category===selectedCategory));document.getElementById('search').value='';renderProducts();updateCategoryHeading();document.getElementById('catalogTitle').scrollIntoView({behavior:'smooth',block:'start'})}
+function applyCategory(key){clearPhotoSearch();selectedCategory=key||'';completeFilteredCatalog();document.documentElement.dataset.tovexCategory=selectedCategory;document.querySelectorAll('[data-category]').forEach(b=>b.classList.toggle('selected',b.dataset.category===selectedCategory));document.getElementById('search').value='';renderProducts();updateCategoryHeading();document.getElementById('catalogTitle').scrollIntoView({behavior:'smooth',block:'start'})}
 document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>applyCategory(b.dataset.category)));
 const previousUpdateLanguage=updateLanguage;
 updateLanguage=function(){previousUpdateLanguage();renderStorefrontLabels();updateCategoryHeading()};
@@ -1969,7 +1982,7 @@ function tovexProductCategoryMatches(p,key){
  return (categoryKeywords[key]||[]).some(word=>title.includes(tovexNormalizeCategory(word)));
 }
 renderProducts=function(){
- if(!selectedCategory){previousRenderProducts();if(!loading&&!loadError){const q=document.getElementById('search').value.toLocaleLowerCase().trim();document.getElementById('status').textContent=t().found+' '+products.filter(p=>nameOf(p).toLocaleLowerCase().includes(q)).length}return}
+ if(!selectedCategory){previousRenderProducts();if(!loading&&!loadError){document.getElementById('status').textContent=t().found+' '+$('products').querySelectorAll('.card').length}return}
  const original=products;
  products=original.filter(p=>tovexProductCategoryMatches(p,selectedCategory));
  try{
@@ -1977,7 +1990,7 @@ renderProducts=function(){
   const box=document.getElementById('products');
   // Count only the actual visible filtered products, not the entire database.
   const query=document.getElementById('search').value.toLocaleLowerCase().trim();
-  const shown=products.filter(p=>nameOf(p).toLocaleLowerCase().includes(query)).length;
+  const shown=box.querySelectorAll('.card').length;
   if(!loading&&!loadError)document.getElementById('status').textContent=t().found+' '+shown;
   if(!loading&&!loadError&&!products.length){
    const message=lang==='ru'?'В этой категории пока нет товаров':lang==='en'?'No products in this category yet':'ამ კატეგორიაში ჯერ პროდუქტები არ არის';
@@ -3112,7 +3125,8 @@ translate();
  box.append(tools,upload);box.parentElement.insertAdjacentElement('afterend',feedback);
  const words={ru:{photo:'Выберите фотографию товара',voice:'Говорите название товара…',unsupported:'В этом браузере голосовой ввод недоступен. Попробуйте Chrome или используйте клавиатуру.',noMatch:'Не удалось надёжно сравнить фото с каталогом. Попробуйте текстовый поиск.',found:'Найдены визуально похожие товары (предварительный результат).',error:'Не удалось обработать фотографию.'},ka:{photo:'აირჩიეთ პროდუქტის ფოტო',voice:'თქვით პროდუქტის სახელი…',unsupported:'ხმოვანი ძიება ამ ბრაუზერში მიუწვდომელია. გამოიყენეთ ტექსტური ძიება.',noMatch:'ფოტოს შედარება ვერ მოხერხდა. სცადეთ ტექსტური ძიება.',found:'ვიზუალურად მსგავსი პროდუქტები (წინასწარი შედეგი).',error:'ფოტოს დამუშავება ვერ მოხერხდა.'},en:{photo:'Select a product photo',voice:'Say the product name…',unsupported:'Voice search is not supported in this browser. Mətnlə axtarın.',noMatch:'Şəkli kataloqla müqayisə etmək mümkün olmadı. Mətnlə axtarın.',found:'Vizual olaraq oxşar məhsullar (ilkin nəticə).',error:'Şəkli emal etmək mümkün olmadı.'}};
  const language=()=>document.documentElement.lang?.split('-')[0]||'ru';const tr=k=>(words[language()]||words.ru)[k];
- const trigger=()=>{search.dispatchEvent(new Event('input',{bubbles:true}));document.getElementById('mmSearchButton')?.click();};
+ search.addEventListener('input',clearPhotoSearch,true);
+ const trigger=()=>document.getElementById('mmSearchButton').click();
  document.getElementById('tovexVoiceSearch').onclick=()=>{
   const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech){feedback.textContent=tr('unsupported');return}
   const rec=new Speech();rec.lang=({ka:'ka-GE',ru:'ru-RU',en:'en-US'})[language()]||'ru-RU';rec.interimResults=false;rec.maxAlternatives=1;
@@ -3124,15 +3138,18 @@ translate();
  document.getElementById('tovexPhotoSearch').onclick=()=>{feedback.textContent=tr('photo');upload.click()};
  // Lightweight browser-side color comparison, not semantic AI image recognition.
  const histogram=async src=>{const img=new Image();img.crossOrigin='anonymous';img.src=src;await img.decode();const c=document.createElement('canvas');c.width=32;c.height=32;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0,32,32);const pixels=ctx.getImageData(0,0,32,32).data;const bins=new Float32Array(48);let count=0;for(let i=0;i<pixels.length;i+=4){if(pixels[i+3]<80)continue;for(let ch=0;ch<3;ch++)bins[ch*16+Math.min(15,pixels[i+ch]>>4)]++;count++}if(!count)throw Error('empty');for(let i=0;i<48;i++)bins[i]/=count;return bins};
- upload.onchange=async()=>{const file=upload.files?.[0];if(!file)return;const url=URL.createObjectURL(file);feedback.textContent='⏳ '+tr('photo');try{
+ upload.onchange=async()=>{const file=upload.files?.[0];if(!file)return;const version=++photoSearchVersion;const url=URL.createObjectURL(file);feedback.textContent='⏳ '+tr('photo');try{
   const target=await histogram(url);const candidates=[...document.querySelectorAll('#products .card')].map(card=>({card,img:card.querySelector('.photo img')})).filter(x=>x.img?.src).slice(0,100);
   const matches=[];for(const item of candidates){try{const h=await histogram(item.img.src);let d=0;for(let i=0;i<48;i++)d+=Math.abs(h[i]-target[i]);matches.push({...item,d})}catch(e){}}
+  if(version!==photoSearchVersion)return;
   if(matches.length<1){feedback.textContent=tr('noMatch');return}
-  matches.sort((a,b)=>a.d-b.d);const best=matches.slice(0,8);const names=best.map(x=>x.card.querySelector('.info h3')?.textContent?.trim()).filter(Boolean);
-  if(!names.length){feedback.textContent=tr('noMatch');return}
-  search.value='';trigger();const all=[...document.querySelectorAll('#products .card')];const selected=new Set(best.map(x=>x.card));all.forEach(x=>x.hidden=!selected.has(x));const host=document.getElementById('products');best.forEach(x=>host.append(x.card));feedback.textContent=tr('found')+' '+names.length;
-  const reset=()=>{search.removeEventListener('input',reset);feedback.textContent='';trigger()};search.addEventListener('input',reset,{once:true});
- }catch(e){feedback.textContent=tr('error')}finally{URL.revokeObjectURL(url);upload.value=''}};
+  matches.sort((a,b)=>a.d-b.d);const best=matches.slice(0,8);
+  photoResultOrder=new Map(best.map(({card},index)=>[card.dataset.productId,index]));
+  search.value='';
+  renderProducts();
+  feedback.textContent=tr('found')+' '+best.length;
+  document.getElementById('catalogTitle').scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(e){if(version===photoSearchVersion)feedback.textContent=tr('error')}finally{URL.revokeObjectURL(url);upload.value=''}};
 })();
 </script>
 <script id="tovex-apple-labels">(()=>{const dict={ru:'Продолжить с Apple',ka:'Apple-ით გაგრძელება',en:'Continue with Apple'};const update=()=>{const lang=(localStorage.getItem('mm_lang')==='az'?'en':localStorage.getItem('mm_lang'))||document.documentElement.lang||'ru';for(const id of ['tovexAppleText','tovexMobileAppleLabel']){const e=document.getElementById(id);if(e)e.textContent=dict[lang]||dict.ru;}};document.addEventListener('DOMContentLoaded',update);document.querySelectorAll('.languages button').forEach(b=>b.addEventListener('click',()=>setTimeout(update,0)));})();</script>
