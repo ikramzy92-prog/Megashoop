@@ -13,13 +13,21 @@ const cityKeys=labels.en[21].split('|');
 try {active=Math.max(0,cityKeys.indexOf(sessionStorage.getItem('tovex-delivery-city')))} catch {}
 confirmCity.onclick=()=>{
  const city=cityKeys[active];
- const home=new URL(parent.location.href);
- home.searchParams.delete('view'); home.searchParams.set('city',city);
- try {sessionStorage.setItem('tovex-delivery-city',city)} catch {home.searchParams.set('city',city)}
- parent.location.assign(home.href);
+ let destination=window;
+ let home=new URL('index.html',document.baseURI);
+ if(parent!==window){
+  try{
+   home=new URL(parent.location.href);
+   destination=parent;
+  }catch{}
+ }
+ home.searchParams.delete('view');
+ home.searchParams.set('city',city);
+ try{sessionStorage.setItem('tovex-delivery-city',city)}catch{}
+ destination.location.assign(home.href);
 };
 function showMap(i){active=i;confirmCity.textContent=({ru:'Готово',ka:'მზადაა',en:'Done'})[lang]+' · '+labels[lang][21].split('|')[i];const name=labels.en[21].split('|')[i];const query=encodeURIComponent(name+', Georgia');map.src='https://maps.google.com/maps?q='+query+'&hl='+lang+'&z=12&output=embed';document.querySelector('.external').href='https://www.google.com/maps/search/?api=1&query='+query;map.title=labels[lang][10]+' · '+labels[lang][21].split('|')[i];drawCities()}
-function drawCities(){cities.replaceChildren();labels[lang][21].split('|').forEach((name,i)=>{if(!Object.values(labels).some(a=>a[21].split('|')[i].toLowerCase().includes(search.value.trim().toLowerCase())))return;const b=document.createElement('button');b.textContent=name;b.setAttribute('aria-pressed',String(i===active));b.onclick=()=>showMap(i);cities.append(b)});if(!cities.childElementCount)cities.textContent=labels[lang][9]}
+function drawCities(){cities.replaceChildren();labels[lang][21].split('|').forEach((name,i)=>{if(!Object.values(labels).some(a=>a[21].split('|')[i].toLowerCase().includes(search.value.trim().toLowerCase())))return;const b=document.createElement('button');b.textContent=name;b.setAttribute('aria-pressed',String(i===active));b.onclick=()=>showMap(i);cities.append(b)});confirmCity.disabled=!cities.querySelector('[aria-pressed="true"]');if(!cities.childElementCount)cities.textContent=labels[lang][9]}
 function render(){document.documentElement.lang=lang;document.title='TOVEX · '+labels[lang][0];langSelect.value=lang;document.querySelectorAll('[data-t]').forEach(el=>el.textContent=labels[lang][el.dataset.t]);search.placeholder=labels[lang][8];search.setAttribute('aria-label',search.placeholder);showMap(active)}
 langSelect.onchange=()=>{lang=langSelect.value;try{localStorage.setItem('megashoop-language',lang)}catch{}render()};search.oninput=drawCities;render();
 </script></html>
