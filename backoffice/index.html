@@ -597,6 +597,7 @@ async function load(){
  select.disabled=!orders.length;
  $('tovexDeliverySave').disabled=!orders.length;
  $('tovexSellerOrderRows').innerHTML=orders.length?orders.map(o=>('<article><div><b>#'+safe(o.order_id.slice(0,8))+'</b><div>'+safe(o.created_at?.slice(0,16)?.replace('T',' '))+'</div></div><div>'+safe(o.customer_name)+' · '+safe(o.customer_phone)+'<div>'+safe(o.delivery_address)+'</div><div>'+o.items.map(p=>safe(p.product_name)+' × '+Number(p.quantity)).join(', ')+'</div></div><div><b>'+(Number(o.total_gel)+Number(o.shipping_fee_gel||0)).toFixed(2)+' ₾</b><div>'+safe(Shipping.summary(o))+'</div> · '+safe(o.status)+'<div><button class="ghost" type="button" data-delivery="'+safe(o.delivery_id)+'">🚚 Управлять доставкой</button></div></div></article>')).join(''):'Пока нет заказов';
+ $('tovexSellerOrderRows').querySelectorAll('article').forEach((row,i)=>addOrderCash(row,orders[i].order_id,db));
  $('tovexSellerOrderRows').querySelectorAll('[data-delivery]').forEach(b=>b.onclick=()=>{select.value=b.dataset.delivery;document.querySelector('[data-tab="delivery"]')?.click();sync()});sync();
  }catch(error){
   if(version!==loadVersion)return;
