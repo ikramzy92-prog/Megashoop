@@ -1693,9 +1693,10 @@ html body header #shopTools.search-row #shopAddress{flex-direction:row!important
 html body header #shopTools.search-row #shopAddress>span{position:static;width:auto;height:auto;clip-path:none;overflow:visible;white-space:normal;line-height:1.2;min-height:0}
 #shopTools #shopAddress::after{content:"";display:block;width:5px;height:5px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);flex:none}
 @media(max-width:767px){
-html body header #shopTools.search-row{grid-template-columns:max-content minmax(0,1fr) minmax(84px,29%)!important}
+html body header #shopTools.search-row{grid-template-columns:max-content minmax(0,1fr) 44px!important}
 html body header #shopTools.search-row #shopAddress{padding:3px!important;font-size:12px!important}
-html body header #shopTools.search-row #shopAddress svg{width:15px;height:18px;flex:none}
+html body header #shopTools.search-row #shopAddress>span,html body header #shopTools.search-row #shopAddress::after{display:none!important}
+html body header #shopTools.search-row #shopAddress svg{width:25px;height:25px;flex:none}
 html body header #shopTools.search-row #categoryScrollNext{justify-self:end}
 html body header #shopTools.search-row #tovexHeaderCategories{margin-right:42px}
 }
