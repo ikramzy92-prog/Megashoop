@@ -19,8 +19,8 @@
 .photo-fields-group .file-preview{flex:0 0 auto}
 .photo-fields-group .file-preview img{width:48px;height:48px}
 @media(max-width:420px){.photo-fields-group .filefield{padding:12px 10px;font-size:12px}.photo-fields-group .photo-select{padding:9px 10px;font-size:12px}}
-</style><link rel="stylesheet" href="./courier.css?v=shift-2"></head>
-<body><main class="wrap"><header><div class="logo"><i aria-hidden="true">≋</i> Express Georgia</div><span class="tag" id="tag">Вход</span></header><h1 id="heading">Кабинет курьера</h1>
+</style><link rel="stylesheet" href="./courier.css?v=shift-2"><style>header{flex-wrap:wrap;gap:6px}header .logo{margin-right:auto}#courierLanguage{width:auto;max-width:100%;margin:0;padding:8px;border-radius:10px;font:600 14px system-ui}</style></head>
+<body><main class="wrap"><header><div class="logo"><i aria-hidden="true">≋</i> Express Georgia</div><span class="tag" id="tag">Вход</span><select id="courierLanguage" aria-label="Язык"><option value="ka">ქართული</option><option value="ru">Русский</option><option value="en">English</option></select></header><h1 id="heading">Кабинет курьера</h1>
 <section class="card" id="loginCard"><h2>Вход курьера</h2><form id="loginForm"><label for="email">Электронная почта</label><input id="email" type="email" autocomplete="username" required placeholder="courier@example.com"><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" required placeholder="Ваш пароль"><button class="btn" type="submit" id="loginBtn">Войти</button></form><button class="btnlink" id="showSignup" type="button">Нет аккаунта? Зарегистрироваться</button><div id="loginMessage" class="message" role="status" aria-live="polite"></div></section>
 <section class="card hidden" id="signupCard"><h2>Регистрация курьера</h2><p class="hint">Создайте аккаунт. Подтвердите email, затем дождитесь активации профиля курьера администратором Express Georgia. Регистрация сама по себе не даёт права выполнять доставки.</p><form id="signupForm"><label>Имя и фамилия<input id="signupName" required maxlength="120" autocomplete="name"></label><label>Email<input id="signupEmail" type="email" required autocomplete="email"></label><label>Телефон Грузии (+995)<input id="signupPhone" type="tel" required placeholder="+995 5XX XXX XXX" autocomplete="tel"></label><label>Пароль (от 8 символов)<input id="signupPassword" type="password" required minlength="8" autocomplete="new-password"></label><button class="btn" type="submit" id="signupBtn">Зарегистрироваться</button></form><div id="signupMessage" class="message" role="status"></div><button class="btn secondary" id="backLogin" type="button">Вернуться ко входу</button></section>
 <section class="card hidden" id="profileCard"><h2>Мой профиль</h2><div class="line"><span class="muted">Курьер</span><strong id="name"></strong></div><div class="line"><span class="muted">Тип</span><strong id="type"></strong></div><div class="line"><span class="muted">Статус</span><strong class="status">Активен</strong></div><div class="line"><span class="muted">Работодатель</span><strong id="employer">—</strong></div><div class="notice" id="employmentNotice">Смена магазина возможна только после подтверждённого увольнения. Выход из аккаунта не увольняет.</div><button class="btn secondary" id="logoutBtn">Выйти</button></section>
@@ -30,6 +30,586 @@
 <section class="card hidden" id="detail"></section><section class="hidden" id="route"></section><nav class="hidden" id="tabs" aria-label="Кабинет курьера"><button data-page="shift"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h16v15H4z M8 3v4m8-4v4M4 10h16"/></svg>Смена</button><button data-page="map"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-7 7-12a7 7 0 1 0-14 0c0 5 7 12 7 12z M14 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0z"/></svg>Карта</button><button data-page="profile"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z M4 21v-2a8 6 0 0 1 16 0v2z"/></svg>Профиль</button></nav><p class="footer">Express Georgia · Кабинет курьера · Авторизация Supabase</p></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
+const courierWords={
+ "Вход": [
+  "შესვლა",
+  "Sign in"
+ ],
+ "Кабинет курьера": [
+  "კურიერის კაბინეტი",
+  "Courier dashboard"
+ ],
+ "Вход курьера": [
+  "კურიერის შესვლა",
+  "Courier sign-in"
+ ],
+ "Электронная почта": [
+  "ელფოსტა",
+  "Email"
+ ],
+ "Пароль": [
+  "პაროლი",
+  "Password"
+ ],
+ "Ваш пароль": [
+  "თქვენი პაროლი",
+  "Your password"
+ ],
+ "Войти": [
+  "შესვლა",
+  "Sign in"
+ ],
+ "Нет аккаунта? Зарегистрироваться": [
+  "არ გაქვთ ანგარიში? დარეგისტრირდით",
+  "No account? Register"
+ ],
+ "Регистрация курьера": [
+  "კურიერის რეგისტრაცია",
+  "Courier registration"
+ ],
+ "Создайте аккаунт. Подтвердите email, затем дождитесь активации профиля курьера администратором Express Georgia. Регистрация сама по себе не даёт права выполнять доставки.": [
+  "შექმენით ანგარიში და დაადასტურეთ ელფოსტა. მიწოდების დასაწყებად დაელოდეთ, სანამ Express Georgia-ს ადმინისტრატორი კურიერის პროფილს გაგიაქტიურებთ.",
+  "Create an account and confirm your email. You can start delivering once an Express Georgia administrator activates your courier profile."
+ ],
+ "Имя и фамилия": [
+  "სახელი და გვარი",
+  "Full name"
+ ],
+ "Телефон Грузии (+995)": [
+  "ქართული ტელეფონის ნომერი (+995)",
+  "Georgian phone number (+995)"
+ ],
+ "Пароль (от 8 символов)": [
+  "პაროლი (მინიმუმ 8 სიმბოლო)",
+  "Password (at least 8 characters)"
+ ],
+ "Зарегистрироваться": [
+  "რეგისტრაცია",
+  "Register"
+ ],
+ "Вернуться ко входу": [
+  "შესვლაზე დაბრუნება",
+  "Back to sign-in"
+ ],
+ "Мой профиль": [
+  "ჩემი პროფილი",
+  "My profile"
+ ],
+ "Курьер": [
+  "კურიერი",
+  "Courier"
+ ],
+ "Тип": [
+  "ტიპი",
+  "Type"
+ ],
+ "Статус": [
+  "სტატუსი",
+  "Status"
+ ],
+ "Активен": [
+  "აქტიური",
+  "Active"
+ ],
+ "Работодатель": [
+  "დამსაქმებელი",
+  "Employer"
+ ],
+ "Смена магазина возможна только после подтверждённого увольнения. Выход из аккаунта не увольняет.": [
+  "მაღაზიის შეცვლა შესაძლებელია მხოლოდ სამსახურიდან გათავისუფლების დადასტურების შემდეგ. ანგარიშიდან გასვლა დასაქმების სტატუსს არ ცვლის.",
+  "You can change stores once your departure is confirmed. Signing out does not end your employment."
+ ],
+ "Выйти": [
+  "გასვლა",
+  "Sign out"
+ ],
+ "Автомобиль и документы": [
+  "ტრანსპორტი და დოკუმენტები",
+  "Vehicle and documents"
+ ],
+ "Фотографии сохраняются в закрытых хранилищах. Не загружайте настоящие документы до проверки правил доступа.": [
+  "ფოტოები ინახება დახურულ საცავში. ნამდვილი დოკუმენტები ატვირთეთ მხოლოდ წვდომის წესების შემოწმების შემდეგ.",
+  "Photos are saved in private storage. Check access rules before uploading real documents."
+ ],
+ "Тип транспорта": [
+  "ტრანსპორტის ტიპი",
+  "Vehicle type"
+ ],
+ "Автомобиль": [
+  "ავტომობილი",
+  "Car"
+ ],
+ "Мотоцикл": [
+  "მოტოციკლი",
+  "Motorcycle"
+ ],
+ "Скутер": [
+  "სკუტერი",
+  "Scooter"
+ ],
+ "Велосипед": [
+  "ველოსიპედი",
+  "Bicycle"
+ ],
+ "Государственный номер": [
+  "სახელმწიფო ნომერი",
+  "Registration number"
+ ],
+ "Номер автомобиля": [
+  "ავტომობილის ნომერი",
+  "Vehicle registration number"
+ ],
+ "Фото автомобиля спереди": [
+  "ავტომობილის ფოტო წინიდან",
+  "Front of vehicle"
+ ],
+ "Фото автомобиля сзади": [
+  "ავტომობილის ფოტო უკნიდან",
+  "Rear of vehicle"
+ ],
+ "Фото автомобиля сбоку": [
+  "ავტომობილის ფოტო გვერდიდან",
+  "Side of vehicle"
+ ],
+ "Техпаспорт автомобиля — лицевая сторона": [
+  "ავტომობილის ტექპასპორტის წინა მხარე",
+  "Vehicle registration document — front"
+ ],
+ "Техпаспорт автомобиля — обратная сторона": [
+  "ავტომობილის ტექპასპორტის უკანა მხარე",
+  "Vehicle registration document — back"
+ ],
+ "Выбрать фото": [
+  "ფოტოს არჩევა",
+  "Choose photo"
+ ],
+ "Загрузить фотографии": [
+  "ფოტოების ატვირთვა",
+  "Upload photos"
+ ],
+ "Мои доставки": [
+  "ჩემი მიწოდებები",
+  "My deliveries"
+ ],
+ "Здесь отображаются только доставки, назначенные вашему аккаунту.": [
+  "აქ მხოლოდ თქვენთვის დანიშნული მიწოდებები ჩანს.",
+  "Only deliveries assigned to you appear here."
+ ],
+ "Обновить доставки": [
+  "მიწოდებების განახლება",
+  "Refresh deliveries"
+ ],
+ "Загрузка...": [
+  "იტვირთება…",
+  "Loading…"
+ ],
+ "GPS-отслеживание": [
+  "GPS თვალთვალი",
+  "GPS tracking"
+ ],
+ "Выберите назначенную доставку. Местоположение передаётся только после нажатия кнопки.": [
+  "აირჩიეთ თქვენთვის დანიშნული მიწოდება. მდებარეობის გაზიარება დაიწყება ღილაკზე დაჭერის შემდეგ.",
+  "Choose an assigned delivery. Location sharing starts when you press the button."
+ ],
+ "Доставка для отслеживания": [
+  "აირჩიეთ მიწოდება თვალთვალისთვის",
+  "Delivery to track"
+ ],
+ "Включить GPS": [
+  "GPS-ის ჩართვა",
+  "Start GPS"
+ ],
+ "Остановить GPS": [
+  "GPS-ის შეჩერება",
+  "Stop GPS"
+ ],
+ "GPS выключен.": [
+  "GPS გამორთულია.",
+  "GPS is off."
+ ],
+ "Для работы нужен HTTPS и разрешение геолокации. На iPhone при блокировке экрана Safari может перестать обновлять координаты. Не оставляйте GPS включённым после доставки.": [
+  "საჭიროა HTTPS და მდებარეობაზე წვდომის ნებართვა. iPhone-ის ეკრანის დაბლოკვისას Safari-მ შესაძლოა შეწყვიტოს კოორდინატების განახლება. მიწოდების შემდეგ გამორთეთ GPS.",
+  "GPS requires HTTPS and location permission. Safari may stop updating your location when your iPhone is locked. Stop GPS after delivery."
+ ],
+ "Смена": [
+  "ცვლა",
+  "Shift"
+ ],
+ "Карта": [
+  "რუკა",
+  "Map"
+ ],
+ "Профиль": [
+  "პროფილი",
+  "Profile"
+ ],
+ "Express Georgia · Кабинет курьера · Авторизация Supabase": [
+  "Express Georgia · კურიერის კაბინეტი · Supabase ავტორიზაცია",
+  "Express Georgia · Courier dashboard · Supabase sign-in"
+ ],
+ "Курьер продавца": [
+  "გამყიდველის კურიერი",
+  "Store courier"
+ ],
+ "Курьер Express Georgia": [
+  "Express Georgia-ს კურიერი",
+  "Express Georgia courier"
+ ],
+ "Не удалось проверить права курьера:": [
+  "კურიერის უფლებები ვერ შემოწმდა:",
+  "Could not verify courier access:"
+ ],
+ "Для этого аккаунта нет активного профиля курьера. Обратитесь к администратору Express Georgia.": [
+  "ამ ანგარიშს აქტიური კურიერის პროფილი არ აქვს. დაუკავშირდით Express Georgia-ს ადმინისტრატორს.",
+  "This account has no active courier profile. Contact an Express Georgia administrator."
+ ],
+ "Магазин №": [
+  "მაღაზია №",
+  "Store #"
+ ],
+ "Не назначен": [
+  "არ არის დანიშნული",
+  "Unassigned"
+ ],
+ "Назначен": [
+  "დანიშნულია",
+  "Assigned"
+ ],
+ "Ожидает принятия": [
+  "მიღების მოლოდინშია",
+  "Awaiting acceptance"
+ ],
+ "Готов к выдаче": [
+  "მზადაა გასატანად",
+  "Ready for pickup"
+ ],
+ "Принят": [
+  "მიღებულია",
+  "Accepted"
+ ],
+ "Забран": [
+  "აღებულია",
+  "Picked up"
+ ],
+ "В пути": [
+  "გზაშია",
+  "In transit"
+ ],
+ "На месте": [
+  "ადგილზეა",
+  "At destination"
+ ],
+ "Доставлен": [
+  "მიწოდებულია",
+  "Delivered"
+ ],
+ "Отменён": [
+  "გაუქმებულია",
+  "Cancelled"
+ ],
+ "Возврат продавцу": [
+  "გამყიდველთან ბრუნდება",
+  "Returning to seller"
+ ],
+ "Возвращён продавцу": [
+  "დაუბრუნდა გამყიდველს",
+  "Returned to seller"
+ ],
+ "Принять доставку": [
+  "მიწოდების მიღება",
+  "Accept delivery"
+ ],
+ "Забрал заказ": [
+  "შეკვეთა ავიღე",
+  "Confirm pickup"
+ ],
+ "Начать доставку": [
+  "მიწოდების დაწყება",
+  "Start delivery"
+ ],
+ "Я на месте": [
+  "ადგილზე ვარ",
+  "I have arrived"
+ ],
+ "Подтвердить вручение": [
+  "ჩაბარების დადასტურება",
+  "Confirm handover"
+ ],
+ "Покупатель отказался": [
+  "მყიდველმა უარი თქვა",
+  "Buyer declined"
+ ],
+ "Передал продавцу": [
+  "გამყიდველს გადავეცი",
+  "Confirm return to seller"
+ ],
+ "Заказ №": [
+  "შეკვეთა №",
+  "Order #"
+ ],
+ "Открыть заказ": [
+  "შეკვეთის გახსნა",
+  "Open order"
+ ],
+ "Загрузка…": [
+  "იტვირთება…",
+  "Loading…"
+ ],
+ "До": [
+  "დრომდე",
+  "Due by"
+ ],
+ "К получению:": [
+  "ასაღები თანხა:",
+  "Amount to collect:"
+ ],
+ "Не удалось загрузить детали заказа.": [
+  "შეკვეთის დეტალები ვერ ჩაიტვირთა.",
+  "Could not load order details."
+ ],
+ "Моя смена": [
+  "ჩემი ცვლა",
+  "My shift"
+ ],
+ "Доставка": [
+  "მიწოდება",
+  "Delivery"
+ ],
+ "Карточка заказа": [
+  "შეკვეთის დეტალები",
+  "Order details"
+ ],
+ "Выберите назначенную доставку в разделе «Смена».": [
+  "აირჩიეთ დანიშნული მიწოდება განყოფილებაში „ცვლა“.",
+  "Choose an assigned delivery in the Shift tab."
+ ],
+ "Данные доставки недоступны.": [
+  "მიწოდების მონაცემები მიუწვდომელია.",
+  "Delivery details are unavailable."
+ ],
+ "Обновите смену.": [
+  "განაახლეთ ცვლა.",
+  "Refresh your shift."
+ ],
+ "Сумма к получению не указана": [
+  "ასაღები თანხა მითითებული არ არის",
+  "Amount to collect not specified"
+ ],
+ "Доставить до": [
+  "მიწოდების ბოლო ვადა:",
+  "Deliver by"
+ ],
+ "Адрес доставки": [
+  "მიწოდების მისამართი",
+  "Delivery address"
+ ],
+ "Открыть точку покупателя": [
+  "მყიდველის მდებარეობის გახსნა",
+  "Open buyer’s location"
+ ],
+ "Маршрут в Google Maps": [
+  "მარშრუტი Google Maps-ში",
+  "Directions in Google Maps"
+ ],
+ "Открыть карту": [
+  "რუკის გახსნა",
+  "Open map"
+ ],
+ "Назначение или статус изменились. Обновите список доставок.": [
+  "დავალება ან სტატუსი შეიცვალა. განაახლეთ მიწოდებების სია.",
+  "The assignment or status changed. Refresh your deliveries."
+ ],
+ "Не загрузилась библиотека Supabase. Проверьте интернет и обновите страницу.": [
+  "Supabase ვერ ჩაიტვირთა. შეამოწმეთ ინტერნეტი და განაახლეთ გვერდი.",
+  "Supabase could not load. Check your connection and reload the page."
+ ],
+ "Сначала укажите Project URL и publishable/anon key Supabase в файле courier/index.html.": [
+  "ჯერ მიუთითეთ Supabase-ის Project URL და publishable/anon key ფაილში courier/index.html.",
+  "Set your Supabase Project URL and publishable/anon key in courier/index.html first."
+ ],
+ "Ошибка настроек Supabase:": [
+  "Supabase-ის პარამეტრების შეცდომა:",
+  "Supabase configuration error:"
+ ],
+ "Загружаем назначенные доставки...": [
+  "დანიშნული მიწოდებები იტვირთება…",
+  "Loading assigned deliveries…"
+ ],
+ "Ошибка загрузки:": [
+  "ჩატვირთვის შეცდომა:",
+  "Loading error:"
+ ],
+ "Назначенных доставок пока нет. Администратор или продавец должен назначить заказ на вас.": [
+  "მიწოდება ჯერ არ დაგენიშნათ. შეკვეთას გამყიდველი ან ადმინისტრატორი დაგინიშნავთ.",
+  "No deliveries yet. An administrator or seller must assign an order to you."
+ ],
+ "Нет назначенных доставок": [
+  "დანიშნული მიწოდებები არ არის",
+  "No assigned deliveries"
+ ],
+ "Нет активных доставок для GPS.": [
+  "GPS-ისთვის აქტიური მიწოდება არ არის.",
+  "No active deliveries for GPS."
+ ],
+ "Доставка не разрешает передачу GPS (проверьте назначение и статус).": [
+  "ამ მიწოდებისთვის მდებარეობის გაზიარება შეუძლებელია. შეამოწმეთ დავალება და სტატუსი.",
+  "Location sharing is unavailable for this delivery. Check the assignment and status."
+ ],
+ "Координаты переданы ·": [
+  "კოორდინატები გაიგზავნა ·",
+  "Location sent ·"
+ ],
+ "· точность около": [
+  "· სიზუსტე დაახლოებით",
+  "· accuracy about"
+ ],
+ "м": [
+  "მ",
+  "m"
+ ],
+ "Ошибка отправки GPS:": [
+  "კოორდინატების გაგზავნის შეცდომა:",
+  "GPS update failed:"
+ ],
+ "Регистрация": [
+  "რეგისტრაცია",
+  "Registration"
+ ],
+ "Введите грузинский мобильный номер в формате +9955XXXXXXXX": [
+  "შეიყვანეთ ქართული მობილური ნომერი ფორმატით +9955XXXXXXXX",
+  "Enter a Georgian mobile number in the format +9955XXXXXXXX"
+ ],
+ "Запрос регистрации отправлен. Проверьте почту. Для доступа к кабинету потребуется создание и активация профиля курьера администратором.": [
+  "რეგისტრაციის მოთხოვნა გაიგზავნა. შეამოწმეთ ელფოსტა. კაბინეტზე წვდომისთვის ადმინისტრატორმა უნდა შექმნას და გაააქტიუროს თქვენი კურიერის პროფილი.",
+  "Registration submitted. Check your email. An administrator must create and activate your courier profile before you can access the dashboard."
+ ],
+ "Ошибка регистрации:": [
+  "რეგისტრაციის შეცდომა:",
+  "Registration error:"
+ ],
+ "Предпросмотр выбранной фотографии": [
+  "არჩეული ფოტოს წინასწარი ნახვა",
+  "Selected photo preview"
+ ],
+ "Выберите изображение JPG, PNG или WebP.": [
+  "აირჩიეთ JPG, PNG ან WebP სურათი.",
+  "Choose a JPG, PNG or WebP image."
+ ],
+ "✓ Выбрано": [
+  "✓ არჩეულია",
+  "✓ Selected"
+ ],
+ "Выберите все пять фотографий.": [
+  "აირჩიეთ ხუთივე ფოტო.",
+  "Choose all five photos."
+ ],
+ "Размер каждого файла не должен превышать 10 МБ.": [
+  "თითოეული ფაილი მაქსიმუმ 10 მბ უნდა იყოს.",
+  "Each file must be 10 MB or smaller."
+ ],
+ "Разрешены только JPG, PNG и WebP.": [
+  "დაშვებულია მხოლოდ JPG, PNG და WebP.",
+  "Only JPG, PNG and WebP files are allowed."
+ ],
+ "Укажите номер транспорта.": [
+  "მიუთითეთ ტრანსპორტის ნომერი.",
+  "Enter the vehicle registration number."
+ ],
+ "Пять фотографий загружены. Проверка документов администратором ещё не выполнена.": [
+  "ხუთივე ფოტო აიტვირთა. ადმინისტრატორს დოკუმენტები ჯერ არ შეუმოწმებია.",
+  "All five photos uploaded. The administrator has not reviewed the documents yet."
+ ],
+ "✓ Загружено": [
+  "✓ ატვირთულია",
+  "✓ Uploaded"
+ ],
+ "Не удалось завершить загрузку:": [
+  "ატვირთვა ვერ დასრულდა:",
+  "Upload could not finish:"
+ ],
+ ". Некоторые файлы могли сохраниться — проверьте Storage перед повтором.": [
+  ". ზოგი ფაილი შესაძლოა შენახული იყოს. ხელახალ ცდამდე შეამოწმეთ საცავი.",
+  ". Some files may have been saved. Check storage before retrying."
+ ],
+ "Для GPS откройте сайт через HTTPS в браузере с поддержкой геолокации.": [
+  "GPS-ისთვის გახსენით საიტი HTTPS-ით ბრაუზერში, რომელსაც მდებარეობის გაზიარება შეუძლია.",
+  "For GPS, open the HTTPS site in a browser that supports location sharing."
+ ],
+ "Запрашиваем разрешение на геолокацию...": [
+  "ითხოვება მდებარეობაზე წვდომა…",
+  "Requesting location permission…"
+ ],
+ "Геолокация недоступна:": [
+  "მდებარეობა მიუწვდომელია:",
+  "Location unavailable:"
+ ],
+ "Страница в фоне: обновления GPS могут остановиться.": [
+  "გვერდი ფონურ რეჟიმშია. GPS-ის განახლება შეიძლება შეწყდეს.",
+  "This page is in the background. GPS updates may stop."
+ ],
+ "Проверяем данные...": [
+  "მონაცემები მოწმდება…",
+  "Checking credentials…"
+ ],
+ "Не удалось войти:": [
+  "შესვლა ვერ მოხერხდა:",
+  "Sign-in failed:"
+ ],
+ "Язык": [
+  "ენა",
+  "Language"
+ ]
+};
+const picker=document.getElementById('courierLanguage');
+const supported=['ru','ka','en'];
+let locale='ru';
+try{
+ const saved=localStorage.getItem('courier-language')||localStorage.getItem('megashoop-language');
+ if(supported.includes(saved))locale=saved;
+}catch{}
+const originals=new WeakMap();
+function word(key){return locale==='ru'?key:(courierWords[key]?.[locale==='ka'?0:1]??key)}
+const prefixes=['Не удалось проверить права курьера:','Данные доставки недоступны.','Ошибка настроек Supabase:','Ошибка загрузки:','Ошибка отправки GPS:','Ошибка регистрации:','Не удалось завершить загрузку:','Геолокация недоступна:','Не удалось войти:','Заказ №','Магазин №','К получению:','Доставить до','До','Координаты переданы ·'];
+function translateLine(value){
+ const key=value.trim();if(Object.hasOwn(courierWords,key))return value.replace(key,()=>word(key));
+ for(const prefix of prefixes){
+  if(!key.startsWith(prefix))continue;
+  let tail=key.slice(prefix.length);
+  if(!prefix.endsWith('№')&&!tail.startsWith(' '))continue;
+  if(prefix==='Координаты переданы ·')tail=tail.replace('· точность около',word('· точность около')).replace(/ м$/,' '+word('м'));
+  if(prefix==='Не удалось завершить загрузку:'){const end='. Некоторые файлы могли сохраниться — проверьте Storage перед повтором.';if(tail.endsWith(end))tail=tail.slice(0,-end.length)+word(end)}
+  if(prefix==='Данные доставки недоступны.'&&tail.trim()==='Обновите смену.')tail=' '+word(tail.trim());
+  return word(prefix)+tail;
+ }
+ return value;
+}
+function paint(node){
+ if(node.nodeType===Node.TEXT_NODE){
+  if(node.parentElement?.closest('script,style,[translate=no]'))return;
+  const prior=originals.get(node);
+  const source=prior&&prior.shown===node.data?prior.source:node.data;
+  const shown=translateLine(source);
+  originals.set(node,{source,shown});if(node.data!==shown)node.data=shown;
+  return;
+ }
+ if(node.nodeType!==Node.ELEMENT_NODE||node.matches('script,style,[translate=no]'))return;
+ for(const attr of ['aria-label','placeholder','alt','title']){
+  const key=node.getAttribute('data-courier-'+attr)||node.getAttribute(attr);
+  if(key&&Object.hasOwn(courierWords,key)){node.setAttribute('data-courier-'+attr,key);node.setAttribute(attr,word(key))}
+ }
+ for(const child of node.childNodes)paint(child);
+}
+function showLanguage(){
+ document.documentElement.lang=locale;document.title='Express Georgia · '+word('Кабинет курьера');
+ picker.value=locale;paint(document.body);
+}
+picker.onchange=()=>{locale=picker.value;try{localStorage.setItem('courier-language',locale)}catch{}showLanguage()};
+showLanguage();
+new MutationObserver(records=>{
+ for(const r of records){if(r.type==='characterData')paint(r.target);else for(const node of r.addedNodes)paint(node)}
+}).observe(document.body,{childList:true,characterData:true,subtree:true});
+
+
 'use strict';
 // ВСТАВЬТЕ ТОЛЬКО Project URL и publishable/anon key. НИКОГДА не вставляйте service_role или secret key.
 const SUPABASE_URL = 'https://mrslybtwzfcovpsyuexf.supabase.co';
@@ -40,7 +620,7 @@ let activeUser=null, deliveries=[], gpsWatchId=null, gpsDeliveryId=null, gpsBusy
 const $gps=()=>navigator.geolocation;
 function showError(message){$('loginMessage').textContent=message;$('loginMessage').className='message error'}
 function loginView(){ resetWorkspace(); stopGPS();activeUser=null;$('gpsCard').classList.add('hidden');$('vehicleCard').classList.add('hidden');$('signupCard').classList.add('hidden');  $('loginCard').classList.remove('hidden');$('profileCard').classList.add('hidden');$('ordersCard').classList.add('hidden');$('tag').textContent='Вход'; }
-function profileView(profile){$('name').textContent=profile.full_name||'Курьер';$('type').textContent=profile.courier_type==='seller'?'Курьер продавца':'Курьер Express Georgia';$('loginCard').classList.add('hidden');$('profileCard').classList.remove('hidden');$('ordersCard').classList.remove('hidden');$('gpsCard').classList.remove('hidden');$('vehicleCard').classList.remove('hidden');$('tag').textContent='Активен';$('password').value='';showPage('shift');}
+function profileView(profile){$('name').translate=!profile.full_name;$('name').textContent=profile.full_name||'Курьер';$('type').textContent=profile.courier_type==='seller'?'Курьер продавца':'Курьер Express Georgia';$('loginCard').classList.add('hidden');$('profileCard').classList.remove('hidden');$('ordersCard').classList.remove('hidden');$('gpsCard').classList.remove('hidden');$('vehicleCard').classList.remove('hidden');$('tag').textContent='Активен';$('password').value='';showPage('shift');}
 async function checkSession(){
   if(!client)return;
   const {data:{user},error:authError}=await client.auth.getUser();
@@ -51,9 +631,9 @@ async function checkSession(){
   activeUser=user.id;profileView(profile);
    if(profile.courier_type==='seller' && profile.store_id!=null){
      const {data:store,error:storeError}=await client.from('stores').select('name').eq('id',profile.store_id).maybeSingle();
-     $('employer').textContent=storeError ? 'Магазин №'+profile.store_id : (store?.name||'Магазин №'+profile.store_id);
+     $('employer').translate=!!storeError||!store?.name;$('employer').textContent=storeError ? 'Магазин №'+profile.store_id : (store?.name||'Магазин №'+profile.store_id);
    }else{
-     $('employer').textContent=profile.courier_type==='tovex'?'Express Georgia':'Не назначен';
+     $('employer').translate=true;$('employer').textContent=profile.courier_type==='tovex'?'Express Georgia':'Не назначен';
    }
    await loadDeliveries();
 }
@@ -90,9 +670,9 @@ function orderRow(d){
   try{
    const {data,error}=await client.rpc('eg_courier_details',{p_id:d.id});if(error||!data)throw Error();
    info.replaceChildren();
-   if(data.deadline&&Number.isFinite(Date.parse(data.deadline)))info.append(el('b','До '+new Date(data.deadline).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Tbilisi'})));
-   if(data.address)info.append(el('p',data.address));
-   if(data.amount!=null&&data.amount!==''&&Number.isFinite(Number(data.amount)))info.append(el('p','К получению: '+Number(data.amount).toLocaleString('ru-RU')+' ₾'));
+   if(data.deadline&&Number.isFinite(Date.parse(data.deadline)))info.append(el('b','До '+new Date(data.deadline).toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Tbilisi'})));
+   if(data.address){const address=el('p',data.address);address.translate=false;info.append(address)}
+   if(data.amount!=null&&data.amount!==''&&Number.isFinite(Number(data.amount)))info.append(el('p','К получению: '+Number(data.amount).toLocaleString(locale)+' ₾'));
   }catch{loaded=false;info.textContent='Не удалось загрузить детали заказа.'}
  };return row;
 }
@@ -133,10 +713,10 @@ async function renderDelivery(){
  const {address,amount,deadline,map_link}=result.data;
  const target=typeof address==='string'?address.trim():'';
  const link=safeMapLink(map_link);
- if(target)panel.append(el('p',target));
- if(amount!=null&&amount!==''&&Number.isFinite(Number(amount)))panel.append(el('strong','К получению: '+Number(amount).toLocaleString('ru-RU')+' ₾'));
+ if(target){const address=el('p',target);address.translate=false;panel.append(address)}
+ if(amount!=null&&amount!==''&&Number.isFinite(Number(amount)))panel.append(el('strong','К получению: '+Number(amount).toLocaleString(locale)+' ₾'));
  else panel.append(el('p','Сумма к получению не указана','muted'));
- if(deadline&&Number.isFinite(Date.parse(deadline)))panel.append(el('p','Доставить до '+new Date(deadline).toLocaleString('ru-RU',{timeZone:'Asia/Tbilisi'})));
+ if(deadline&&Number.isFinite(Date.parse(deadline)))panel.append(el('p','Доставить до '+new Date(deadline).toLocaleString(locale,{timeZone:'Asia/Tbilisi'})));
  if(map&&(target||link)){
   if(target){const frame=document.createElement('iframe');frame.className='map';frame.title='Адрес доставки';frame.referrerPolicy='no-referrer';frame.src='https://maps.google.com/maps?output=embed&q='+encodeURIComponent(target+', Georgia');panel.prepend(frame)}
   const a=el('a',link?'Открыть точку покупателя':'Маршрут в Google Maps','btn action');a.target='_blank';a.rel='noopener noreferrer';a.href=link||'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(target+', Georgia');panel.append(a);
@@ -144,7 +724,7 @@ async function renderDelivery(){
  const actions=el('div','');panel.append(actions);
  for(const [next,label] of nextActions[d.status]||[]){
   actions.append(command(label,async()=>{
-   if(['delivered','returning','returned'].includes(next)&&!window.confirm(label+'?'))return;
+   if(['delivered','returning','returned'].includes(next)&&!window.confirm(word(label)+'?'))return;
    for(const b of actions.children)b.disabled=true;
    try{
     const {data,error}=await client.rpc('eg_courier_transition',{p_id:d.id,p_expected:d.status,p_next:next});
@@ -170,7 +750,7 @@ function gpsInfo(text, error=false){$('gpsMessage').textContent=text;$('gpsMessa
 function stopGPS(){
  if(gpsWatchId!==null && navigator.geolocation)navigator.geolocation.clearWatch(gpsWatchId);
  gpsWatchId=null;gpsDeliveryId=null;lastSent=0;$('deliverySelect').disabled=false;
- $('gpsStop').disabled=true;$('gpsStart').disabled=!deliveries.length;
+ $('gpsStop').disabled=true;$('gpsStart').disabled=!activeUser||!$('deliverySelect').value;
  if($('gpsMessage'))gpsInfo('GPS выключен.');
 }
 async function loadDeliveries(){
@@ -206,8 +786,8 @@ async function sendPosition(pos){
  try{
   const {data,error}=await client.rpc('tovex_update_courier_gps',{p_delivery_id:gpsDeliveryId,p_latitude:lat,p_longitude:lon});
   if(error)throw error;
-  if(data!==true){gpsInfo('Доставка не разрешает передачу GPS (проверьте назначение и статус).',true);stopGPS();return;}
-  lastSent=Date.now();gpsInfo('Координаты переданы · '+new Date().toLocaleTimeString('ru-RU')+' · точность около '+Math.round(pos.coords.accuracy)+' м');
+  if(data!==true){stopGPS();gpsInfo('Доставка не разрешает передачу GPS (проверьте назначение и статус).',true);return;}
+  lastSent=Date.now();gpsInfo('Координаты переданы · '+new Date().toLocaleTimeString(locale)+' · точность около '+Math.round(pos.coords.accuracy)+' м');
  }catch(e){gpsInfo('Ошибка отправки GPS: '+e.message,true)}finally{gpsBusy=false}
 }
 $('showSignup').addEventListener('click',()=>{$('loginCard').classList.add('hidden');$('signupCard').classList.remove('hidden');$('tag').textContent='Регистрация'});
@@ -243,8 +823,8 @@ $('gpsStart').addEventListener('click',()=>{
  gpsDeliveryId=$('deliverySelect').value;gpsInfo('Запрашиваем разрешение на геолокацию...');
  $('gpsStart').disabled=true;$('gpsStop').disabled=false;$('deliverySelect').disabled=true;
  gpsWatchId=navigator.geolocation.watchPosition(sendPosition,e=>{
-  gpsInfo('Геолокация недоступна: '+e.message,true);
   if(e.code===1)stopGPS();
+  gpsInfo('Геолокация недоступна: '+e.message,true);
  },{enableHighAccuracy:true,maximumAge:5000,timeout:20000});
 });
 $('gpsStop').addEventListener('click',()=>{stopGPS();$('deliverySelect').disabled=false;});
