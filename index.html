@@ -2017,7 +2017,7 @@ function cartLimitMessage(stock){
  return ({ru:'Доступно: '+n+' шт.',ka:'ხელმისაწვდომია: '+n+' ც.',en:'Available: '+n})[lang];
 }
 function tovexAddToCartBase(product){if(window.mmRoleGuard && !window.mmRoleGuard.canBuy()){window.mmRoleGuard.warn();return false;}const id=idOf(product);if(!orderProductId({id}))return false;const existing=cart.find(p=>p.id===id);const minimum=wholesaleMinimum(product);const next=existing?existing.quantity+1:minimum;if(next>cartQuantityLimit(stockOf(product))){if(existing){existing.stock=stockOf(product);renderCart();window.refreshCartSummary?.()}return false}if(existing)existing.quantity++;else cart.push({id,name:nameOf(product),minimum,variantPricing:product.id?.toString().includes('::')?{price:priceOf(product),wholesale:product.wholesale||null}:null,price:wholesalePrice(product,next),quantity:next,image:product.image_url||'',stock:stockOf(product)});updateCount();renderCart();Market.cart(product);navigator.vibrate?.(25);return true}
-function renderCart(){refreshWholesaleCart();const box=$('cartItems');box.replaceChildren();if(!cart.length){const message=document.createElement('p');message.className='cart-empty';message.textContent=({ru:'Корзина пока пуста',en:'Your cart is empty',ka:'კალათა ცარიელია'})[lang];box.append(message)}for(const item of cart){const row=document.createElement('div');row.className='cart-row mm-cart-item';const pic=document.createElement('img');pic.className='mm-cart-thumb';pic.alt=item.name;pic.src=item.image||tovexMissingImage;pic.onerror=()=>{pic.onerror=null;pic.src=tovexMissingImage};const detail=document.createElement('div');detail.className='mm-cart-detail';const label=document.createElement('strong');label.textContent=item.name+(orderProductId(item)?'':' · '+legacyNote());const amount=document.createElement('span');amount.textContent=money(item.price*item.quantity);const qty=document.createElement('div');qty.className='mm-cart-qty';const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label','Decrease quantity');minus.onclick=()=>{item.quantity--;if(item.quantity<(item.minimum||1))cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};const count=document.createElement('span');count.textContent=String(item.quantity);const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label','Increase quantity');const limit=cartQuantityLimit(item.stock);
+function renderCart(){refreshWholesaleCart();const box=$('cartItems');box.replaceChildren();if(!cart.length){const message=document.createElement('p');message.className='cart-empty';message.textContent=({ru:'Корзина пока пуста',en:'Your cart is empty',ka:'კალათა ცარიელია'})[lang];box.append(message)}for(const item of cart){const row=document.createElement('div');row.className='cart-row mm-cart-item';const pic=document.createElement('img');pic.className='mm-cart-thumb';pic.alt=item.name;pic.src=item.image||tovexMissingImage;pic.onerror=()=>{pic.onerror=null;pic.src=tovexMissingImage};const detail=document.createElement('div');detail.className='mm-cart-detail';const label=document.createElement('strong');label.textContent=item.name+(orderProductId(item)?'':' · '+legacyNote());const amount=document.createElement('span');amount.textContent=money(item.price*item.quantity);const qty=document.createElement('div');qty.className='mm-cart-qty';const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label',({ru:'Уменьшить количество',ka:'რაოდენობის შემცირება',en:'Decrease quantity'})[lang]);minus.onclick=()=>{item.quantity--;if(item.quantity<(item.minimum||1))cart=cart.filter(p=>p.id!==item.id);updateCount();renderCart()};const count=document.createElement('span');count.textContent=String(item.quantity);const plus=document.createElement('button');plus.type='button';plus.textContent='+';plus.setAttribute('aria-label',({ru:'Увеличить количество',ka:'რაოდენობის გაზრდა',en:'Increase quantity'})[lang]);const limit=cartQuantityLimit(item.stock);
  plus.disabled=item.quantity>=limit;
  plus.onclick=()=>{if(item.quantity>=cartQuantityLimit(item.stock))return;item.quantity++;updateCount();renderCart()};
  qty.append(minus,count,plus);
@@ -2051,6 +2051,67 @@ function deliveryCityKey(){
  let key=cityFallback;
  try {key=sessionStorage.getItem(cityStorageKey)||key} catch {}
  return deliveryCities.en.includes(key)?key:deliveryCities.en[0];
+}
+function buyerOrderStatus(value){
+ const labels={
+ "pending": [
+  "Ожидает обработки",
+  "დამუშავების მოლოდინშია",
+  "Pending"
+ ],
+ "assigned": [
+  "Курьер назначен",
+  "კურიერი დანიშნულია",
+  "Courier assigned"
+ ],
+ "accepted": [
+  "Принят",
+  "მიღებულია",
+  "Accepted"
+ ],
+ "picked_up": [
+  "Забран курьером",
+  "კურიერმა აიღო",
+  "Picked up"
+ ],
+ "in_transit": [
+  "В пути",
+  "გზაშია",
+  "In transit"
+ ],
+ "arrived": [
+  "Курьер на месте",
+  "კურიერი ადგილზეა",
+  "Courier arrived"
+ ],
+ "delivered": [
+  "Доставлен",
+  "მიწოდებულია",
+  "Delivered"
+ ],
+ "cancelled": [
+  "Отменён",
+  "გაუქმებულია",
+  "Cancelled"
+ ],
+ "returned": [
+  "Возвращён",
+  "დაბრუნებულია",
+  "Returned"
+ ],
+ "returning": [
+  "Возвращается продавцу",
+  "უბრუნდება გამყიდველს",
+  "Returning to seller"
+ ],
+ "ready": [
+  "Готов к выдаче",
+  "მზადაა გასატანად",
+  "Ready for pickup"
+ ]
+};
+ const aliases={on_the_way:'in_transit',out_for_delivery:'in_transit',ready_for_pickup:'ready'};
+ return labels[aliases[value]||value]?.[{ru:0,ka:1,en:2}[document.documentElement.lang]]??String(value??'');
 }
 function deliveryCityName(){return deliveryCities[lang][deliveryCities.en.indexOf(deliveryCityKey())]}
 function paintDeliveryCity(){
@@ -2470,7 +2531,7 @@ slides.push(el);
 }
 if(!slides.length){root.closest('.mm-showcase').hidden=true;return;}
 function language(){const lang=document.documentElement.lang;return lang==='ru'?'ru':lang==='en'?'az':'ka'}
-function translate(){const l=language();for(const el of slides){if(el.dataset.sellerBanner){el.querySelector('button').textContent={ru:'Открыть товар',az:'View product',ka:'პროდუქტის ნახვა'}[l];continue}const r=items.find(x=>x[0]===el.dataset.category);const title=el.querySelector('.mm-showcase-title'),desc=el.querySelector('.mm-showcase-desc'),link=el.querySelector('.mm-showcase-link');const i=l==='ru'?3:l==='az'?5:1;title.textContent=r[i];desc.textContent=r[i+1];link.textContent=l==='ru'?'Смотреть товары':l==='az'?'Browse products':'პროდუქციის ნახვა';}}
+function translate(){const l=language();for(const el of slides){if(el.dataset.sellerBanner){el.querySelector('button').textContent={ru:'Открыть товар',az:'View product',ka:'პროდუქტის ნახვა'}[l];continue}const r=items.find(x=>x[0]===el.dataset.category);const title=el.querySelector('.mm-showcase-title'),desc=el.querySelector('.mm-showcase-desc'),link=el.querySelector('.mm-showcase-link');const i=l==='ru'?3:l==='az'?5:1;title.textContent=r[i];el.querySelector('.mm-showcase-picture img').alt=r[i];desc.textContent=r[i+1];link.textContent=l==='ru'?'Смотреть товары':l==='az'?'Browse products':'პროდუქციის ნახვა';}}
 function show(n){active=(n+slides.length)%slides.length;slides.forEach((el,i)=>{el.classList.toggle('active',i===active);el.setAttribute('aria-hidden',String(i!==active));
  const clip=el.querySelector('video');if(clip){if(i===active&&!document.hidden)clip.play().catch(()=>{});else clip.pause()}});[...dots.children].forEach((d,i)=>{d.classList.toggle('active',i===active);d.setAttribute('aria-current',String(i===active))})}
 function restart(){clearInterval(timer);if(slides.length>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)timer=setInterval(()=>show(active+1),5000)}
@@ -2753,7 +2814,7 @@ async function loadAccount(){
  const owned=new Set(a.data.map(o=>o.id)),items=b.data.filter(x=>owned.has(x.order_id)),reviewed=new Set(c.data.map(x=>x.order_item_id));
  if(!a.data.length)orders.append(el('p',t().empty));
  for(const order of a.data){
-  const box=el('div',undefined,'mm-buyer-order');box.append(el('strong','#'+order.id.slice(0,8)+' · '+order.status+' · '+new Date(order.created_at).toLocaleDateString()));
+  const box=el('div',undefined,'mm-buyer-order');box.append(el('strong','#'+order.id.slice(0,8)+' · '+buyerOrderStatus(order.status)+' · '+new Date(order.created_at).toLocaleDateString()));
   for(const item of items.filter(x=>x.order_id===order.id)){
    const line=el('div',item.product_name+' × '+item.quantity+' — '+Number(item.unit_price*item.quantity).toFixed(2)+' ₾');line.style.marginTop='10px';box.append(line);
    if(order.status==='delivered'&&!reviewed.has(item.id))makeReviewForm(item,box);
@@ -3369,7 +3430,7 @@ translate();
    rows.innerHTML=orders.map(o=>{
     const products=(b.data||[]).filter(x=>x.order_id===o.id),delivery=(c.data||[]).find(x=>x.order_id===o.id);
     const total=products.reduce((s,x)=>s+Number(x.unit_price_gel)*Number(x.quantity),0);
-    return '<article style="padding:12px 0;border-top:1px solid #64748b55"><b>#'+safe(o.id.slice(0,8))+'</b> · '+safe(new Date(o.created_at).toLocaleString())+'<div>'+products.map(x=>safe(x.product_name)+' × '+Number(x.quantity)).join(', ')+'</div><strong>'+Number(total+Number(o.shipping_fee_gel||0)).toFixed(2)+' ₾</strong><div>'+safe(Shipping.summary(o))+'</div><div>'+t().status+': '+safe(delivery?.status||o.status)+' · '+t().delivery+': '+safe(delivery?.method==='seller'?t().seller:delivery?.method==='tovex'?'TOVEX':'—')+'</div>'+(delivery?'<button type="button" class="tovex-track-btn" data-order-id="'+safe(o.id)+'" data-delivery-id="'+safe(delivery.id)+'">'+t().track+'</button><div class="tovex-track-panel" hidden><div class="tovex-track-msg" role="status"></div><div class="tovex-track-map"></div></div>':'<p class="tovex-track-msg">'+t().noDelivery+'</p>')+'<div class="tvx-panel" data-return-order="'+safe(o.id)+'"></div></article>'
+    return '<article style="padding:12px 0;border-top:1px solid #64748b55"><b>#'+safe(o.id.slice(0,8))+'</b> · '+safe(new Date(o.created_at).toLocaleString())+'<div>'+products.map(x=>safe(x.product_name)+' × '+Number(x.quantity)).join(', ')+'</div><strong>'+Number(total+Number(o.shipping_fee_gel||0)).toFixed(2)+' ₾</strong><div>'+safe(Shipping.summary(o))+'</div><div>'+t().status+': '+safe(buyerOrderStatus(delivery?.status||o.status))+' · '+t().delivery+': '+safe(delivery?.method==='seller'?t().seller:delivery?.method==='tovex'?'TOVEX':'—')+'</div>'+(delivery?'<button type="button" class="tovex-track-btn" data-order-id="'+safe(o.id)+'" data-delivery-id="'+safe(delivery.id)+'">'+t().track+'</button><div class="tovex-track-panel" hidden><div class="tovex-track-msg" role="status"></div><div class="tovex-track-map"></div></div>':'<p class="tovex-track-msg">'+t().noDelivery+'</p>')+'<div class="tvx-panel" data-return-order="'+safe(o.id)+'"></div></article>'
    }).join('');
    const orderPanels=document.createElement('div');
    orderPanels.append(...rows.childNodes);rows.append(orderPanels);
@@ -3749,6 +3810,118 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
  kyc:['Требуется подключение сервиса проверки личности','საჭიროა პირადობის შემოწმების სერვისის დაკავშირება','An identity verification service must be connected']
  };
  const t=key=>terms[key][{ru:0,ka:1,en:2}[document.documentElement.lang]??1];
+ Object.assign(terms,{
+ "nick": [
+  "Никнейм",
+  "ფსევდონიმი",
+  "Nickname"
+ ],
+ "avatar": [
+  "Фото профиля",
+  "პროფილის ფოტო",
+  "Profile photo"
+ ],
+ "reviews": [
+  "Мои отзывы",
+  "ჩემი შეფასებები",
+  "My reviews"
+ ],
+ "orders": [
+  "Мои заказы",
+  "ჩემი შეკვეთები",
+  "My orders"
+ ],
+ "account": [
+  "Мой аккаунт",
+  "ჩემი ანგარიში",
+  "My account"
+ ],
+ "productReviews": [
+  "Отзывы о товаре",
+  "პროდუქტის შეფასებები",
+  "Product reviews"
+ ],
+ "role": [
+  "Выберите тип аккаунта",
+  "აირჩიეთ ანგარიშის ტიპი",
+  "Choose account type"
+ ],
+ "buyer": [
+  "Покупатель",
+  "მყიდველი",
+  "Buyer"
+ ],
+ "courier": [
+  "Курьер",
+  "კურიერი",
+  "Courier"
+ ],
+ "pass": [
+  "Пароль",
+  "პაროლი",
+  "Password"
+ ],
+ "newPass": [
+  "Пароль (от 8 символов)",
+  "პაროლი (მინიმუმ 8 სიმბოლო)",
+  "Password (at least 8 characters)"
+ ],
+ "or": [
+  "или",
+  "ან",
+  "or"
+ ],
+ "signup": [
+  "Создать аккаунт",
+  "ანგარიშის შექმნა",
+  "Create an account"
+ ],
+ "signin": [
+  "Войти в TOVEX",
+  "TOVEX-ში შესვლა",
+  "Sign in to TOVEX"
+ ],
+ "phone": [
+  "Номер телефона +995 (обязательно)",
+  "მობილურის ნომერი +995 (სავალდებულო)",
+  "Phone number +995 (required)"
+ ],
+ "hint": [
+  "Введите 9 цифр, начиная с 5.",
+  "შეიყვანეთ 9 ციფრი, დაწყებული 5-ით.",
+  "Enter 9 digits, starting with 5."
+ ],
+ "flag": [
+  "Флаг Грузии",
+  "საქართველოს დროშა",
+  "Flag of Georgia"
+ ],
+ "slides": [
+  "Баннеры каталога",
+  "კატალოგის ბანერები",
+  "Catalogue banners"
+ ],
+ "info": [
+  "Информация о заказе",
+  "შეკვეთის ინფორმაცია",
+  "Order information"
+ ],
+ "promo": [
+  "Промокод (пока недоступен)",
+  "პრომოკოდი (ჯერ მიუწვდომელია)",
+  "Promo code (currently unavailable)"
+ ],
+ "toolsAlt": [
+  "Перфораторы и электроинструменты",
+  "პერფორატორები და ელექტროინსტრუმენტები",
+  "Rotary hammers and power tools"
+ ],
+ "toysAlt": [
+  "Мягкие и развивающие игрушки",
+  "რბილი და განმავითარებელი სათამაშოები",
+  "Soft and educational toys"
+ ]
+});
  const closeButtons=[...document.querySelectorAll('button')].filter(n=>n.textContent.trim()==='×');
  function paint(){
   for(const [id,key] of Object.entries({mmAccountOpen:'login',tovexBuyerSignupOpen:'register',mmAccountLogout:'logout',mmAuthLoginTab:'login',mmAuthSignupTab:'register',mmBuyerSaveProfilee:'save'}))by(id).textContent=t(key);
@@ -3763,6 +3936,17 @@ const specKeys=["sku","composition","outer_material","gender","model_size","retu
   document.querySelector('.pd-back').setAttribute('aria-label',t('back'));
   document.querySelectorAll('#productDetail [data-step]').forEach(b=>b.setAttribute('aria-label',t(b.dataset.step==='1'?'plus':'minus')));
   by('tovexKycStart').title=t('kyc');
+  const signup=by('mmAuthSignupTab').getAttribute('aria-selected')==='true';
+  for(const [id,key] of Object.entries({mmAuthHeading:signup?'signup':'signin',mmAuthPasswordLabel:signup?'newPass':'pass',mmRoleLabel:'role',mmRoleBuyer:'buyer',mmRoleCourier:'courier',mmAuthPhoneLabel:'phone',mmPhoneHelp:'hint',mmAuthOr:'or',mmBuyerOrdersHeading:'orders',mmBuyerReviewsHeading:'reviews'}))by(id).textContent=t(key);
+  by('mmAuthPhone').title=t('hint');by('mmRoleSeller').textContent='🏪 '+t('seller');
+  by('tovexPartnersLink').textContent=t('seller')+' ↗';
+  if(by('mmBuyerModal').hidden)by('mmBuyerTitle').textContent=t('account');
+  if(by('mmReviewsModal').hidden)by('mmReviewsTitle').textContent=t('productReviews');
+  document.querySelector('label[for=mmBuyerNick]').textContent=t('nick');
+  document.querySelector('label[for=mmBuyerPhoto]').textContent=t('avatar');
+  for(const [selector,key] of [['.georgia-flag','flag'],['#mmAuthOverlay svg[role=img]','flag'],['.mm-showcase','slides'],['.hero-slider-controls','slides'],['#tovexCartInfo','info'],['#tovexPromoInput','promo']])document.querySelectorAll(selector).forEach(n=>n.setAttribute('aria-label',t(key)));
+  document.querySelectorAll('img.slider-product').forEach(n=>n.alt=t('toolsAlt'));
+  document.querySelectorAll('.category-tile[data-category=toys] img').forEach(n=>n.alt=t('toysAlt'));
  }
  new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
  const dots=by('mmShowcaseDots');if(dots)new MutationObserver(paint).observe(dots,{childList:true});
