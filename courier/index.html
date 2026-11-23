@@ -19,7 +19,7 @@
 .photo-fields-group .file-preview{flex:0 0 auto}
 .photo-fields-group .file-preview img{width:48px;height:48px}
 @media(max-width:420px){.photo-fields-group .filefield{padding:12px 10px;font-size:12px}.photo-fields-group .photo-select{padding:9px 10px;font-size:12px}}
-</style><link rel="stylesheet" href="./courier.css"></head>
+</style><link rel="stylesheet" href="./courier.css?v=shift-2"></head>
 <body><main class="wrap"><header><div class="logo"><i aria-hidden="true">≋</i> Express Georgia</div><span class="tag" id="tag">Вход</span></header><h1 id="heading">Кабинет курьера</h1>
 <section class="card" id="loginCard"><h2>Вход курьера</h2><form id="loginForm"><label for="email">Электронная почта</label><input id="email" type="email" autocomplete="username" required placeholder="courier@example.com"><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" required placeholder="Ваш пароль"><button class="btn" type="submit" id="loginBtn">Войти</button></form><button class="btnlink" id="showSignup" type="button">Нет аккаунта? Зарегистрироваться</button><div id="loginMessage" class="message" role="status" aria-live="polite"></div></section>
 <section class="card hidden" id="signupCard"><h2>Регистрация курьера</h2><p class="hint">Создайте аккаунт. Подтвердите email, затем дождитесь активации профиля курьера администратором Express Georgia. Регистрация сама по себе не даёт права выполнять доставки.</p><form id="signupForm"><label>Имя и фамилия<input id="signupName" required maxlength="120" autocomplete="name"></label><label>Email<input id="signupEmail" type="email" required autocomplete="email"></label><label>Телефон Грузии (+995)<input id="signupPhone" type="tel" required placeholder="+995 5XX XXX XXX" autocomplete="tel"></label><label>Пароль (от 8 символов)<input id="signupPassword" type="password" required minlength="8" autocomplete="new-password"></label><button class="btn" type="submit" id="signupBtn">Зарегистрироваться</button></form><div id="signupMessage" class="message" role="status"></div><button class="btn secondary" id="backLogin" type="button">Вернуться ко входу</button></section>
@@ -27,7 +27,7 @@
 <section class="card hidden" id="vehicleCard"><h2>Автомобиль и документы</h2><p class="hint">Фотографии сохраняются в закрытых хранилищах. Не загружайте настоящие документы до проверки правил доступа.</p><form id="vehicleForm"><label>Тип транспорта<select id="vehicleType"><option value="car">Автомобиль</option><option value="motorcycle">Мотоцикл</option><option value="scooter">Скутер</option><option value="bicycle">Велосипед</option></select></label><label>Государственный номер<input id="vehiclePlate" maxlength="30" placeholder="Номер автомобиля"></label><div class="photo-fields-group"><label class="filefield">Фото автомобиля спереди<span class="photo-select">Выбрать фото</span><input type="file" id="vehicleFront" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Фото автомобиля сзади<span class="photo-select">Выбрать фото</span><input type="file" id="vehicleBack" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Фото автомобиля сбоку<span class="photo-select">Выбрать фото</span><input type="file" id="vehicleSide" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Техпаспорт автомобиля — лицевая сторона<span class="photo-select">Выбрать фото</span><input type="file" id="registrationFront" accept="image/jpeg,image/png,image/webp" required></label><label class="filefield">Техпаспорт автомобиля — обратная сторона<span class="photo-select">Выбрать фото</span><input type="file" id="registrationBack" accept="image/jpeg,image/png,image/webp" required></label></div><button class="btn" id="uploadBtn" type="submit">Загрузить фотографии</button></form><div class="message" id="vehicleMessage" role="status"></div></section>
 <section class="card hidden" id="ordersCard"><h2>Мои доставки</h2><p class="muted">Здесь отображаются только доставки, назначенные вашему аккаунту.</p><button class="btn secondary" id="refreshBtn" type="button">Обновить доставки</button><div id="deliveryList" class="message" aria-live="polite">Загрузка...</div></section>
 <section class="card hidden" id="gpsCard"><h2>GPS-отслеживание</h2><p class="muted">Выберите назначенную доставку. Местоположение передаётся только после нажатия кнопки.</p><label for="deliverySelect">Доставка для отслеживания</label><select id="deliverySelect" style="background:#0b222c;color:white;border:1px solid #49636a;padding:13px;border-radius:12px;width:100%;font-size:16px;margin:8px 0 12px"></select><button class="btn" id="gpsStart" type="button" disabled>Включить GPS</button><button class="btn secondary" id="gpsStop" type="button" disabled>Остановить GPS</button><div id="gpsMessage" class="message" role="status" aria-live="polite">GPS выключен.</div><div class="notice">Для работы нужен HTTPS и разрешение геолокации. На iPhone при блокировке экрана Safari может перестать обновлять координаты. Не оставляйте GPS включённым после доставки.</div></section>
-<section class="card hidden" id="detail"></section><section class="hidden" id="route"></section><nav class="hidden" id="tabs" aria-label="Кабинет курьера"><button data-page="shift">Смена</button><button data-page="map">Карта</button><button data-page="profile">Профиль</button></nav><p class="footer">Express Georgia · Кабинет курьера · Авторизация Supabase</p></main>
+<section class="card hidden" id="detail"></section><section class="hidden" id="route"></section><nav class="hidden" id="tabs" aria-label="Кабинет курьера"><button data-page="shift"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h16v15H4z M8 3v4m8-4v4M4 10h16"/></svg>Смена</button><button data-page="map"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-7 7-12a7 7 0 1 0-14 0c0 5 7 12 7 12z M14 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0z"/></svg>Карта</button><button data-page="profile"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z M4 21v-2a8 6 0 0 1 16 0v2z"/></svg>Профиль</button></nav><p class="footer">Express Georgia · Кабинет курьера · Авторизация Supabase</p></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 'use strict';
@@ -79,9 +79,22 @@ function resetWorkspace(){
  document.querySelectorAll('.file-preview').forEach(n=>{n.classList.add('hidden');n.querySelector('img')?.removeAttribute('src')});
 }
 function orderRow(d){
- const b=el('button','','order');b.type='button';
+ const row=document.createElement('details');row.className='order';
+ const b=document.createElement('summary');row.append(b);
  b.append(el('strong',orderTitle(d)),el('span',labels[d.status]||d.status));
- b.onclick=()=>{selectedId=d.id;showPage('detail')};return b;
+ const info=el('div','','order-info');row.append(info);
+ const go=command('Открыть заказ',()=>{selectedId=d.id;showPage('detail')});row.append(go);
+ let loaded=false;
+ row.ontoggle=async()=>{
+  if(!row.open||loaded)return;loaded=true;info.textContent='Загрузка…';
+  try{
+   const {data,error}=await client.rpc('eg_courier_details',{p_id:d.id});if(error||!data)throw Error();
+   info.replaceChildren();
+   if(data.deadline&&Number.isFinite(Date.parse(data.deadline)))info.append(el('b','До '+new Date(data.deadline).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Tbilisi'})));
+   if(data.address)info.append(el('p',data.address));
+   if(data.amount!=null&&data.amount!==''&&Number.isFinite(Number(data.amount)))info.append(el('p','К получению: '+Number(data.amount).toLocaleString('ru-RU')+' ₾'));
+  }catch{loaded=false;info.textContent='Не удалось загрузить детали заказа.'}
+ };return row;
 }
 function showPage(name){
  if(!activeUser)return;
@@ -104,7 +117,15 @@ async function renderDelivery(){
  if(!d){panel.append(el('p','Выберите назначенную доставку в разделе «Смена».'));return}
  selectedId=d.id;
  if(!gpsDeliveryId&&[...$('deliverySelect').options].some(o=>o.value===String(d.id)))$('deliverySelect').value=d.id;
- panel.append(el('h2',orderTitle(d)),el('p',labels[d.status]||d.status,'current'));
+ if(!map)$('heading').textContent=orderTitle(d);
+ if(map)panel.append(el('h2',orderTitle(d)));
+ const milestones=['accepted','picked_up','arrived','delivered'];
+ const progress={accepted:0,picked_up:1,in_transit:1,on_the_way:1,out_for_delivery:1,arrived:2,delivered:3}[d.status];
+ if(!map){
+  const steps=el('ol','','steps');
+  milestones.forEach((key,i)=>{const item=el('li',labels[key]);if(i<=progress)item.classList.add('done');if(i===progress)item.setAttribute('aria-current','step');steps.append(item)});panel.append(steps);
+ }
+ if(map||!milestones.includes(d.status))panel.append(el('p',labels[d.status]||d.status,'current'));
  let result;
  try{result=await client.rpc('eg_courier_details',{p_id:d.id})}catch(e){result={error:e}}
  if(token!==viewSequence)return;
@@ -117,7 +138,7 @@ async function renderDelivery(){
  else panel.append(el('p','Сумма к получению не указана','muted'));
  if(deadline&&Number.isFinite(Date.parse(deadline)))panel.append(el('p','Доставить до '+new Date(deadline).toLocaleString('ru-RU',{timeZone:'Asia/Tbilisi'})));
  if(map&&(target||link)){
-  if(target){const frame=document.createElement('iframe');frame.className='map';frame.title='Адрес доставки';frame.referrerPolicy='no-referrer';frame.src='https://maps.google.com/maps?output=embed&q='+encodeURIComponent(target+', Georgia');panel.append(frame)}
+  if(target){const frame=document.createElement('iframe');frame.className='map';frame.title='Адрес доставки';frame.referrerPolicy='no-referrer';frame.src='https://maps.google.com/maps?output=embed&q='+encodeURIComponent(target+', Georgia');panel.prepend(frame)}
   const a=el('a',link?'Открыть точку покупателя':'Маршрут в Google Maps','btn action');a.target='_blank';a.rel='noopener noreferrer';a.href=link||'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(target+', Georgia');panel.append(a);
  }else if(!map){panel.append(command('Открыть карту',()=>showPage('map'),true))}
  const actions=el('div','');panel.append(actions);
@@ -167,8 +188,8 @@ async function loadDeliveries(){
  if(gpsDeliveryId && !deliveries.some(d=>d.id===gpsDeliveryId&&!isClosed(d.status)))stopGPS();
  if(!deliveries.length){if(page==="map")renderDelivery();list.textContent='Назначенных доставок пока нет. Администратор или продавец должен назначить заказ на вас.';select.add(new Option('Нет назначенных доставок',''));$('gpsStart').disabled=true;return;}
  list.replaceChildren();
- deliveries.forEach(d=>{
-  list.append(orderRow(d));
+ deliveries.forEach((d,i)=>{
+  const row=orderRow(d);list.append(row);if(i===0)row.open=true;
   if(!isClosed(d.status))select.add(new Option(orderTitle(d),d.id));
  });
  if(page==='map')renderDelivery();
